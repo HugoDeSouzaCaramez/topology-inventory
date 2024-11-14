@@ -43,4 +43,36 @@ contrário, haverá falhas de compilação.
 É dentro do bloco de plugin maven-compile-plugin que adicionamos a configuração para annotationProcessorPaths.
 
 Como adicionamos a dependência lombok, precisamos atualizar o arquivo module-info.java do
-domínio
+domínio.
+
+======================================
+Compreendendo o domínio do cenário em questão:
+Começaremos a modelar o domínio do problema considerando o fato de que um roteador core pode se
+conectar a roteadores core e edge. Os roteadores edge, por sua vez, se conectam a switches e suas redes.
+Os roteadores de núcleo são mais rápidos e lidam com altas cargas de tráfego, e não lidam diretamente com
+o tráfego gerado por um switch e suas redes. Por outro lado, os roteadores de borda lidam diretamente com
+o tráfego gerado por um switch e suas redes. Em nosso cenário, um roteador de borda não tem permissão
+para se conectar a outros roteadores de borda; ele só pode se conectar a roteadores de núcleo e switches.
+Um switch pode ter várias redes.
+
+O objetivo do sistema de topologia e inventário é permitir que os usuários visualizem e gerenciem ativos de rede.
+Por ativos de rede, queremos dizer roteadores, switches e redes – roteadores e switches sendo físicos
+ativos, e redes sendo ativos lógicos fornecidos por switches. Esses ativos são espalhados por diferentes
+locais, e o sistema deve mostrar a interconectividade entre ativos e seus sites. Um local é composto do
+endereço completo, juntamente com sua latitude e longitude.
+A parte de gerenciamento é baseada em nada mais do que operações do tipo Criar, Ler, Atualizar, Excluir
+(CRUD), permitindo que os usuários exerçam controle sobre os dados dos sistemas de topologia e inventário.
+
+Nossa abordagem para construir tal sistema é primeiro criar um hexágono de Domínio, usando um modelo
+de domínio contendo as operações e regras necessárias para cumprir o propósito do sistema em seu nível mais alto.
+Nossa intenção no nível mais alto é validar ideias de negócios diretamente no hexágono de Domínio sem a
+ajuda de coisas presentes nos hexágonos de Aplicação e Framework. Conforme as coisas se movem para
+esses hexágonos, elas tendem a se tornar mais específicas da tecnologia, operando em um nível mais
+baixo, porque as coisas específicas da tecnologia estão muito longe do hexágono de Domínio. O grau em
+que mantemos as funcionalidades do sistema central dentro do hexágono de Domínio influencia
+fortemente o quão frouxamente acoplado o sistema hexagonal será.
+
+Para validar os métodos e classes do hexágono de domínio, criaremos testes unitários para garantir que as
+operações de domínio funcionem conforme o esperado. Isso nos dará um grau de garantia para seguir em frente e usar essas
+operações no hexágono da aplicação.
+==============================================
