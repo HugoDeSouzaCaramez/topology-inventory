@@ -115,5 +115,23 @@ forma única. É por isso que também temos latitude e longitude como atributos 
 
 Os objetos de valor que acabamos de criar são os mais importantes porque são os blocos de construção
 básicos para os outros objetos de valor e entidades que compõem o sistema inteiro. Em seguida, podemos
-criar objetos de valor mais elaborados com base naqueles que acabamos de criar
+criar objetos de valor mais elaborados com base naqueles que acabamos de criar.
+
+Em seguida, podemos
+criar objetos de valor mais elaborados com base naqueles que acabamos de criar.
+
+Com a classe de objeto de valor IP , podemos criar endereços IPv4 e IPv6. A restrição que
+verifica qual protocolo usar está dentro do construtor de objeto de valor. A lógica que
+usamos para validar o endereço IP é simples, apenas para fins de nosso exemplo. Para
+uma validação mais abrangente, podemos usar a classe InetAddressValidator da biblioteca commons-validator
+
+Em seguida, criamos um objeto de valor para representar as redes que serão adicionadas a um switch
+Modelamos o objeto de valor Network para armazenar o endereço IP, o nome da rede e os atributos
+Classless Inter-Domain Routing (CIDR). CIDR é uma notação de endereço de rede composta de dois
+números. O primeiro número (por exemplo, 10.0.0.0) é o endereço IP base da rede. O segundo número
+(por exemplo, 24) é usado para determinar a máscara de sub-rede da rede e quantos endereços IP
+estarão disponíveis nessa rede. Na classe Network , nos referimos ao segundo número CIDR.
+Dentro do construtor Network , adicionamos a restrição para validar se o valor CIDR é válido.
+Agora que vimos os objetos de valor, que são os blocos de construção do nosso hexágono de domínio,
+podemos prosseguir para a criação de entidades e suas especificações.
 =====================================
