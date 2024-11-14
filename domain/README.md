@@ -76,3 +76,24 @@ Para validar os métodos e classes do hexágono de domínio, criaremos testes un
 operações de domínio funcionem conforme o esperado. Isso nos dará um grau de garantia para seguir em frente e usar essas
 operações no hexágono da aplicação.
 ==============================================
+
+
+Entidades são os elementos
+que usamos para classificar componentes do sistema que têm uma identidade. Por outro lado, os objetos de
+valor não têm uma identidade. Usamos objetos de valor para descrever aquelas partes do sistema onde não
+há necessidade de definir uma identidade. Então, temos agregados que servem para encapsular as entidades e os valores relacionados a elas.
+
+
+Recomendo começar criando objetos de valor primeiro porque eles são como os blocos de construção, a matériaprima que usaremos para construir objetos de valor mais elaborados e, mais importante, as entidades. Agora,
+adicionaremos todas as classes de objetos de volume (diretório vo para VOLUME) no módulo hexágono Domain, que foram criadas na seção
+anterior quando inicializamos o hexágono Domain.
+
+
+O código da classe Id é muito direto, com apenas um atributo UUID que usamos para
+armazenar o valor id . Usaremos o método estático withId para criar instâncias de Id com uma string dada.
+
+Se quisermos criar algo novo, devemos usar o método estático withoutId ,
+que gera IDs aleatoriamente.
+
+A classe de objeto de valor enum Vendor , como veremos na seção Definindo entidades e
+especificações, é usada em classes de entidade de roteador e switch.
