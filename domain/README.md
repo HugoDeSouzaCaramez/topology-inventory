@@ -88,7 +88,8 @@ Recomendo começar criando objetos de valor primeiro porque eles são como os bl
 adicionaremos todas as classes de objetos de volume (diretório vo para VOLUME) no módulo hexágono Domain, que foram criadas na seção
 anterior quando inicializamos o hexágono Domain.
 
-
+================================
+Classes de VOLUME (objetos de valor) de domínio:
 O código da classe Id é muito direto, com apenas um atributo UUID que usamos para
 armazenar o valor id . Usaremos o método estático withId para criar instâncias de Id com uma string dada.
 
@@ -97,3 +98,22 @@ que gera IDs aleatoriamente.
 
 A classe de objeto de valor enum Vendor , como veremos na seção Definindo entidades e
 especificações, é usada em classes de entidade de roteador e switch.
+
+A classe de objeto de valor enum Vendor , como veremos na seção Definindo entidades e
+especificações, é usada em classes de entidade de roteador e switch.
+Modelaremos a classe Vendor como enum para ilustrar facilmente os recursos do sistema.
+Faremos a mesma coisa com o enum Model.
+
+Para o Protocolo, criamos um objeto de valor enum para representar o Protocolo da Internet.
+
+Para nos ajudar a definir claramente com que tipo de roteador estamos lidando, criaremos um enum RouterType
+A mesma ideia também é aplicada aos tipos de switch disponíveis
+
+Como cada roteador e switch tem uma localização, temos que criar uma classe de objeto de valor Location.
+Apresentamos o objeto de valor Location com atributos que nos permitem identificar um endereço de
+forma única. É por isso que também temos latitude e longitude como atributos de classe.
+
+Os objetos de valor que acabamos de criar são os mais importantes porque são os blocos de construção
+básicos para os outros objetos de valor e entidades que compõem o sistema inteiro. Em seguida, podemos
+criar objetos de valor mais elaborados com base naqueles que acabamos de criar
+=====================================
