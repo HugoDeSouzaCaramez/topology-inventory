@@ -200,5 +200,11 @@ As especificações SameCountrySpec e SameIpSpec são usadas pelo método addRou
 que nenhuma restrição seja violada antes de adicionar qualquer roteador a um roteador principal.
 As especificações SameCountrySpec e SameIpSpec são usadas pelo método addRouter para garantir
 que nenhuma restrição seja violada antes de adicionar qualquer roteador a um roteador principal.
-
+Seguindo em frente, temos as especificações EmptyRouterSpec e EmptySwitchSpec . Antes de um
+roteador ser removido, precisamos ter certeza de que nenhum outro roteador ou switch esteja conectado a tal roteador.
+Essas são especificações muito simples. Vamos começar olhando a especificação EmptyRouterSpec.
+Esta especificação é baseada no tipo CoreRouter porque somente roteadores de núcleo podem ser conectados
+a outros roteadores de núcleo e de borda.
+A classe EmptySwitchSpec é muito similar à classe EmptyRouterSpec . A diferença, porém, é que somente
+roteadores de borda podem ter switches. É por isso que essa especificação é baseada no tipo EdgeRouter.
 
