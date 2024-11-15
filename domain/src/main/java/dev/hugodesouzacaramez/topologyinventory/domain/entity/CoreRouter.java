@@ -1,5 +1,9 @@
 package dev.hugodesouzacaramez.topologyinventory.domain.entity;
 
+import dev.hugodesouzacaramez.topologyinventory.domain.specification.EmptyRouterSpec;
+import dev.hugodesouzacaramez.topologyinventory.domain.specification.EmptySwitchSpec;
+import dev.hugodesouzacaramez.topologyinventory.domain.specification.SameCountrySpec;
+import dev.hugodesouzacaramez.topologyinventory.domain.specification.SameIpSpec;
 import dev.hugodesouzacaramez.topologyinventory.domain.vo.*;
 import lombok.Builder;
 import lombok.Getter;

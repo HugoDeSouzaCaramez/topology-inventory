@@ -1,5 +1,7 @@
 package dev.hugodesouzacaramez.topologyinventory.domain.specification;
 
+import dev.hugodesouzacaramez.topologyinventory.domain.entity.EdgeRouter;
+
 public final class EmptySwitchSpec extends AbstractSpecification<EdgeRouter> {
 
     @Override
