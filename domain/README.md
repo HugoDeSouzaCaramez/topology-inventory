@@ -270,4 +270,18 @@ Este serviço segue a mesma ideia que aplicamos ao serviço de roteador. Ele é 
 predicado fornecido pelo método getSwitchTypePredicate para filtrar coleções de switches com base em seu tipo.
 Conforme novos predicados surgem, podemos usá-los como novos critérios para filtrar coleções de switches.
 Além disso, observe que o método findById é usado novamente para permitir a recuperação de switches com base no parâmetro do tipo.
+Embora não modelemos a rede como entidades no modelo de domínio, não há problema em criar classes de
+serviço para manipular coleções de objetos de valor de rede.
+Vamos criar uma última classe de serviço para o sistema de topologia e inventário.
+Serviço de rede
+Este serviço é baseado principalmente na necessidade de filtrar coleções de rede com base no protocolo
+IP. Podemos ter coleções de redes IPv4 e IPv6. Este serviço fornece a capacidade de filtrar tais coleções
+com base no protocolo IP da rede.
+O método filterAndRetrieveNetworks recebe uma lista de redes e um predicado, para filtrar a
+lista, como parâmetros. Ele retorna uma lista filtrada de redes.
+Com o NetworkService, concluímos a criação de serviços de domínio.
+=========================================================================
+
+
+
 
