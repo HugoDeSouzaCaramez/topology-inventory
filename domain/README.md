@@ -152,10 +152,6 @@ Roteadores e switches são tipos diferentes de equipamentos de rede, então come
 classe abstrata Equipment.
 
 A maioria dos objetos de valor criados na seção anterior estão presentes aqui na entidade Equipamento .
-Aqui, temos mais dois predicados da classe abstrata Router :
-A classe abstrata Router define predicados comuns a roteadores core ou edge. Usamos o
-predicado fornecido por getRouterTypePredicate para aplicar filtros que recuperam apenas
-roteadores de um tipo específico.
 Usamos o predicado fornecido por getVendorTypePredicate para aplicar os filtros que recuperam apenas o
 equipamento de um vendor específico.
 
