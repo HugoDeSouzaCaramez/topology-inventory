@@ -1,5 +1,7 @@
 package dev.hugodesouzacaramez.topologyinventory.domain.specification;
 
+import dev.hugodesouzacaramez.topologyinventory.domain.exception.GenericSpecificationException;
+
 public final class AndSpecification<T> extends AbstractSpecification<T> {
 
     private final Specification<T> spec1;

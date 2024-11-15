@@ -1,5 +1,8 @@
 package dev.hugodesouzacaramez.topologyinventory.domain.entity;
 
+import dev.hugodesouzacaramez.topologyinventory.domain.specification.CIDRSpecification;
+import dev.hugodesouzacaramez.topologyinventory.domain.specification.NetworkAmountSpec;
+import dev.hugodesouzacaramez.topologyinventory.domain.specification.NetworkAvailabilitySpec;
 import dev.hugodesouzacaramez.topologyinventory.domain.vo.*;
 import lombok.Builder;
 import lombok.Getter;

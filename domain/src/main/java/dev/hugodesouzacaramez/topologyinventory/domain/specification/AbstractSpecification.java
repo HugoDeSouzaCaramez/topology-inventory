@@ -1,5 +1,7 @@
 package dev.hugodesouzacaramez.topologyinventory.domain.specification;
 
+import dev.hugodesouzacaramez.topologyinventory.domain.exception.GenericSpecificationException;
+
 public abstract sealed class AbstractSpecification<T> implements Specification<T> permits
         AndSpecification,
         CIDRSpecification,

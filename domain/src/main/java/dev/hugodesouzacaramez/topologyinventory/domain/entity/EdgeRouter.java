@@ -1,5 +1,6 @@
 package dev.hugodesouzacaramez.topologyinventory.domain.entity;
 
+import dev.hugodesouzacaramez.topologyinventory.domain.specification.EmptyNetworkSpec;
 import dev.hugodesouzacaramez.topologyinventory.domain.specification.SameCountrySpec;
 import dev.hugodesouzacaramez.topologyinventory.domain.specification.SameIpSpec;
 import dev.hugodesouzacaramez.topologyinventory.domain.vo.*;

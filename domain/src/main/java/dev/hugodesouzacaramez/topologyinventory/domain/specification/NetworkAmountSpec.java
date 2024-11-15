@@ -2,6 +2,7 @@ package dev.hugodesouzacaramez.topologyinventory.domain.specification;
 
 import dev.hugodesouzacaramez.topologyinventory.domain.entity.Equipment;
 import dev.hugodesouzacaramez.topologyinventory.domain.entity.Switch;
+import dev.hugodesouzacaramez.topologyinventory.domain.exception.GenericSpecificationException;
 
 public final class NetworkAmountSpec extends AbstractSpecification<Equipment> {
 

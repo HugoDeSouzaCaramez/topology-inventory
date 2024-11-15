@@ -1,6 +1,7 @@
 package dev.hugodesouzacaramez.topologyinventory.domain.specification;
 
 import dev.hugodesouzacaramez.topologyinventory.domain.entity.CoreRouter;
+import dev.hugodesouzacaramez.topologyinventory.domain.exception.GenericSpecificationException;
 
 public final class EmptyRouterSpec extends AbstractSpecification<CoreRouter> {
 

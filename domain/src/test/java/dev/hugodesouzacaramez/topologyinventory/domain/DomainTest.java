@@ -4,6 +4,7 @@ import dev.hugodesouzacaramez.topologyinventory.domain.entity.CoreRouter;
 import dev.hugodesouzacaramez.topologyinventory.domain.entity.EdgeRouter;
 import dev.hugodesouzacaramez.topologyinventory.domain.entity.Router;
 import dev.hugodesouzacaramez.topologyinventory.domain.entity.Switch;
+import dev.hugodesouzacaramez.topologyinventory.domain.exception.GenericSpecificationException;
 import dev.hugodesouzacaramez.topologyinventory.domain.service.NetworkService;
 import dev.hugodesouzacaramez.topologyinventory.domain.service.RouterService;
 import dev.hugodesouzacaramez.topologyinventory.domain.service.SwitchService;

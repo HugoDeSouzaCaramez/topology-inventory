@@ -2,6 +2,7 @@ package dev.hugodesouzacaramez.topologyinventory.domain.specification;
 
 import dev.hugodesouzacaramez.topologyinventory.domain.entity.Equipment;
 import dev.hugodesouzacaramez.topologyinventory.domain.entity.Switch;
+import dev.hugodesouzacaramez.topologyinventory.domain.exception.GenericSpecificationException;
 import dev.hugodesouzacaramez.topologyinventory.domain.vo.IP;
 import dev.hugodesouzacaramez.topologyinventory.domain.vo.Network;
 

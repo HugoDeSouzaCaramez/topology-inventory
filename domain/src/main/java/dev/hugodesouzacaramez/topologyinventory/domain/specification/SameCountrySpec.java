@@ -2,6 +2,7 @@ package dev.hugodesouzacaramez.topologyinventory.domain.specification;
 
 import dev.hugodesouzacaramez.topologyinventory.domain.entity.CoreRouter;
 import dev.hugodesouzacaramez.topologyinventory.domain.entity.Equipment;
+import dev.hugodesouzacaramez.topologyinventory.domain.exception.GenericSpecificationException;
 
 public final class SameCountrySpec extends AbstractSpecification<Equipment> {
 

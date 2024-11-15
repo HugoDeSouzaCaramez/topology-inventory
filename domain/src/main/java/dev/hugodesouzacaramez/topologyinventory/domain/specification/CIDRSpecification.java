@@ -1,5 +1,7 @@
 package dev.hugodesouzacaramez.topologyinventory.domain.specification;
 
+import dev.hugodesouzacaramez.topologyinventory.domain.exception.GenericSpecificationException;
+
 public final class CIDRSpecification extends AbstractSpecification<Integer> {
 
     final static public int MINIMUM_ALLOWED_CIDR = 8;

@@ -1,6 +1,7 @@
 package dev.hugodesouzacaramez.topologyinventory.domain.specification;
 
 import dev.hugodesouzacaramez.topologyinventory.domain.entity.EdgeRouter;
+import dev.hugodesouzacaramez.topologyinventory.domain.exception.GenericSpecificationException;
 
 public final class EmptySwitchSpec extends AbstractSpecification<EdgeRouter> {
 
