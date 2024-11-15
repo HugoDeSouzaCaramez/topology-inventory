@@ -207,4 +207,16 @@ Esta especificação é baseada no tipo CoreRouter porque somente roteadores de 
 a outros roteadores de núcleo e de borda.
 A classe EmptySwitchSpec é muito similar à classe EmptyRouterSpec . A diferença, porém, é que somente
 roteadores de borda podem ter switches. É por isso que essa especificação é baseada no tipo EdgeRouter.
+O propósito do método addSwitch é conectar switches a roteadores de borda. Além disso, no EdgeRouter
+No entanto, o contexto é diferente porque estamos adicionando um switch a um roteador. A única
+especificação nova usada na classe EdgeRouter é a especificação EmptyNetworkSpec , que é usada para
+garantir que todas as redes sejam removidas de um switch antes que ele possa ser removido de um roteador de borda.
+classe, reutilizamos as mesmas especificações SameCountrySpec e SameIpSpec usadas
+ao implementar a classe CoreRouter.
+Para o método removeSwitch , temos a especificação EmptyNetworkSpec para garantir que um switch não tenha
+redes conectadas a ele.
+Assim como fizemos na classe CoreRouter , usamos as especificações SameCountrySpec e SameIpSpec.
+No entanto, o contexto é diferente porque estamos adicionando um switch a um roteador. A única
+especificação nova usada na classe EdgeRouter é a especificação EmptyNetworkSpec , que é usada para
+garantir que todas as redes sejam removidas de um switch antes que ele possa ser removido de um roteador de borda.
 
