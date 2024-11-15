@@ -168,10 +168,12 @@ Os roteadores de núcleo podem ser conectados a outros roteadores de núcleo e d
 class, criamos um método addRouter recebendo o tipo abstrato Router como parâmetro. Também usamos
 a especificação SameCountrySpec para garantir que os roteadores de borda estejam no mesmo país que
 o roteador principal. Esta regra não se aplica quando tentamos conectar um roteador principal a outro roteador principal.
-
 Em seguida, temos a especificação SameIPSpec para confirmar que os roteadores não têm o mesmo endereço IP.
 Tornamos as regras de negócios mais explícitas e o código mais fácil de ler e entender usando
 especificações. Você pode escrever esse código sem nenhuma especificação e apenas lançar
 condições if-else com as variáveis necessárias, mas a carga mental necessária para entender o código
 para qualquer um que não esteja familiarizado com ele provavelmente seria maior.
+Para o método removeRouter , temos a especificação EmptyRouterSpec , que nos impede
+de remover um roteador que tenha outros roteadores conectados a ele. A especificação
+EmptySwitchSpec verifica se um roteador tem algum switch conectado a ele.
 
