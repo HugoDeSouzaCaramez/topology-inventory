@@ -243,3 +243,12 @@ redes de um switch.
 Com a implementação da entidade Switch , concluímos a modelagem das entidades e especificações
 necessárias para atender à finalidade da topologia e do sistema de inventário.
 ===================================================
+
+
+Com base nas entidades que acabamos de criar, podemos agora pensar em tarefas que não estão diretamente
+relacionadas a tais entidades. Esse é o caso de serviços que funcionam como uma alternativa para fornecer
+capacidades fora das entidades de domínio. Vamos agora ver como implementar serviços que nos permitem
+encontrar, filtrar e recuperar dados do sistema.
+
+
+
