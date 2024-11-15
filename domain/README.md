@@ -265,3 +265,9 @@ um serviço de domínio, podemos usar esses predicados para filtrar tais coleç�
 Para o método filterAndRetrieveRouter , passamos uma lista de roteadores e um predicado, para
 filtrar a lista, como parâmetros. Então, definimos um método findById para recuperar um roteador,
 usando um parâmetro do tipo Id.
+Serviço de switch
+Este serviço segue a mesma ideia que aplicamos ao serviço de roteador. Ele é baseado principalmente no
+predicado fornecido pelo método getSwitchTypePredicate para filtrar coleções de switches com base em seu tipo.
+Conforme novos predicados surgem, podemos usá-los como novos critérios para filtrar coleções de switches.
+Além disso, observe que o método findById é usado novamente para permitir a recuperação de switches com base no parâmetro do tipo.
+
