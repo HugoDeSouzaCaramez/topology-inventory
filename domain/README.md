@@ -195,4 +195,10 @@ Usamos o método check para executar a especificação. Outras classes podem cha
 para verificar se a especificação foi atendida ou não.
 É possível conectar dois roteadores core de diferentes países. O que não é possível, como dito anteriormente, é conectar roteadores
 edge e core que não estejam presentes no mesmo país. Note que esta especificação é baseada no tipo de equipamento , permitindonos reutilizar esta especificação não apenas com roteadores, mas também em switches.
+A seguinte especificação SameIpSpec garante que nenhum equipamento tenha o mesmo endereço IP.
+As especificações SameCountrySpec e SameIpSpec são usadas pelo método addRouter para garantir
+que nenhuma restrição seja violada antes de adicionar qualquer roteador a um roteador principal.
+As especificações SameCountrySpec e SameIpSpec são usadas pelo método addRouter para garantir
+que nenhuma restrição seja violada antes de adicionar qualquer roteador a um roteador principal.
+
 
