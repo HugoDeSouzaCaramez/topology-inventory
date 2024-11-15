@@ -176,4 +176,19 @@ para qualquer um que não esteja familiarizado com ele provavelmente seria maior
 Para o método removeRouter , temos a especificação EmptyRouterSpec , que nos impede
 de remover um roteador que tenha outros roteadores conectados a ele. A especificação
 EmptySwitchSpec verifica se um roteador tem algum switch conectado a ele.
+Roteadores core lidam apenas com outros roteadores. É por isso que não há referência a switches na classe de
+entidade CoreRouter.
+Observe que os dois métodos, addRouter e removeRouter, operam diretamente em um parâmetro do
+tipo Router , usando especificações de domínio para verificar se não há violações de restrição antes
+de fazer qualquer alteração. Vamos examinar de perto as especificações usadas pela entidade
+CoreRouter , começando com a especificação SameCountrySpec . Essa especificação garante que os
+roteadores de borda sejam sempre do mesmo país que seus roteadores principais.
+A especificação do pacote é onde colocaremos todas as especificações, então esse é o pacote no
+qual colocaremos a especificação SameCountrySpec.
+O construtor SameCountrySpec recebe um objeto Equipment , que usamos para inicializar o
+campo privado do equipamento.
+Continuando com a implementação SameCountrySpec , substituímos o método isSatisfiedBy.
+A implementação SameCountrySpec não se aplica a roteadores core. É por isso que sempre retornamos
+true quando o objeto é uma entidade CoreRouter . Caso contrário, prosseguimos com a validação
+para verificar se o equipamento não está em um país diferente.
 
