@@ -250,5 +250,18 @@ relacionadas a tais entidades. Esse é o caso de serviços que funcionam como um
 capacidades fora das entidades de domínio. Vamos agora ver como implementar serviços que nos permitem
 encontrar, filtrar e recuperar dados do sistema.
 
+========================================
+Definindo serviços de domínio
 
-
+O sistema de topologia e inventário é sobre a visualização e o gerenciamento de ativos de rede, então precisamos
+habilitar um usuário para lidar com coleções de tais ativos de rede. Uma maneira de fazer isso é por meio de
+serviços. Com serviços, podemos definir comportamentos para lidar com entidades do sistema e objetos de valor.
+Todos os serviços que criaremos nesta seção residem no pacote de serviços.
+Vamos começar criando um serviço para lidar com coleções de roteadores.
+Serviço de roteador
+Na seção anterior, ao implementar as entidades Router, CoreRouter e EdgeRouter , também criamos
+alguns métodos para retornar predicados para nos ajudar a filtrar coleções de roteadores. Com
+um serviço de domínio, podemos usar esses predicados para filtrar tais coleções.
+Para o método filterAndRetrieveRouter , passamos uma lista de roteadores e um predicado, para
+filtrar a lista, como parâmetros. Então, definimos um método findById para recuperar um roteador,
+usando um parâmetro do tipo Id.
