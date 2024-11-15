@@ -219,4 +219,27 @@ Assim como fizemos na classe CoreRouter , usamos as especificações SameCountry
 No entanto, o contexto é diferente porque estamos adicionando um switch a um roteador. A única
 especificação nova usada na classe EdgeRouter é a especificação EmptyNetworkSpec , que é usada para
 garantir que todas as redes sejam removidas de um switch antes que ele possa ser removido de um roteador de borda.
-
+O que resta agora é a implementação da classe de entidade Switch e suas especificações relacionadas. As ideias
+que usamos aqui são semelhantes às que aplicamos em entidades de roteador de núcleo e borda. Vamos começar
+criando uma classe de entidade Switch.
+Começamos a implementação da classe Switch criando um predicado do método
+getSwitchTypePredicate , que usamos para filtrar coleções de switches pelo tipo de switch.
+Em seguida, criamos um método addNetworkToSwitch.
+O método addNetworkToSwitch recebe um parâmetro do tipo Network , que usamos para
+adicionar uma rede a um switch. No entanto, antes de adicionar a rede, precisamos
+verificar algumas restrições expressas pelas especificações. A primeira é a especificação
+NetworkAvailabilitySpec , que verifica se a rede já existe no switch. Em seguida, usamos a especificação CIDR
+especificação para verificar se o CIDR da rede é válido. Finalmente, usamos o NetworkAmountSpec
+especificação para validar se ultrapassamos o máximo de redes permitidas no switch.
+Em seguida, temos o método removeNetworkFromSwitch.
+Como não há restrições para remover redes de um switch, esse método não usa nenhuma especificação.
+Para resumir, logo no início da classe Switch , declaramos um predicado para nos
+permitir filtrar coleções de switches com base nos tipos de switch (LAYER2 e LAYER3).
+O método addNetworktoSwitch usa NetworkAvailabilitySpec, NetworkAmountSpec e CIDRSpecification
+especificações que já definimos no Capítulo 2, Envolvendo Regras de Negócios dentro do Hexágono de Domínio.
+Se nenhuma das restrições dessas especificações for violada, um objeto de rede será adicionado ao switch.
+Por fim, temos o método removeNetworkFromSwitch , que não analisa nenhuma especificação para remover
+redes de um switch.
+Com a implementação da entidade Switch , concluímos a modelagem das entidades e especificações
+necessárias para atender à finalidade da topologia e do sistema de inventário.
+===================================================
