@@ -191,4 +191,8 @@ Continuando com a implementação SameCountrySpec , substituímos o método isSa
 A implementação SameCountrySpec não se aplica a roteadores core. É por isso que sempre retornamos
 true quando o objeto é uma entidade CoreRouter . Caso contrário, prosseguimos com a validação
 para verificar se o equipamento não está em um país diferente.
+Usamos o método check para executar a especificação. Outras classes podem chamar esse método
+para verificar se a especificação foi atendida ou não.
+É possível conectar dois roteadores core de diferentes países. O que não é possível, como dito anteriormente, é conectar roteadores
+edge e core que não estejam presentes no mesmo país. Note que esta especificação é baseada no tipo de equipamento , permitindonos reutilizar esta especificação não apenas com roteadores, mas também em switches.
 
