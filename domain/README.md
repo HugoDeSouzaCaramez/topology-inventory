@@ -135,3 +135,27 @@ Dentro do construtor Network , adicionamos a restrição para validar se o valor
 Agora que vimos os objetos de valor, que são os blocos de construção do nosso hexágono de domínio,
 podemos prosseguir para a criação de entidades e suas especificações.
 =====================================
+
+=====================================
+Definindo entidades e especificações
+
+Depois de criarmos todos os objetos de valor, podemos começar a pensar em como representar os elementos
+em entidades que têm uma identidade. Além disso, precisamos desenvolver especificações para definir regras
+de negócios que governam restrições que as entidades devem obedecer.
+O que caracteriza uma entidade é sua identidade e a presença de regras de negócio e dados.
+No sistema de topologia e inventário, temos como entidades Equipamento, Roteador e Switch.
+
+Dentro do módulo Java de domínio que criamos anteriormente, adicionaremos as classes de entidade dentro de
+um pacote chamado entity.
+
+Roteadores e switches são tipos diferentes de equipamentos de rede, então começaremos criando uma
+classe abstrata Equipment.
+
+A maioria dos objetos de valor criados na seção anterior estão presentes aqui na entidade Equipamento .
+Aqui, temos mais dois predicados da classe abstrata Router :
+A classe abstrata Router define predicados comuns a roteadores core ou edge. Usamos o
+predicado fornecido por getRouterTypePredicate para aplicar filtros que recuperam apenas
+roteadores de um tipo específico.
+Usamos o predicado fornecido por getVendorTypePredicate para aplicar os filtros que recuperam apenas o
+equipamento de um vendor específico.
+
