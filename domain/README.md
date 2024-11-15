@@ -358,6 +358,7 @@ Com findSwitchById, testamos o método findById do SwitchService.
 A execução bem-sucedida desses testes nos garante que as operações mais fundamentais do hexágono de domínio
 funcionam conforme o esperado.
 Essa é a luz verde que precisamos para seguir em frente e começar o desenvolvimento do Application Hexagon.
+TODOS OS TESTES VERDES
 =========================================================================
 
 
