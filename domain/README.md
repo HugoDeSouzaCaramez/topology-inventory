@@ -282,6 +282,20 @@ lista, como parâmetros. Ele retorna uma lista filtrada de redes.
 Com o NetworkService, concluímos a criação de serviços de domínio.
 =========================================================================
 
+Para conduzir o desenvolvimento de objetos de valor, entidades, especificações e serviços, você pode
+adotar uma abordagem de Desenvolvimento Orientado a Testes (TDD), onde você pode começar a criar
+testes quebrados e então implementar as classes e métodos corretos para fazer esses testes passarem.
+Fizemos o contrário aqui para fornecer uma visão geral dos componentes que precisávamos criar para
+construir o hexágono de Domínio para o sistema de topologia e inventário.
+
+
+Nesta seção, criamos serviços que operam sob o nível hexagonal Domain. Em vez de colocar mais
+comportamentos diretamente em entidades, criamos classes de serviço separadas para habilitar
+comportamentos que não consideramos inerentemente parte das entidades. Esses serviços nos permitem
+manipular coleções de roteadores, switches e redes.
+
+
+
 
 
 
