@@ -294,8 +294,71 @@ comportamentos diretamente em entidades, criamos classes de serviço separadas p
 comportamentos que não consideramos inerentemente parte das entidades. Esses serviços nos permitem
 manipular coleções de roteadores, switches e redes.
 
+=======================================================
+Testando o hexágono de domínio
 
-
+Para testar o hexágono de Domínio apropriadamente, devemos confiar apenas em seus componentes,
+ignorando qualquer coisa vinda de outros hexágonos. Afinal, esses hexágonos devem depender do hexágono de Domínio
+e não o contrário. Como já vimos, o hexágono de Domínio concentra-se na lógica do sistema central. É dessa
+lógica que derivamos a estrutura e o comportamento dos hexágonos de Aplicação e Framework. Ao construir
+um hexágono de Domínio robusto e bem testado, construímos uma base sólida para todo o sistema.
+Entre as operações realizadas pelo sistema de topologia e inventário, podemos considerar adicionar, remover
+e pesquisar ativos de rede como os mais importantes.
+Vamos começar vendo como podemos testar a adição de equipamentos de rede...
+O método addNetworkToSwitch verifica o caminho bem-sucedido quando o sistema pode
+adicionar uma rede a um switch.
+O método addNetworkToSwitch_failBecauseSameNetworkAddress verifica o
+caminho sem sucesso quando tentamos adicionar uma rede que já existe no switch.
+Em seguida, temos cenários de teste em que queremos adicionar um switch a um roteador de borda
+Adicionamos um switch a um roteador de borda sem switches conectados; tal roteador de borda deve ter
+exatamente um switch conectado a ele.
+Quando tentamos adicionar um switch para um país diferente do roteador de borda, o método
+addSwitchToEdgeRouter verifica o caminho bem-sucedido, enquanto o método
+addSwitchToEdgeRouter_failBecauseEquipmentOfDifferentCountries verifica o caminho malsucedido.
+Em seguida, temos cenários de teste onde queremos adicionar um roteador de borda a um roteador central.
+O método addEdgeToCoreRouter verifica o caminho bem-sucedido quando tentamos adicionar um roteador de borda
+que é para um país diferente do roteador principal.
+O método addEdgeToCoreRouter_failBecauseRoutersOfDifferentCountries verifica o
+caminho sem sucesso quando os roteadores de borda e de núcleo estão em países diferentes.
+Em seguida, temos cenários de teste em que queremos adicionar um roteador principal a outro roteador principal.
+O método addCoreToCoreRouter verifica o caminho bem-sucedido quando podemos adicionar um roteador de
+núcleo a outro.
+O método addCoreToCoreRouter_failBecauseRoutersOfSameIp verifica o caminho sem
+sucesso quando tentamos adicionar roteadores principais com o mesmo endereço IP.
+Com esses testes, também podemos verificar se as especificações funcionam conforme o esperado.
+. Depois, há outros cenários em que é necessário remover qualquer roteador de um roteador principal, um switch
+de um roteador de borda e uma rede de um switch.
+O método de teste removeRouter verifica se podemos remover um roteador de borda de um
+roteador de núcleo.
+O método de teste removeSwitch verifica se podemos remover um switch de um roteador de borda.
+O método de teste removeNetwork verifica se podemos remover uma rede de um switch.
+Após as operações de adição e remoção, temos que testar as operações de filtro e recuperação.
+Para filtrar roteadores por tipo, implementamos o seguinte teste.
+O método filterRouterByType testa as operações disponíveis na classe RouterService .
+No caso anterior, verificamos se o método filterAndRetrieveRouter pode realmente
+filtrar e recuperar roteadores CORE ou EDGE de uma lista contendo diferentes tipos de roteadores.
+Para filtrar roteadores por fornecedo... Usando um predicado fornecido pelo método getVendorPredicate , chamamos
+filterAndRetrieveRouter da classe RouterService . Então, verificamos se o modelo de
+roteador recuperado é o que estamos procurando.
+Em seguida, testamos o mesmo método filterRouterByLocation , mas com um predicado diferente.
+Ao chamar o método getCountryPredicate , recebemos o predicado para filtrar roteadores por país. O
+resultado desse método é armazenado na variável actualCountry , que usamos na asserção de teste.
+Em seguida, testamos o método filterRouterByModel.
+O objetivo aqui é confirmar se o método filterAndRetrieveRouter funciona conforme o esperado
+quando precisamos filtrar listas de roteadores com base no modelo do roteador.
+Aqui, temos um teste para o método filterAndRetrieveSwitch da classe SwitchService...
+O objetivo aqui é verificar se é possível filtrar listas de switch usando o predicado
+fornecido pelo método getSwitchTypePredicate . Este é o predicado que usamos para
+filtrar listas de switch por tipo. Finalmente, o método assertEquals verifica se o tipo de
+switch esperado corresponde ao que esperamos.
+Em seguida, testamos as operações para recuperar roteadores e switches usando seus IDs.
+Com findRouterById, testamos o método findById do RouterService.
+Por fim, implementamos o método findSwitchById.
+Com findSwitchById, testamos o método findById do SwitchService.
+A execução bem-sucedida desses testes nos garante que as operações mais fundamentais do hexágono de domínio
+funcionam conforme o esperado.
+Essa é a luz verde que precisamos para seguir em frente e começar o desenvolvimento do Application Hexagon.
+=========================================================================
 
 
 
