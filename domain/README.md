@@ -155,3 +155,13 @@ A maioria dos objetos de valor criados na seção anterior estão presentes aqui
 Usamos o predicado fornecido por getVendorTypePredicate para aplicar os filtros que recuperam apenas o
 equipamento de um vendor específico.
 
+Derivando de Equipment, criamos uma classe abstrata Router.
+A classe abstrata Router define predicados comuns a roteadores core ou edge. Usamos o
+predicado fornecido por getRouterTypePredicate para aplicar filtros que recuperam apenas
+roteadores de um tipo específico.
+Usamos os predicados getModelPredicate e getCountryPredicate para recuperar roteadores de um
+modelo específico ou de um país específico.
+A classe abstrata Router fornece os atributos comuns compartilhados por roteadores core e edge. É na classe Router que
+introduzimos os predicados para servir como filtros ao consultar listas de roteadores.
+
+
