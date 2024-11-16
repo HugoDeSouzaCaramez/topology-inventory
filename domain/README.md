@@ -452,4 +452,14 @@ desenvolvimento de todo o hexágono do aplicativo. Ao expressar a intenção do 
 a partir deles para implementar portas, você será capaz de desenvolver o código para atingir objetivos de caso
 de uso de forma estruturada.
 
+=================================================
+Inicializando o hexágono do aplicativo
+
+O hexágono Application orquestra requisições internas por meio do hexágono Domain e
+requisições externas por meio do hexágono Framework. Construímos os recursos do sistema com base no modelo de domínio
+fornecido pelo hexágono Domain, com portas e casos de uso. No hexágono Application, não
+especificamos nenhuma restrição ou regra de negócio. Em vez disso, nosso objetivo para o hexágono
+Application é definir e controlar o fluxo de dados no sistema hexagonal.
+
+
 
