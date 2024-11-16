@@ -542,3 +542,7 @@ Uma boa interface de caso de uso para gerenciamento de roteador deve conter as o
 que o sistema cumpra os cenários descritos pelos arquivos RouterAdd.feature, RouterCreate.feature e
 RouterRemove.feature. A interface de caso de uso RouterManagementUseCase é definida em referência aos cenários que
 descrevemos nos arquivos de recursos do Cucumber.
+O método createRouter é baseado no arquivo RouterCreate.feature Cucumber.
+Os métodos addRouterToCoreRouter e removeRouterFromCoreRouter são para
+Arquivos RouterAdd.feature e RouterRemove.feature , respectivamente. Agora, vamos prosseguir
+para criar as descrições escritas para os casos de uso de gerenciamento de switch.
