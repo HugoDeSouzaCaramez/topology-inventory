@@ -546,3 +546,24 @@ O método createRouter é baseado no arquivo RouterCreate.feature Cucumber.
 Os métodos addRouterToCoreRouter e removeRouterFromCoreRouter são para
 Arquivos RouterAdd.feature e RouterRemove.feature , respectivamente. Agora, vamos prosseguir
 para criar as descrições escritas para os casos de uso de gerenciamento de switch.
+=======================================================
+
+================================================================
+Criação de descrições escritas para casos de uso de gerenciamento de switch
+
+Começaremos criando o arquivo SwitchAdd.feature.
+Este é um cenário de caso de uso muito direto. Dado que fornecemos um switch válido, podemos adicioná-lo
+a um roteador de borda. Não há menção aos roteadores principais porque eles não devem receber conexões
+de switch.
+
+Em seguida, criamos o arquivo SwitchCreate.feature.
+Este cenário é semelhante ao arquivo RouterCreate.feature , no sentido de que se fornecermos todos os dados
+necessários, um novo objeto Switch será criado.
+
+Por fim, criamos o arquivo SwitchRemove.feature.
+Então, para remover um switch de um roteador de borda, temos que garantir que o switch não tenha redes conectadas
+a ele. É isso que o cenário anterior afirma.
+
+Agora, vamos definir a interface do caso de uso para gerenciamento de switches, com base nos cenários do Cucumber
+que acabamos de criar.
+===============================================================
