@@ -3,9 +3,53 @@
 Build the project and run all tests with `./mvnw package` or `mvnw.cmd package` for Windows.
 
 
+Seguindo um exemplo real de um sistema que gerencia o inventário de topologia e rede de uma empresa
+de telecomunicações, nesta parte você aprenderá como implementar os blocos de construção para criar
+esse sistema usando ideias de arquitetura hexagonal.
+
+Esta é uma parte prática em que teremos a oportunidade de colocar a mão na massa enquanto aplicamos
+os princípios da arquitetura hexagonal. Começamos implementando o hexágono Domain, que contém o
+modelo de domínio da topologia e do sistema de inventário. Em seguida, implementamos o hexágono
+Application usando casos de uso e portas para expressar comportamentos do sistema. Para habilitar e
+expor os recursos fornecidos pelo sistema hexagonal, usamos adaptadores para implementar o hexágono
+Framework. Fechando esta parte, aprendemos como usar módulos Java para aplicar inversão de dependência em nosso sistema.
+
+Esta parte tem os seguintes capítulos:
+• Capítulo 6, Construindo o Hexágono de Domínio
+• Capítulo 7, Construindo o Hexágono da Aplicação
+• Capítulo 8, Construindo o Hexágono da Estrutura
+• Capítulo 9, Aplicando Inversão de Dependência com Módulos Java
+
+
 ====================================================================================
 ====================================================================================
 Hexagono de domínio
+
+Em capítulos anteriores, tivemos a oportunidade de empregar técnicas de Domain-Driven Design
+(DDD), como entidades e objetos de valor, para criar um modelo de domínio. No entanto, até agora,
+não tocamos na organização de pacotes, classes e módulos para se adequar ao propósito da arquitetura hexagonal.
+
+O hexágono de Domínio é o lugar para começar a desenvolver uma aplicação hexagonal. Com base no domínio,
+derivamos todos os outros hexágonos. Podemos dizer que o hexágono de Domínio é o cérebro dos sistemas
+hexagonais porque a lógica de negócios fundamental reside em tal hexágono.
+
+Então, neste capítulo, começaremos a explorar como estruturar um projeto de aplicativo hexagonal a partir do
+zero usando uma abordagem de módulo Java. Isso nos ajudará a garantir melhor encapsulamento e teste de
+unidade para validar nosso código conforme desenvolvemos os componentes hexagonais do Domain.
+
+Abordaremos os seguintes tópicos neste capítulo:
+• Bootstrapping do hexágono de domínio
+• Compreendendo o domínio do problema
+• Definindo objetos de valor
+• Definição de entidades e especificações
+• Definição de serviços de domínio
+• Testando o hexágono de domínio
+
+Ao final deste capítulo, você terá adquirido uma perspectiva prática sobre o desenvolvimento de todos os
+componentes do Domain hexagon. Esse conhecimento permitirá que você cuide de todos os detalhes sobre a
+estrutura e o arranjo de classes e pacotes no Domain hexagon.
+
+
 mvn archetype:generate -DarchetypeGroupId=org.codehaus.mojo.archetypes -DarchetypeArtifactId=pom-root -DarchetypeVersion=RELEASE -DgroupId=dev.hugodesouzacaramez -DartifactId=topology-inventory -Dversion=1.0-SNAPSHOT -DinteractiveMode=false
 
 Usamos o objetivo archetype:generate Maven para gerar um projeto raiz Maven para o
