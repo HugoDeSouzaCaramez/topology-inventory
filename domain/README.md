@@ -533,3 +533,12 @@ Uma vez que temos cenários Cucumber descrevendo os comportamentos suportados
 em relação ao gerenciamento do roteador, podemos definir a interface do caso de uso que permitirá a implementação das operações.
 Essas operações permitirão tais comportamentos.
 ===============================================
+
+
+=====================================================================
+Definindo a interface do caso de uso para gerenciamento de roteador
+
+Uma boa interface de caso de uso para gerenciamento de roteador deve conter as operações que permitem
+que o sistema cumpra os cenários descritos pelos arquivos RouterAdd.feature, RouterCreate.feature e
+RouterRemove.feature. A interface de caso de uso RouterManagementUseCase é definida em referência aos cenários que
+descrevemos nos arquivos de recursos do Cucumber.
