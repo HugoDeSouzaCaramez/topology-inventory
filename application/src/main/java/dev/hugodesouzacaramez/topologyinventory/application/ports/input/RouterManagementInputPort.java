@@ -40,7 +40,7 @@ public class RouterManagementInputPort implements RouterManagementUseCase {
     @Override
     public CoreRouter addRouterToCoreRouter(Router router, CoreRouter coreRouter) {
         var addedRouter =  coreRouter.addRouter(router);
-        return addedRouter;
+        return (CoreRouter) addedRouter;
     }
     @Override
     public Router removeRouterFromCoreRouter(Router router, CoreRouter coreRouter) {
