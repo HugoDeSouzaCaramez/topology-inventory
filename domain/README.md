@@ -3,6 +3,9 @@
 Build the project and run all tests with `./mvnw package` or `mvnw.cmd package` for Windows.
 
 
+====================================================================================
+====================================================================================
+Hexagono de domínio
 mvn archetype:generate -DarchetypeGroupId=org.codehaus.mojo.archetypes -DarchetypeArtifactId=pom-root -DarchetypeVersion=RELEASE -DgroupId=dev.hugodesouzacaramez -DartifactId=topology-inventory -Dversion=1.0-SNAPSHOT -DinteractiveMode=false
 
 Usamos o objetivo archetype:generate Maven para gerar um projeto raiz Maven para o
@@ -361,5 +364,48 @@ Essa é a luz verde que precisamos para seguir em frente e começar o desenvolvi
 TODOS OS TESTES VERDES
 =========================================================================
 
+Começamos bootstrapping
+do hexágono Domain como um projeto Maven modularizado e usando o JPMS.
+Analisamos e entendemos brevemente o domínio do problema, pois ele se relaciona ao gerenciamento de
+ativos de rede. Então, traduzimos o domínio do problema em um modelo de domínio baseado em objetos de
+valor, entidades, especificações e serviços. Finalmente, testamos tudo o que fizemos para garantir que as coisas não quebrem quando
+começamos a desenvolver o hexágono da Aplicação em cima do hexágono do Domínio.
+Ao aprender como desenvolver um hexágono de Domínio robusto, estabelecemos uma base sólida
+na qual os hexágonos de Aplicação e Framework podem confiar.
+
+
+=================================================
+=================================================
+Hexagono de aplicação
+
+Uma vez que temos uma fundação fornecida pelo hexágono Domain, podemos construir a parte
+restante do sistema em cima disso. É hora de pensar sobre como o sistema coordenará o manuseio
+de diferentes dados e comportamentos para atender às necessidades de diferentes atores, e
+exploraremos isso por meio de uma discussão de exemplos de casos de uso. Para fazer isso,
+precisamos criar o hexágono Application em cima da fundação definida pelo hexágono Domain.
+
+Para continuar construindo a estrutura modular iniciada no capítulo anterior, onde configuramos o hexágono de Domínio
+como um módulo Java, continuaremos a usar a abordagem modular definindo o hexágono de Aplicação como o segundo
+módulo Java do nosso sistema hexagonal.
+
+Para fornecer uma melhor visão das capacidades do sistema, uma abordagem recomendada é usar o Cucumber, que é
+uma tecnologia de desenvolvimento orientada a comportamento bem conhecida que usa conceitos como recursos e
+cenários para descrever o comportamento do sistema. Então, para o hexágono Application, usaremos o Cucumber para
+nos ajudar a moldar os casos de uso do sistema hexagonal.
+
+O Cucumber nos permite testar o hexágono do aplicativo e explicar a estrutura dos casos de uso de uma maneira não
+técnica.
+
+Neste capítulo, aprenderemos sobre os seguintes tópicos:
+• Inicializando o hexágono do aplicativo
+• Definição de casos de uso
+• Implementação de casos de uso com portas de entrada
+• Testando o aplicativo hexagon
+
+
+Ao final deste capítulo, você saberá como utilizar casos de uso como um modelo para conduzir o
+desenvolvimento de todo o hexágono do aplicativo. Ao expressar a intenção do usuário por meio de casos de uso e derivar objetos
+a partir deles para implementar portas, você será capaz de desenvolver o código para atingir objetivos de caso
+de uso de forma estruturada.
 
 
