@@ -730,5 +730,41 @@ Isso conclui a implementação de portas de entrada para roteador, switch e gere
 tudo funcione conforme o esperado, vamos criar testes Cucumber com base nas descrições de casos de uso escritas
 e nas portas de entrada que acabamos de criar.
 
+=======================================================
+Implementando casos de uso com portas de entrada
+
+Uma coisa interessante e útil sobre o Cucumber é que podemos usar a descrição de cenário escrita fornecida no
+arquivo de recursos para personalizar testes de unidade. Além disso, esses cenários escritos fornecem uma maneira
+fácil de entender e implementar os casos de uso do sistema hexagonal. Também estamos preparando o terreno para o
+desenvolvimento de testes de unidade no hexágono do aplicativo.
+
+Então, os testes que estamos prestes a construir nesta seção são uma continuação das descrições de cenário escritas
+que criamos para as operações de roteador, switch e gerenciamento de rede. Nosso objetivo aqui é testar
+implementações de porta de entrada para garantir que essas portas funcionem conforme o esperado quando os adaptadores de entrada as chamam.
+
+Para começar, precisamos criar a classe de teste ApplicationTest para habilitar o Cucumber.
+A parte importante é a anotação @RunWith , que aciona a inicialização do mecanismo Cucumber.
+
+Vamos começar criando testes para verificar se o sistema é capaz de adicionar roteadores.
+Da mesma forma que criamos um arquivo RouterAdd.feature , criaremos sua contraparte como uma
+classe de teste RouterAdd.java.
+As etapas a seguir mostram como adicionar um roteador de borda a um roteador principal:
+1. O primeiro passo é obter um roteador de borda:
+   Aqui, usamos o método createRouter de RouterManagementUseCase para criar objetos
+   de roteador de borda. Precisamos converter o objeto retornado para um tipo
+   EdgeRouter porque o método createRouter retorna Router. Então, para garantir que
+   recebemos um objeto de roteador adequado, chamamos assertNotNull em edgeRouter.
+2. Agora que temos o EdgeRouter, precisamos criar o CoreRouter usando o método createRouter.
+   Este código segue exatamente o mesmo padrão do primeiro passo. A única diferença é que
+   passamos CORE como RouterType para o método createRouter de RouterManagementUseCase
+3. Com esses dois objetos, EdgeRouter e CoreRouter, agora podemos testar a adição do primeiro para o último.
+   O método addRouterToCoreRouter recebe EdgeRouter e CoreRouter como parâmetros.
+   No final do método, comparamos os IDs de roteador de borda reais e esperados para
+   confirmar se o roteador de borda foi adicionado corretamente ao roteador de núcleo.
+
+Para testar a execução das etapas do cenário Cucumber do RouterAdd.feature, precisamos
+executar o seguinte comando Maven:
+mvn test
+
 
 
