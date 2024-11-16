@@ -587,3 +587,22 @@ Cucumber para redes.
 ==============================================
 
 ========================================================
+Criação de descrições escritas para casos de uso de gerenciamento de rede
+
+Para redes, continuaremos a seguir o mesmo padrão das operações add, create e remove usadas anteriormente
+em roteadores e switches. 
+
+Vamos começar com o arquivo NetworkAdd.feature.
+Este é um cenário simples para garantir que podemos adicionar redes a um switch.
+
+Após a adição das redes, temos o arquivo NetworkCreate.feature.
+Para a criação de redes, assim como fizemos com roteadores e switches, garantimos que todos os dados
+necessários sejam fornecidos corretamente para que uma nova rede seja criada.
+
+Por fim, temos o arquivo NetworkRemove.feature.
+Ele segue a mesma estrutura do cenário de adição, mas verifica a capacidade do sistema de remover redes
+de um switch.
+
+Agora que temos cenários do Cucumber para gerenciamento de rede, vamos definir uma interface de caso de uso
+para executar tais cenários.
+=====================================================
