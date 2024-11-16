@@ -493,5 +493,43 @@ Cucumber no hexágono do aplicativo.
 Depois que o módulo Maven e o módulo Java do Application Hexagon estiverem configurados corretamente para a
 topologia e o sistema de inventário, podemos prosseguir e começar a definir casos de uso para o sistema.
 
-
 ==================================================
+Definindo casos de uso
+
+O sistema de topologia e inventário permite que os usuários gerenciem recursos de rede, como
+roteadores, switches e redes. Para habilitar esse gerenciamento, criamos um modelo de domínio
+no capítulo anterior que representa o relacionamento entre esses recursos. O que temos que fazer agora é construir os
+recursos do sistema em termos do modelo de domínio. Esses recursos representam a intenção do usuário ao interagir com o
+sistema.
+
+Para tornar possível expressar casos de uso tanto na forma escrita quanto em código, usamos o Cucumber, uma
+ferramenta valiosa para permitir que pessoas não técnicas entendam os casos de uso que existem no código.
+Ao confiar em conceitos do Cucumber, como recursos e cenários, podemos criar descrições de casos de uso que
+são fáceis de seguir. As descrições de casos de uso que são moldadas usando o Cucumber podem servir como
+referências para desenvolver interfaces de casos de uso.
+
+Antes de criar as interfaces de caso de uso para o sistema de topologia e inventário, primeiro precisamos estruturar os
+casos de uso em arquivos de recursos consumidos pelo Cucumber. Os arquivos de recursos são onde descreveremos
+uma sequência de instruções escritas que definem o caso de uso. Essa mesma descrição escrita é então usada durante
+a implementação das classes para testar o caso de uso.
+=======================================================
+
+=================================================================================
+Criação de descrições escritas para casos de uso de gerenciamento de roteador
+
+Para começar, vamos criar o arquivo RouterAdd.feature , que descreve o caso de uso relacionado
+à adição de roteadores ao sistema.
+Este arquivo de recursos descreve dois cenários: o primeiro é quando um usuário deseja adicionar um roteador de borda
+a um roteador principal; o segundo é quando o usuário deseja adicionar um roteador principal a outro roteador principal.
+
+Depois disso, temos o arquivo RouterCreate.feature.
+Aqui, temos dois cenários descrevendo a criação de roteadores de núcleo e de borda.
+
+Por fim, temos o arquivo RouterRemove.feature.
+Para cada um dos dois cenários descritos, definimos um conjunto específico de restrições para permitir a
+remoção do roteador.
+
+Uma vez que temos cenários Cucumber descrevendo os comportamentos suportados
+em relação ao gerenciamento do roteador, podemos definir a interface do caso de uso que permitirá a implementação das operações.
+Essas operações permitirão tais comportamentos.
+===============================================
