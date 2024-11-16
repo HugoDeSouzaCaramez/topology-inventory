@@ -466,5 +466,5 @@ fornecido pelo hexágono Domain, com portas e casos de uso. No hexágono Applica
 especificamos nenhuma restrição ou regra de negócio. Em vez disso, nosso objetivo para o hexágono
 Application é definir e controlar o fluxo de dados no sistema hexagonal.
 
-
+mvn archetype:generate -DarchetypeGroupId=de.rieckpil.archetypes -DarchetypeArtifactId=testing-toolkit -DarchetypeVersion=1.0.0 -DgroupId=dev.hugodesouzacaramez -DartifactId=application -Dversion=1.0-SNAPSHOT -Dpackage=dev.hugodesouzacaramez.topologyinventory.application -DinteractiveMode=false
 
