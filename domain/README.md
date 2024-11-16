@@ -567,3 +567,23 @@ a ele. É isso que o cenário anterior afirma.
 Agora, vamos definir a interface do caso de uso para gerenciamento de switches, com base nos cenários do Cucumber
 que acabamos de criar.
 ===============================================================
+
+
+================================================================
+Definindo a interface do caso de uso para gerenciamento de switch
+
+Assim como fizemos com os roteadores, faremos o mesmo para os switches, criando uma interface de caso de
+uso para definir as operações de gerenciamento do switch, com base nas descrições escritas que fizemos anteriormente em nosso
+Arquivos de recursos do Cucumber.
+Os métodos createSwitch, addSwitchToEdgeRouter e removeSwitchFromEdgeRouter
+correspondem aos arquivos de recurso Cucumber SwitchCreate.feature, SwitchAdd.feature
+e SwitchRemove.feature , respectivamente. O método createSwitch recebe todos os
+parâmetros necessários para construir um objeto Switch . Os métodos
+addSwitchToEdgeRouter e removeSwitchFromEdgeRouter recebem um switch e um
+roteador de borda como parâmetros, e ambos os métodos retornam EdgeRouter.
+
+Para finalizar a definição dos casos de uso, ainda precisamos criar os arquivos de recursos e interfaces do
+Cucumber para redes.
+==============================================
+
+========================================================
