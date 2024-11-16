@@ -25,6 +25,12 @@ Esta parte tem os seguintes capítulos:
 ====================================================================================
 Hexagono de domínio
 
+O projeto de aplicação hexagonal que começaremos neste capítulo é, na verdade, uma
+continuação do sistema de topologia e inventário que desenvolvemos nos últimos capítulos. No
+entanto, a diferença aqui é que aumentaremos algumas das capacidades do sistema e usaremos
+o Java Platform Module System (JPMS) para encapsular o hexágono de domínio em um módulo Java.
+
+
 Em capítulos anteriores, tivemos a oportunidade de empregar técnicas de Domain-Driven Design
 (DDD), como entidades e objetos de valor, para criar um modelo de domínio. No entanto, até agora,
 não tocamos na organização de pacotes, classes e módulos para se adequar ao propósito da arquitetura hexagonal.
