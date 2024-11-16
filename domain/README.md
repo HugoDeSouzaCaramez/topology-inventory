@@ -630,3 +630,62 @@ Aplicativo move esses dados para jusante até que eles alcancem um dos adaptador
 Agora que temos todas as interfaces de caso de uso para gerenciar roteadores, switches e redes, podemos fornecer
 uma implementação de porta de entrada para cada uma dessas interfaces de caso de uso.
 
+===============================================
+Implementando casos de uso com portas de entrada
+
+Portas de entrada são um elemento central do hexágono Application. Elas desempenham um
+papel crucial de integração porque é por meio delas que fazemos a ponte entre os hexágonos Domain e Framework.
+Podemos obter dados externos de uma porta de saída e encaminhar esses dados para o hexágono de domínio usando
+portas de saída. Uma vez que a lógica de negócios do hexágono de Domínio é aplicada aos dados, o hexágono de
+Aplicativo move esses dados para jusante até que eles alcancem um dos adaptadores de saída no hexágono de Estrutura.
+
+Ao criar o hexágono do aplicativo, você pode definir interfaces de porta de saída, mas como ainda não há um
+hexágono do Framework para fornecer um adaptador de saída como implementação, você não pode usar essas
+portas de saída.
+
+Você verá declarações de porta de saída no código a seguir, mas elas ainda não estão sendo usadas.
+Estamos apenas preparando o hexágono Application para funcionar quando tivermos o hexágono Framework para fornecer
+as implementações.
+
+As etapas a seguir nos ajudarão a implementar casos de uso com portas de entrada.
+
+Começamos criando um campo RouterManagementOutputPort na classe
+RouterManagementInputPort.
+Criamos este campo de interface RouterManagementOutputPort porque não queremos depender
+diretamente de sua implementação. Lembre-se, adaptadores de saída implementam portas de saída.
+
+Em seguida, implementamos o método createRouter.
+Com o método createRouter , receberemos todos os parâmetros necessários para
+construir um objeto Router . A criação do objeto é delegada ao método getRouter da classe RouterFactory.
+
+Em seguida, implementamos o método retrieveRoute.
+É um método muito simples que usa Id para obter os objetos Router , usando o método
+retrieveRouter da porta de saída RouterManagementOutputPort.
+
+Em seguida, implementamos o método persistRouter.
+Para persistir um roteador, precisamos passar o objeto Router que queremos persistir. Esse método
+é geralmente usado após qualquer operação que crie novos objetos Router ou cause alterações nos existentes.
+
+Em seguida, implementamos o método addRouterToCoreRouter.
+Para adicionar o roteador ao CoreRouter, chamamos o método addRouter do CoreRouter.
+Não estamos persistindo Router porque não temos um adaptador que nos permita fazer isso.
+Então, apenas retornamos o objeto Router adicionado.
+
+Por fim, implementamos removeRouterFromCoreRouter.
+Novamente, usamos um dos métodos presentes na classe CoreRoute . Aqui, chamamos
+o método removeRouter para remover Router do CoreRouter. Então, retornamos
+removedRouter, em vez de realmente removê-lo de uma fonte de dados externa.
+
+O primeiro método que implementamos, createRouter, pode produzir roteadores core ou
+edge. Para fazer isso, precisamos fornecer um método factory diretamente no hexágono
+Domain, em uma classe chamada RouterFactory. A seguir está como implementamos esse método factory getRouter.
+O parâmetro RouterType , que passamos para o método getRouter , tem apenas dois valores possíveis – CORE
+e EDGE. O switch analisa um desses dois valores para determinar qual método builder usar. Se RouterType for
+CORE, então o método builder do CoreRouter é chamado.
+Caso contrário, o método builder do EdgeRouter é usado.
+Se nem CORE nem EDGE forem informados, o comportamento padrão é lançar uma exceção dizendo que
+nenhum tipo de roteador válido foi informado.
+=============================================================
+
+==================================================
+Vamos implementar a interface SwitchManagementUseCase com SwitchManagementInputPort
