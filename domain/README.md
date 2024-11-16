@@ -469,3 +469,29 @@ Application é definir e controlar o fluxo de dados no sistema hexagonal.
 cd topology-inventory
 mvn archetype:generate -DarchetypeGroupId=de.rieckpil.archetypes -DarchetypeArtifactId=testing-toolkit -DarchetypeVersion=1.0.0 -DgroupId=dev.hugodesouzacaramez -DartifactId=application -Dversion=1.0-SNAPSHOT -Dpackage=dev.hugodesouzacaramez.topologyinventory.application -DinteractiveMode=false
 
+O comando anterior cria a estrutura básica do projeto Maven para o hexágono Application.
+Aqui, definimos a coordenada groupId do módulo como dev.hugodesouzacaramez e a versão como 1.0-
+SNAPSHOT, as mesmas usadas para o projeto pai. Definimos artifactId como application
+para identificar exclusivamente este módulo no projeto Maven.
+
+O arquivo raiz pom.xml deve conter os módulos Maven de aplicação e domínio.
+
+Após a criação do projeto do módulo Maven, precisamos configurar o Application hexagon
+como um módulo Java criando o arquivo descritor do módulo em application/src/java/moduleinfo.java
+
+Note que a primeira entrada requer – ela declara que o módulo application depende do
+módulo domain . Precisamos adicionar a dependência Domain hexagon em application/pom.xml
+As coordenadas Maven groupId, artifactId e version especificam os parâmetros corretos para
+buscar o módulo Maven do hexágono de domínio.
+
+Como utilizaremos o Cucumber para fornecer uma descrição escrita e também testar nossos casos de uso,
+precisamos adicionar suas dependências ao application/pom.xml
+
+Conforme declarado na introdução deste capítulo, usaremos o Cucumber para estruturar e testar casos de uso.
+As dependências do Maven declaradas nos exemplos de código anteriores são necessárias para habilitar o
+Cucumber no hexágono do aplicativo.
+Depois que o módulo Maven e o módulo Java do Application Hexagon estiverem configurados corretamente para a
+topologia e o sistema de inventário, podemos prosseguir e começar a definir casos de uso para o sistema.
+
+
+==================================================
