@@ -685,7 +685,50 @@ CORE, então o método builder do CoreRouter é chamado.
 Caso contrário, o método builder do EdgeRouter é usado.
 Se nem CORE nem EDGE forem informados, o comportamento padrão é lançar uma exceção dizendo que
 nenhum tipo de roteador válido foi informado.
-=============================================================
 
-==================================================
+
 Vamos implementar a interface SwitchManagementUseCase com SwitchManagementInputPort
+
+Começaremos implementando o método createSwitch.
+Para o método createSwitch , não precisamos de um método factory para criar objetos porque
+não há variações de objeto Switch em comparação com roteadores. Em vez disso, geramos
+objetos Switch , usando o método builder diretamente da classe Switch.
+
+Em seguida, implementamos o método addSwitchToEdgeRouter.
+Então, temos addSwitchToEdgeRouter, que recebe Switch e EdgeRouter como parâmetros, para
+adicionar switches a um roteador de borda. Não há como persistir switches sem persistir
+roteadores também. É por isso que não colocamos um método de persistência aqui. Ao fazer isso,
+impomos que todas as operações de persistência de switch ocorram somente quando persistimos roteadores.
+Lembre-se de que o roteador é um agregado (um cluster de objetos de domínio) que controla o
+ciclo de vida de outras entidades e objetos de valor, incluindo objetos do tipo Switch.
+
+Por fim, implementamos o método removeSwitchFromEdgeRoute.
+O último método, removeSwitchFromEdgeRouter, recebe os mesmos parâmetros,
+Switch e EdgeRouter, e remove switches de roteadores de borda usando o método
+removeSwitch presente em uma instância do EdgeRouter.
+
+
+Agora, vamos ver como podemos implementar a interface NetworkManagementUseCase
+com NetworkManagementInputPort.
+
+Começamos implementando o método createNetwork.
+Para criar uma nova rede, usamos todos os parâmetros do método recebidos em conjunto com o
+método builder da classe Network.
+
+Em seguida, implementamos addNetworkToSwitch.
+Aqui, recebemos os objetos Network e Switch . Então, chamamos o método
+addNetworkToSwitch no Switch passando o objeto Network como parâmetro. Então,
+retornamos um objeto Switch com o objeto Network adicionado.
+
+Por fim, implementamos o método removeNetworkFromSwitch.
+Recebemos os objetos Network e Switch como parâmetros, como no método
+addNetworkToSwitch . No entanto, para remover a rede de um switch, chamamos
+removeNetworkFromSwitch do objeto Switch.
+=====================================================
+
+Isso conclui a implementação de portas de entrada para roteador, switch e gerenciamento de rede. Para garantir que
+tudo funcione conforme o esperado, vamos criar testes Cucumber com base nas descrições de casos de uso escritas
+e nas portas de entrada que acabamos de criar.
+
+
+

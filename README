@@ -1,2 +1,5 @@
 domain - DDD
 application - BDD (TDD)
+
+Lembre-se de que o roteador é um agregado (um cluster de objetos de domínio) que controla o
+ciclo de vida de outras entidades e objetos de valor, incluindo objetos do tipo Switch.
