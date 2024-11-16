@@ -606,3 +606,27 @@ de um switch.
 Agora que temos cenários do Cucumber para gerenciamento de rede, vamos definir uma interface de caso de uso
 para executar tais cenários.
 =====================================================
+
+
+====================================================
+Criação de descrições escritas para casos de uso de gerenciamento de rede
+
+A interface NetworkManagementUseCase segue a mesma estrutura das interfaces definidas
+anteriormente, onde declaramos métodos para operações de criação, adição e remoção.
+
+Aqui, novamente, declaramos os métodos createNetwork, addNetworkToSwitch e
+removeNetworkFromSwitch com base nas descrições escritas dos arquivos de recursos
+do Cucumber. Essas três declarações de método na interface NetworkManagementUseCase
+representam o primeiro passo na implementação dos recursos que nos permitirão gerenciar redes, como
+descrito nos cenários que criamos usando o Cucumber.
+=======================================================
+
+Nesta seção, aprendemos sobre uma abordagem para iniciar o desenvolvimento de casos de uso descrevendo
+primeiro os comportamentos e cenários esperados do sistema. Depois que os cenários foram completamente
+explorados, nós os utilizamos como referência para definir as interfaces de casos de uso que permitirão que
+o sistema execute os comportamentos descritos nos cenários.
+portas de saída. Uma vez que a lógica de negócios do hexágono de Domínio é aplicada aos dados, o hexágono de
+Aplicativo move esses dados para jusante até que eles alcancem um dos adaptadores de saída no hexágono de Estrutura.
+Agora que temos todas as interfaces de caso de uso para gerenciar roteadores, switches e redes, podemos fornecer
+uma implementação de porta de entrada para cada uma dessas interfaces de caso de uso.
+
