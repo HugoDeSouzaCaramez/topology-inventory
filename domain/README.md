@@ -1046,6 +1046,44 @@ uma porta de entrada usando sua referência de interface de caso de uso:
 Vamos agora criar o adaptador que manipula as operações relacionadas ao switch.
 
 =======================================================
+O adaptador de entrada de gerenciamento de switch
+
+Antes de definir os métodos que expõem as operações relacionadas ao switch, precisamos configurar a inicialização
+adequada da classe SwitchManagementGenericAdapter.
+SwitchManagementGenericAdapter é conectado a duas portas de entrada – a primeira porta de entrada
+é SwitchManagementInputPort de SwitchManagementUseCase, e a segunda porta de entrada é
+RouterManagementInputPort de RouterManagementUseCase. É por isso que iniciamos a implementação
+da classe declarando os atributos para SwitchManagementUseCase e RouterManagementUseCase.
+Estamos conectando o adaptador de switch à porta de entrada do roteador porque queremos impor
+que qualquer atividade de persistência aconteça somente por meio de um roteador. A entidade
+Router , como um agregado, controla os ciclos de vida dos objetos que estão relacionados a ele.
+
+Em seguida, implementamos o método setPorts.
+Com o método setPorts , inicializamos ambas as portas de entrada com os adaptadores
+SwitchManagementH2Adapter e RouterManagementH2Adapter para permitir acesso ao banco de dados H2 na memória.
+
+Vamos ver como implementar os métodos que expõem as operações relacionadas ao switch:
+1. Começamos com uma operação simples que apenas recupera um switch:
+   O método retrieveSwitch recebe Id como parâmetro. Então, ele utiliza uma referência de caso de uso
+   para encaminhar a solicitação para a porta de entrada.
+2. Em seguida, temos um método que nos permite criar e adicionar um switch a um roteador de borda:
+   Chamamos o método de porta de entrada do switch, createSwitch, passando os parâmetros recebidos pelo
+   método createAndAddSwitchToEdgeRouter para criar um switch. Com routerId, recuperamos o roteador de
+   borda chamando o método retrieveRouter da porta de entrada do roteador . Assim que tivermos os objetos
+   Switch e EdgeRouter , podemos chamar o método addSwitchToEdgeRouter para adicionar o switch ao roteador
+   de borda. Como última etapa, chamamos o método persistRouter para persistir a operação na fonte de dados.
+3. Por fim, temos o método removeSwitchFromEdgeRouter , que nos permite remover
+   um switch de um roteador de borda:
+   removeSwitchFromEdgeRouter recebe Id como parâmetro para o switch e outro Id
+   para o roteador de borda. Então, ele recupera o roteador chamando o método retrieveRouter.
+   Com o ID do switch, ele recupera o objeto switch do objeto edge router. Depois
+   de obter os objetos Switch e EdgeRouter , ele chama o método
+   removeSwitchFromEdgeRouter para remover o switch do edge router.
+
+O que resta agora é implementar o adaptador que lida com as redes de topologia e inventário.
+
+
+
 
 
 
