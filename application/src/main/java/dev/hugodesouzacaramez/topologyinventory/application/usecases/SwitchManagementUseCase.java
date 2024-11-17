@@ -2,11 +2,7 @@ package dev.hugodesouzacaramez.topologyinventory.application.usecases;
 
 import dev.hugodesouzacaramez.topologyinventory.domain.entity.EdgeRouter;
 import dev.hugodesouzacaramez.topologyinventory.domain.entity.Switch;
-import dev.hugodesouzacaramez.topologyinventory.domain.vo.IP;
-import dev.hugodesouzacaramez.topologyinventory.domain.vo.Location;
-import dev.hugodesouzacaramez.topologyinventory.domain.vo.Model;
-import dev.hugodesouzacaramez.topologyinventory.domain.vo.SwitchType;
-import dev.hugodesouzacaramez.topologyinventory.domain.vo.Vendor;
+import dev.hugodesouzacaramez.topologyinventory.domain.vo.*;
 
 public interface SwitchManagementUseCase {
 
@@ -17,6 +13,8 @@ public interface SwitchManagementUseCase {
             Location location,
             SwitchType switchType
     );
+
+    Switch retrieveSwitch(Id id);
 
     EdgeRouter addSwitchToEdgeRouter(Switch networkSwitch, EdgeRouter edgeRouter);
 
