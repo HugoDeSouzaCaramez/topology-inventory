@@ -832,4 +832,9 @@ para executar os testes automáticos do hexagono de aplicação: executar o arqu
 ==================================================================
 
 
+=============================================================
+=============================================================
+Construindo o hexagono de framework (hexagono de estrutura)
+
+
 
