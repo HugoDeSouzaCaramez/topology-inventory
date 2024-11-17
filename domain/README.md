@@ -1108,7 +1108,46 @@ O adaptador para gerenciar redes é o último adaptador de entrada que temos que
 três adaptadores, agora podemos gerenciar roteadores, switches e redes do hexágono do Framework. Para
 garantir que esses adaptadores estejam funcionando bem, vamos criar alguns testes para eles.
 
+================================================================
+Testando o hexágono do Framework
 
+Ao testar o hexágono do Framework, não só temos a oportunidade de verificar se os adaptadores de entrada
+e saída estão funcionando bem, mas também podemos testar se os outros hexágonos, Domínio e Aplicação,
+estão fazendo sua parte em resposta às solicitações vindas do hexágono do Framework.
+
+Para testá-lo, chamamos os adaptadores de entrada para disparar a execução de tudo o que for necessário nos
+hexágonos downstream para atender à solicitação. Começamos implementando testes para os adaptadores de gerenciamento do roteador.
+Os testes para switches e redes seguem o mesmo padrão.
+
+Para os roteadores, colocaremos nossos testes na classe RouterTest.
+No construtor RouterTest , instanciamos a classe de adaptador de entrada
+RouterManagementGenericAdapter que usamos para executar os testes. O método loadData
+carrega alguns dados de teste da classe pai FrameworkTestData.
+Uma vez configurados corretamente os requisitos dos testes, podemos prosseguir com os testes:
+1. Primeiro, testamos a recuperação do roteador:
+   Chamamos o adaptador de entrada, informando-o do id do roteador que queremos recuperar. Com
+   assertEquals, comparamos o ID esperado com o ID real para ver se eles correspondem.
+2. Para testar a criação do roteador, temos que implementar o método de teste createRouter:
+   Do adaptador de entrada do roteador, chamamos o método createRouter para criar e persistir um novo
+   roteador. Então, chamamos o método retrieveRouter com o ID gerado anteriormente pelo roteador que
+   acabamos de criar. Finalmente, executamos assertEquals para confirmar se o roteador recuperado da
+   fonte de dados é de fato o roteador que criamos.
+3. Para testar a adição de um roteador a um roteador principal, temos o método de teste addRouterToCoreRouter:
+   Passamos as variáveis, routerId e coreRouterId, como parâmetros para o método addRouterToCoreRouter
+   do adaptador de entrada , que retorna um roteador principal. assertEquals verifica se o roteador
+   principal tem o roteador que adicionamos.
+4. Para testar a remoção de um roteador de um roteador principal:
+   Este teste é muito semelhante ao anterior. Usamos novamente o routerId e o coreRouterId
+   variáveis, mas agora também usamos o método removeRouterFromCoreRouter , que retorna o roteador
+   removido. assertEquals verifica se o ID do roteador removido corresponde ao ID da variável routerId .
+
+Para executar esses testes, execute o seguinte comando no diretório raiz do projeto Maven:
+mvn test
+
+Ao implementar os testes hexagonais do Framework, concluímos o desenvolvimento do hexagono do
+Framework e de todo o backend do sistema de topologia e inventário. Pegando o que aprendemos neste
+capítulo e nos capítulos anteriores, podemos aplicar todas as técnicas abordadas para criar um sistema
+seguindo os princípios da arquitetura hexagonal.
 
 
 
