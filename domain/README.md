@@ -922,6 +922,57 @@ Com os módulos Maven e Java configurados corretamente para o Framework hexagon,
 criação dos adaptadores de saída para o sistema de topologia e inventário.
 
 ===================================
+Implementando adaptadores de saída
+
+Começaremos implementando os adaptadores de saída para configurar a integração entre nossa
+topologia e sistema de inventário e a tecnologia de fonte de dados subjacente, que é um banco de dados H2 na memória
+Também é importante implementar primeiro os adaptadores de saída porque nos referimos a eles ao implementar os
+adaptadores de entrada.
+
+O sistema de topologia e inventário permite a recuperação de dados externos para entidades de roteadores e
+switches. Então, nesta seção, revisaremos as interfaces de porta de saída que obtêm dados externos relacionados a essas entidades.
+Também forneceremos uma implementação de adaptador de saída para cada interface de porta de saída.
+
+================================
+Adaptador de saída de gerenciamento do roteador
+
+O adaptador de saída de gerenciamento do roteador que precisamos criar deve implementar a
+Interface RouterManagementOutputPort.
+As assinaturas dos métodos retrieveRouter e removeRouter têm Id como parâmetro.
+Usamos Id para identificar o roteador na fonte de dados subjacente. Então, temos a assinatura
+do método persistRouter recebendo um parâmetro Router , que pode representar roteadores core e edge.
+Usamos esse parâmetro do roteador para persistir os dados na fonte de dados.
+
+Para o sistema de topologia e inventário, por enquanto, temos que implementar apenas um adaptador de saída
+para permitir que o sistema use um banco de dados H2 na memória.
+
+Começamos a implementação com a classe RouterManagementH2Adapter.
+A conexão do banco de dados H2 é controlada pelo EntityManager. Essa conexão é configurada pelo
+método setUpH2Database , que executamos quando chamamos o construtor vazio da classe. Usamos a
+variável chamada instance para fornecer um singleton para que outros objetos possam disparar operações do banco de dados.
+
+Vamos implementar cada método declarado na interface da porta de saída:
+1. Começamos com o método retrieveRouter , que recebe Id como parâmetro:
+   O método getReference do EntityManager é chamado com RouterData.class e o valor UUID
+   é extraído do objeto Id . RouterData é uma classe de entidade de banco de dados que
+   usamos para mapear dados vindos do banco de dados para a classe de entidade de
+   domínio Router . Esse mapeamento é realizado pelo método routerDataToDomain da classe RouterH2Mapper.
+2. Em seguida, implementamos o método removeRouter , que remove um roteador do banco de dados:
+   Para remover um roteador, primeiro temos que recuperá-lo chamando o método getReference .
+   Uma vez que temos um objeto RouterData representando a entidade do banco de dados, podemos
+   chamar o método remove do EntityManager, que pode excluir o roteador do banco de dados.
+3. Por fim, implementamos o método persistRouter:
+   Ele recebe um objeto de entidade de domínio Router que precisa ser convertido em um objeto de
+   entidade de banco de dados RouterData que pode ser persistido com o método persist do EntityManager.
+
+Ao implementar os métodos retrieveRouter, removeRouter e persistRouter , fornecemos as
+operações básicas de banco de dados necessárias para o sistema de topologia e inventário.
+
+Vamos prosseguir para ver a implementação dos adaptadores de saída do switch.
+
+======================================
+
+
 
 
 
