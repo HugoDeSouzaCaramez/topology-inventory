@@ -738,6 +738,8 @@ arquivo de recursos para personalizar testes de unidade. Além disso, esses cen�
 fácil de entender e implementar os casos de uso do sistema hexagonal. Também estamos preparando o terreno para o
 desenvolvimento de testes de unidade no hexágono do aplicativo.
 
+=============================================
+TESTES
 Então, os testes que estamos prestes a construir nesta seção são uma continuação das descrições de cenário escritas
 que criamos para as operações de roteador, switch e gerenciamento de rede. Nosso objetivo aqui é testar
 implementações de porta de entrada para garantir que essas portas funcionem conforme o esperado quando os adaptadores de entrada as chamam.
@@ -762,9 +764,39 @@ As etapas a seguir mostram como adicionar um roteador de borda a um roteador pri
    No final do método, comparamos os IDs de roteador de borda reais e esperados para
    confirmar se o roteador de borda foi adicionado corretamente ao roteador de núcleo.
 
+
 Para testar a execução das etapas do cenário Cucumber do RouterAdd.feature, precisamos
 executar o seguinte comando Maven:
 mvn test
 
+O teste Cucumber passa pelos métodos de teste no arquivo RouterAdd.java na mesma
+ordem em que foram declarados no arquivo RouterAdd.feature .
+
+Agora, vamos ver como podemos implementar a classe de teste RouterCreate.java para o arquivo de recurso
+RouterCreate.
+
+Agora, vamos ver como podemos implementar a classe de teste RouterCreate.java para o arquivo de recurso
+RouterCreate.
+
+As etapas do cenário a seguir explicam como criar um novo roteador principal no sistema:
+1. O primeiro passo é criar um novo roteador principal:
+   Fornecemos todos os dados necessários para o método createRouter do
+   RouterManagementUseCase para criar o novo roteador principal.
+2. Em seguida, procedemos para confirmar se o roteador criado era de fato um roteador core:
+   A primeira asserção verifica se recebemos um ponteiro nulo. A segunda asserção analisa o tipo do
+   roteador para confirmar que é um roteador core.
+
+As etapas do cenário a seguir envolvem verificar se podemos simplesmente criar um roteador de borda usando
+o método createRouter do RouterManagementUseCase:
+1. Primeiro, criamos um roteador de borda:
+   Seguimos o mesmo procedimento para criar os objetos do roteador principal, mas agora definimos o
+   parâmetro EDGE como RouterType para criação do objeto.
+2. Na última etapa do cenário, apenas executamos as asserções:
+   A primeira asserção verifica com o método assertNotNull se a referência do roteador não é nula. Então,
+   ele prossegue executando assertEquals para verificar se o roteador criado é EdgeRouter.
+
+Para executar os testes relacionados à criação de roteadores, executaremos o seguinte comando Maven no
+diretório raiz do projeto:
+mvn test
 
 
