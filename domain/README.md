@@ -836,5 +836,93 @@ para executar os testes automáticos do hexagono de aplicação: executar o arqu
 =============================================================
 Construindo o hexagono de framework (hexagono de estrutura)
 
+Ao construir um aplicativo hexagonal, o último passo consiste em expor os recursos do aplicativo
+conectando adaptadores de entrada a portas de entrada. Além disso, se houver necessidade de obter dados de, ou persisti-los dentro,
+sistemas externos, então precisamos conectar adaptadores de saída às portas de saída. O hexágono do
+Framework é o lugar onde montamos todos os adaptadores necessários para fazer o sistema hexagonal.
+
+Primeiro criamos o modelo de domínio usando coisas incluindo entidades, objetos de valor e
+especificações no hexágono Domain. Então, no hexágono Application, expressamos a intenção
+do usuário usando casos de uso e portas. Agora, no hexágono Framework, temos que empregar
+adaptadores para expor recursos do sistema e definir quais tecnologias serão usadas para
+habilitar tais recursos. Depois de montar os hexágonos Domain, Application e Framework, teremos uma arquitetura hexagonal montada completamente.
+
+O que é tão atraente sobre a arquitetura hexagonal é que podemos adicionar e remover
+adaptadores sem nos preocupar em mudar a lógica do sistema central encapsulada no hexágono
+de Domínio. Claro, há um preço a ser pago na forma de tradução de dados entre entidades de domínio e entidades externas.
+No entanto, em troca, ganhamos um sistema mais desacoplado, com limites claros entre seus
+âmbitos de responsabilidades.
+
+Neste capítulo, abordaremos os seguintes tópicos:
+• Inicializando o hexágono do Framework
+• Implementação de adaptadores de saída
+• Implementação de adaptadores de entrada
+• Testando o hexágono do Framework
+
+Ao final deste capítulo, você terá aprendido a criar adaptadores de entrada para tornar os recursos do aplicativo
+hexagonal acessíveis a outros usuários e sistemas. Além disso, você aprenderá a implementar adaptadores de saída
+para permitir que o sistema hexagonal se comunique com fontes de dados externas.
+
+======================================
+Inicializando o hexágono do Framework
+
+Ao construir um sistema usando arquitetura hexagonal, você não precisa decidir antecipadamente se a API do
+sistema será exposta usando REST ou gRPC, nem se a fonte de dados primária do sistema será um banco de dados
+MySQL ou MongoDB. Em vez disso, o que você precisa fazer é começar a modelar seu domínio de problema no
+hexágono Domain, então projetar e implementar casos de uso no hexágono Application. Então, somente após criar
+os dois hexágonos anteriores você precisa começar a pensar sobre quais tecnologias habilitarão as funcionalidades
+do sistema hexagonal.
+
+Uma abordagem hexagonal centrada em Domain-Driven Design nos permite adiar as
+decisões sobre as tecnologias subjacentes internas ou externas ao sistema hexagonal. Outra prerrogativa
+da abordagem hexagonal é a natureza plugável dos adaptadores. Se você quiser expor um determinado
+recurso do sistema para ser acessível via REST, você cria e pluga um adaptador de entrada REST em uma porta de entrada.
+Mais tarde, se você quiser expor esse mesmo recurso aos clientes que usam gRPC, você pode criar e conectar um
+adaptador de entrada gRPC na mesma porta de entrada.
+
+Ao lidar com fontes de dados externas, temos as mesmas prerrogativas plugáveis usando
+adaptadores de saída. Você pode plugar diferentes adaptadores de saída na mesma porta de
+saída, alterando a tecnologia de fonte de dados subjacente sem ter que refatorar muito todo o sistema hexagonal.
+
+Para explorar mais os adaptadores de entrada, teremos uma discussão mais aprofundada no Capítulo 12, Usando
+RESTEasy Reactive para Implementar Adaptadores de Entrada. Também investigaremos mais possibilidades para
+adaptadores de saída no Capítulo 13, Persistindo Dados com Adaptadores de Saída e Hibernate Reactive.
+
+Vamos nos ater ao básico e criar uma estrutura sólida para adaptadores de entrada e saída. Além dessa estrutura,
+mais tarde, poderemos adicionar os recursos interessantes fornecidos pelo framework Quarkus.
+
+Dando continuidade ao desenvolvimento da topologia e do sistema de inventário, precisamos inicializar o
+Framework Hexagon como um módulo Maven e Java:
+cd topology-inventory
+mvn archetype:generate -DarchetypeGroupId=de.rieckpil.archetypes -DarchetypeArtifactId=testing-toolkit -DarchetypeVersion=1.0.0 -DgroupId=dev.hugodesouzacaramez -DartifactId=framework -Dversion=1.0-SNAPSHOT -Dpackage=dev.hugodesouzacaramez.topologyinventory.framework -DinteractiveMode=false
+
+O objetivo mvn archetype:generate cria um módulo Maven chamado framework dentro
+de topology-inventory. Este módulo vem com uma estrutura de diretório esqueleto
+baseada no groupId e artificatId que passamos para o comando mvn . Além disso, ele inclui um pom filho.
+rquivo xml dentro do diretório do framework .
+
+Após executar o comando mvn para criar o módulo do framework , o pom.xml do projeto raiz
+o arquivo será atualizado para conter o novo módulo.
+O módulo framework é inserido no final como o último módulo que acabamos de adicionar.
+
+Como o módulo do framework depende dos módulos de domínio e de aplicativo , precisamos
+adicioná-los como dependências ao arquivo pom.xml do módulo do framework.
+
+Deve haver um arquivo filho pom.xml no diretório do framework e um arquivo pai
+pom.xml no diretório topology-inventory.
+
+Depois de concluirmos a configuração do Maven, podemos criar o arquivo descriptor
+que transforma o módulo Maven do framework em um módulo Java. Fazemos isso criando
+o seguinte arquivo, topology- inventory/framework/src/java/module-info.java
+Como adicionamos domínio e aplicativo como dependências Maven ao arquivo pom.xml do
+framework , também podemos adicioná-los como dependências do módulo Java ao module-info.java
+arquivo descritor.
+
+Com os módulos Maven e Java configurados corretamente para o Framework hexagon, podemos prosseguir para a
+criação dos adaptadores de saída para o sistema de topologia e inventário.
+
+===================================
+
+
 
 
