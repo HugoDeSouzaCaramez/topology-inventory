@@ -971,6 +971,26 @@ operações básicas de banco de dados necessárias para o sistema de topologia 
 Vamos prosseguir para ver a implementação dos adaptadores de saída do switch.
 
 ======================================
+Adaptador de saída de gerenciamento de switch
+
+O adaptador de saída que implementamos para o switch é mais simples porque não precisamos persistir switches
+diretamente ou removê-los. O único propósito do adaptador de saída do switch é habilitar a recuperação de switches
+do banco de dados. Permitimos persistência somente por meio do adaptador de saída do roteador.
+
+Para começar, vamos definir a interface SwitchManagementOutputPort.
+Temos apenas um método chamado retrieveSwitch, que recebe Id e retorna Switch.
+
+A implementação do adaptador de saída SwitchManagementH2Adapter é muito direta e similar
+à sua contraparte de roteador. Então, vamos apenas avaliar a implementação do método retrieveSwitch.
+Chamamos o método getReference do EntityManager com SwitchData.class e um valor UUID
+como parâmetros para recuperar um objeto de entidade de banco de dados SwitchData . Então,
+esse objeto é convertido em uma entidade de domínio Switch quando chamamos o método
+switchDataToDomain da classe RouterH2Mapper.
+
+Agora que temos RouterManagementH2Adapter e SwitchManagementH2Adapter
+implementado corretamente, podemos prosseguir com a implementação dos adaptadores de entrada.
+
+
 
 
 
