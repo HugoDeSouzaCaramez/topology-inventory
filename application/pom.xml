@@ -2,19 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-
   <parent>
     <groupId>dev.hugodesouzacaramez</groupId>
     <artifactId>topology-inventory</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
+  <modelVersion>4.0.0</modelVersion>
 
   <artifactId>application</artifactId>
-
-  <properties>
-    <cucumber.version>7.11.0</cucumber.version>
-  </properties>
 
   <dependencies>
     <dependency>
@@ -41,5 +36,26 @@
       <version>${cucumber.version}</version>
       <scope>test</scope>
     </dependency>
+    <!-- Dependência para Jackson Core -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>2.15.2</version> <!-- Atualize a versão conforme necessário -->
+    </dependency>
+
+    <!-- Dependência para Jackson Databind -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.15.2</version> <!-- Atualize a versão conforme necessário -->
+    </dependency>
+
+    <!-- Dependência para Jackson Annotations -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>2.15.2</version> <!-- Atualize a versão conforme necessário -->
+    </dependency>
   </dependencies>
+
 </project>
