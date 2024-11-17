@@ -1082,6 +1082,32 @@ Vamos ver como implementar os métodos que expõem as operações relacionadas a
 
 O que resta agora é implementar o adaptador que lida com as redes de topologia e inventário.
 
+==========================================
+O adaptador de entrada de gerenciamento de rede
+
+Assim como fizemos com os adaptadores de roteador e switch, vamos implementar a classe
+NetworkManagementGenericAdapter definindo primeiro as portas de que ela precisa.
+Além de NetworkManagementUseCase, também usamos SwitchManagementUseCase. Precisamos
+chamar o método setPorts do construtor de NetworkManagementGenericAdapter para inicializar
+corretamente os objetos de porta de entrada e atribuí-los às suas respectivas referências de caso de uso.
+Veja a seguir como implementamos o método setPorts:
+Como fizemos em implementações anteriores do adaptador de entrada, configuramos o método setPorts para
+inicializar os objetos de porta de entrada e atribuí-los às referências de caso de uso.
+
+Vamos implementar os métodos relacionados à rede:
+1. Primeiro, implementamos o método addNetworkToSwitch para adicionar uma rede a um switch:
+   O método addNetworkToSwitch recebe os objetos Network e Id como parâmetros.
+   Para prosseguir, precisamos recuperar o objeto Switch chamando o método retrieveSwitch.
+   Então, podemos chamar o método addNetworkToSwitch para adicionar a rede ao switch.
+2. Em seguida, implementamos o método para remover uma rede de um switch:
+   Primeiro, obtemos um objeto Switch chamando o método retrieveSwitch com o parâmetro Id.
+   Para remover uma rede de um switch, usamos o nome da rede para encontrá-la em uma lista de
+   redes anexadas ao switch. Fazemos isso chamando o método removeNetworkFromSwitch.
+
+O adaptador para gerenciar redes é o último adaptador de entrada que temos que implementar. Com esses
+três adaptadores, agora podemos gerenciar roteadores, switches e redes do hexágono do Framework. Para
+garantir que esses adaptadores estejam funcionando bem, vamos criar alguns testes para eles.
+
 
 
 
