@@ -15,6 +15,20 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 
+import dev.hugodesouzacaramez.topologyinventory.domain.entity.CoreRouter;
+import dev.hugodesouzacaramez.topologyinventory.domain.entity.EdgeRouter;
+import dev.hugodesouzacaramez.topologyinventory.domain.vo.IP;
+import dev.hugodesouzacaramez.topologyinventory.domain.vo.Model;
+import dev.hugodesouzacaramez.topologyinventory.domain.vo.Vendor;
+import io.cucumber.java.en.And;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+
+import static dev.hugodesouzacaramez.topologyinventory.domain.vo.RouterType.CORE;
+import static dev.hugodesouzacaramez.topologyinventory.domain.vo.RouterType.EDGE;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 public class RouterAdd extends ApplicationTestData {
 
     CoreRouter anotherCoreRouter;
@@ -26,6 +40,7 @@ public class RouterAdd extends ApplicationTestData {
     @Given("I have an edge router")
     public void assert_edge_router_exists(){
         edgeRouter = (EdgeRouter) this.routerManagementUseCase.createRouter(
+                null,
                 Vendor.HP,
                 Model.XYZ0004,
                 IP.fromAddress("20.0.0.1"),
@@ -37,6 +52,7 @@ public class RouterAdd extends ApplicationTestData {
     @And("I have a core router")
     public void assert_core_router_exists(){
         coreRouter = (CoreRouter) this.routerManagementUseCase.createRouter(
+                null,
                 Vendor.CISCO,
                 Model.XYZ0001,
                 IP.fromAddress("30.0.0.1"),
@@ -57,6 +73,7 @@ public class RouterAdd extends ApplicationTestData {
     @Given("I have this core router")
     public void assert_this_core_router_exists(){
         coreRouter = (CoreRouter) this.routerManagementUseCase.createRouter(
+                null,
                 Vendor.CISCO,
                 Model.XYZ0001,
                 IP.fromAddress("30.0.0.1"),
@@ -68,6 +85,7 @@ public class RouterAdd extends ApplicationTestData {
     @And("I have another core router")
     public void assert_another_core_router_exists(){
         anotherCoreRouter = (CoreRouter) this.routerManagementUseCase.createRouter(
+                null,
                 Vendor.CISCO,
                 Model.XYZ0001,
                 IP.fromAddress("40.0.0.1"),

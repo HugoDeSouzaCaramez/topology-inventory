@@ -1,13 +1,25 @@
 package dev.hugodesouzacaramez.topologyinventory.application.ports.input;
 
+import dev.hugodesouzacaramez.topologyinventory.application.ports.output.RouterManagementOutputPort;
 import dev.hugodesouzacaramez.topologyinventory.application.usecases.NetworkManagementUseCase;
+import dev.hugodesouzacaramez.topologyinventory.domain.entity.EdgeRouter;
 import dev.hugodesouzacaramez.topologyinventory.domain.entity.Switch;
+import dev.hugodesouzacaramez.topologyinventory.domain.service.NetworkService;
 import dev.hugodesouzacaramez.topologyinventory.domain.vo.IP;
+import dev.hugodesouzacaramez.topologyinventory.domain.vo.Id;
 import dev.hugodesouzacaramez.topologyinventory.domain.vo.Network;
 import lombok.NoArgsConstructor;
 
+import java.util.function.Predicate;
+
 @NoArgsConstructor
 public class NetworkManagementInputPort implements NetworkManagementUseCase {
+
+    RouterManagementOutputPort routerManagementOutputPort;
+
+    public NetworkManagementInputPort(RouterManagementOutputPort routerNetworkOutputPort){
+        this.routerManagementOutputPort = routerNetworkOutputPort;
+    }
 
     @Override
     public Network createNetwork(
@@ -19,14 +31,37 @@ public class NetworkManagementInputPort implements NetworkManagementUseCase {
                 .networkCidr(networkCidr)
                 .build();
     }
+
     @Override
     public Switch addNetworkToSwitch(Network network, Switch networkSwitch) {
-        networkSwitch.addNetworkToSwitch(network);
-        return networkSwitch;
+        Id routerId = networkSwitch.getRouterId();
+        Id switchId = networkSwitch.getId();
+        EdgeRouter edgeRouter = (EdgeRouter) routerManagementOutputPort
+                .retrieveRouter(routerId);
+        Switch switchToAddNetwork = edgeRouter
+                .getSwitches()
+                .get(switchId);
+        switchToAddNetwork.addNetworkToSwitch(network);
+        routerManagementOutputPort.persistRouter(edgeRouter);
+        return switchToAddNetwork;
     }
+
     @Override
-    public Switch removeNetworkFromSwitch(Network network, Switch networkSwitch) {
-        networkSwitch.removeNetworkFromSwitch(network);
-        return networkSwitch;
+    public Switch removeNetworkFromSwitch(String networkName, Switch networkSwitch) {
+        Id routerId = networkSwitch.getRouterId();
+        Id switchId = networkSwitch.getId();
+        EdgeRouter edgeRouter = (EdgeRouter) routerManagementOutputPort
+                .retrieveRouter(routerId);
+        Switch switchToRemoveNetwork = edgeRouter
+                .getSwitches()
+                .get(switchId);
+        Predicate<Network> networkPredicate = Network.getNetworkNamePredicate(networkName);
+        var network = NetworkService.
+                findNetwork(switchToRemoveNetwork.getSwitchNetworks(), networkPredicate);
+        switchToRemoveNetwork.removeNetworkFromSwitch(network);
+        routerManagementOutputPort.persistRouter(edgeRouter);
+        return switchToRemoveNetwork.removeNetworkFromSwitch(network)
+                ? switchToRemoveNetwork
+                : null;
     }
 }

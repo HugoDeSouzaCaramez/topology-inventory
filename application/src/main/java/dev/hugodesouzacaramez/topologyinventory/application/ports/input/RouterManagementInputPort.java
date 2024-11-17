@@ -5,12 +5,7 @@ import dev.hugodesouzacaramez.topologyinventory.application.usecases.RouterManag
 import dev.hugodesouzacaramez.topologyinventory.domain.entity.CoreRouter;
 import dev.hugodesouzacaramez.topologyinventory.domain.entity.Router;
 import dev.hugodesouzacaramez.topologyinventory.domain.entity.factory.RouterFactory;
-import dev.hugodesouzacaramez.topologyinventory.domain.vo.IP;
-import dev.hugodesouzacaramez.topologyinventory.domain.vo.Id;
-import dev.hugodesouzacaramez.topologyinventory.domain.vo.Location;
-import dev.hugodesouzacaramez.topologyinventory.domain.vo.Model;
-import dev.hugodesouzacaramez.topologyinventory.domain.vo.RouterType;
-import dev.hugodesouzacaramez.topologyinventory.domain.vo.Vendor;
+import dev.hugodesouzacaramez.topologyinventory.domain.vo.*;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
@@ -18,15 +13,31 @@ public class RouterManagementInputPort implements RouterManagementUseCase {
 
     RouterManagementOutputPort routerManagementOutputPort;
 
+    public RouterManagementInputPort(RouterManagementOutputPort routerNetworkOutputPort){
+        this.routerManagementOutputPort = routerNetworkOutputPort;
+    }
+
     @Override
-    public Router createRouter(Vendor vendor,
+    public Router createRouter(Id id,
+                               Vendor vendor,
                                Model model,
                                IP ip,
                                Location location,
                                RouterType routerType) {
         return RouterFactory.getRouter(null,
-                vendor, model, ip, location, routerType);
+                vendor,
+                model,
+                ip,
+                location,
+                routerType
+        );
     }
+
+    @Override
+    public Router removeRouter(Id id) {
+        return routerManagementOutputPort.removeRouter(id);
+    }
+
     @Override
     public Router retrieveRouter(Id id) {
         return routerManagementOutputPort.retrieveRouter(id);
@@ -39,12 +50,14 @@ public class RouterManagementInputPort implements RouterManagementUseCase {
 
     @Override
     public CoreRouter addRouterToCoreRouter(Router router, CoreRouter coreRouter) {
-        var addedRouter =  coreRouter.addRouter(router);
-        return (CoreRouter) addedRouter;
+        var addedRouter = coreRouter.addRouter(router);
+        return (CoreRouter) persistRouter(addedRouter);
     }
+
     @Override
     public Router removeRouterFromCoreRouter(Router router, CoreRouter coreRouter) {
         var removedRouter = coreRouter.removeRouter(router);
+        persistRouter(coreRouter);
         return removedRouter;
     }
 }
