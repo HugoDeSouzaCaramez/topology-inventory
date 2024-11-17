@@ -990,7 +990,62 @@ switchDataToDomain da classe RouterH2Mapper.
 Agora que temos RouterManagementH2Adapter e SwitchManagementH2Adapter
 implementado corretamente, podemos prosseguir com a implementação dos adaptadores de entrada.
 
+==============================================
+Implementando os adaptadores de entrada
 
+Ao construir o hexágono Application, precisamos criar casos de uso e portas de entrada para expressar capacidades do sistema.
+Para tornar essas capacidades disponíveis para usuários e outros sistemas, precisamos construir adaptadores de entrada e
+conectá-los a portas de entrada.
+
+Para o sistema de topologia e inventário, implementaremos um conjunto de adaptadores de entrada genéricos como Java POJOs.
+Esses adaptadores de entrada genéricos são a base para a implementação tecnologicamente específica que ocorre no Capítulo
+12, Using RESTEasy Reactive to Implement Input Adapters. Nesse capítulo, reimplementaremos os adaptadores de entrada
+genéricos como adaptadores de entrada baseados em RESTEasy usando o framework Quarkus.
+
+A função central do adaptador de entrada é receber solicitações de fora do sistema hexagonal e atendê -las usando uma porta de
+entrada.
+
+Continuando a desenvolver a topologia e o sistema de inventário, vamos implementar os adaptadores de entrada que recebem
+solicitações relacionadas ao gerenciamento do roteador.
+
+==================================
+Adaptador de entrada de gerenciamento do roteador
+
+Começamos criando a classe RouterManagementGenericAdapter.
+Começamos a implementação do RouterManagementGenericAdapter declarando um atributo de classe para RouterManagementUseCase.
+Em vez de usar uma referência de classe de porta de entrada, utilizamos a referência de interface de caso de uso,
+RouterManagementUseCase, para conectar à porta de entrada.
+No construtor de RouterManagementGenericAdapter, chamamos o método setPorts , que
+instancia RouterManagementInputPort com um parâmetro RouterManagementH2Adapter
+como uma porta de saída para conectar ao banco de dados H2 na memória que a porta de entrada usa.
+O método setPorts armazena um objeto RouterManagementInputPort no atributo
+RouterManagementUseCase que definimos anteriormente.
+Após a inicialização da classe, precisamos criar os métodos que expõem as operações suportadas pelo
+sistema hexagonal. A intenção aqui é receber a solicitação no adaptador de entrada e encaminhá-la para
+uma porta de entrada usando sua referência de interface de caso de uso:
+1. Aqui estão as operações para recuperar e remover roteadores do sistema:
+   Os comentários são para nos lembrar que essas operações serão transformadas em endpoints REST
+   ao integrar o Quarkus no sistema hexagonal. Tanto retrieveRouter quanto removeRouter recebem Id
+   como parâmetro. Então, a solicitação é encaminhada para uma porta de entrada usando uma referência de caso de uso.
+2. Então, temos a operação para criar um novo roteador:
+   Na referência RouterManagementUseCase , primeiro chamamos o método createRouter
+   para criar um novo roteador e, em seguida, o persistimos usando o método persistRouter.
+3. Lembre-se de que no sistema de topologia e inventário, apenas roteadores core podem receber
+   conexões de roteadores core e edge. Para permitir a adição e remoção de roteadores de ou
+   para um roteador core, primeiro definimos a seguinte operação para adicionar roteadores:
+   Para o método addRouterToCoreRouter , passamos as instâncias de Id dos roteadores como parâmetros
+   que pretendemos adicionar junto com o Id do roteador principal de destino. Com esses IDs, chamamos
+   o método retrieveRouter para obter os objetos do roteador da nossa fonte de dados. Assim que
+   tivermos os objetos Router e CoreRouter , manipulamos a solicitação para a porta de entrada usando
+   uma referência de caso de uso, chamando addRouterToCoreRouter para adicionar um roteador ao outro.
+4. Depois disso, definimos a operação para remover roteadores de um roteador principal:
+   Para o método removeRouterFromCoreRouter , seguimos os mesmos passos que aqueles para o método
+   addRouterToCoreRouter . A única diferença, porém, é que no final, chamamos removeRouterFromCoreRouter
+   do caso de uso para remover um roteador do outro.
+
+Vamos agora criar o adaptador que manipula as operações relacionadas ao switch.
+
+=======================================================
 
 
 
