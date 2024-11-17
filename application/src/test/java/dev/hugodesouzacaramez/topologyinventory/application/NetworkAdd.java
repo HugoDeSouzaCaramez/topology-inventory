@@ -38,8 +38,7 @@ public class NetworkAdd extends ApplicationTestData {
                 networkManagementUseCase.
                 addNetworkToSwitch(network, networkSwitch).
                 getSwitchNetworks();
-        var network = NetworkService.
-                findNetwork(networks, predicate).getNetworkName();
+        var network = NetworkService.findNetwork(networks, predicate).getNetworkName();
         assertEquals("Finance", network);
     }
 }
