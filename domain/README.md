@@ -799,4 +799,31 @@ Para executar os testes relacionados à criação de roteadores, executaremos o 
 diretório raiz do projeto:
 mvn test
 
+Agora que terminamos o cenário para criar roteadores, vamos ver como implementar a classe de
+teste java RouterRemove. para o arquivo RouterRemove.feature.
+Temos que criar os métodos para testar um cenário onde queremos remover um roteador de borda de um
+roteador principal:
+1. Para começar, primeiro precisamos saber se o roteador principal com o qual estamos trabalhando tem pelo menos
+   um roteador de borda conectado a ele.
+   A partir de um roteador core, buscamos um roteador edge conectado a ele. Então,
+   armazenamos o roteador edge retornado na variável edgeRouter . Depois disso, afirmamos
+   o tipo de roteador para confirmar se temos um roteador edge.
+2. Em seguida, temos que verificar se não há redes anexadas ao switch conectado ao roteador de
+      borda. Temos que verificar isso; caso contrário, não seremos capazes de remover o switch
+      do roteador de borda:
+   Para afirmar que um switch não tem redes conectadas a ele, primeiro verificamos o tamanho das
+   redes no switch. Ele deve retornar 1. Então, removemos a rede e verificamos o tamanho novamente.
+   Precisamos garantir que o switch não tenha redes conectadas a ele para que ele possa ser removido.
+3. Em seguida, podemos prosseguir para verificar se não há switches conectados ao roteador de borda:
+   Aqui, removemos o switch usando o método removeSwitch , seguido por uma asserção para confirmar
+   que o roteador de borda não tem mais switches conectados.
+4. Agora, podemos testar a remoção do roteador de borda do roteador principal:
+   Para testar a remoção de um roteador de borda do roteador principal, primeiro obtemos o ID do
+   roteador de borda do roteador que pretendemos remover. Armazenamos esse ID na variável actualID .
+   Então, prosseguimos para a remoção real. O método removeRouterFromCoreRouter retorna o roteador
+   removido. Então, podemos usar o ID do roteador removido, armazenado na variável expectedID , para
+   verificar com o método assertEquals se o roteador foi realmente removido.
+
+
+
 
