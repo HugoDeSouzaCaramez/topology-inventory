@@ -824,6 +824,12 @@ roteador principal:
    removido. Então, podemos usar o ID do roteador removido, armazenado na variável expectedID , para
    verificar com o método assertEquals se o roteador foi realmente removido.
 
+Concluímos a parte de teste do gerenciamento de roteadores. Para o gerenciamento de switches
+e redes, seguimos as mesmas ideias.
+
+para executar os testes automáticos do hexagono de domínio: mvn test
+para executar os testes automáticos do hexagono de aplicação: executar o arquivo ApplicationTest
+==================================================================
 
 
 
