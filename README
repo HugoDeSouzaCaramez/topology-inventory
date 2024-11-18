@@ -1,3 +1,8 @@
+Aplicativo de gerenciamento de topologia de rede baseado em arquitetura hexagonal
+
+para executar os testes na raiz do projeto execute:
+mvn test
+
 domain - DDD
 application - BDD (TDD) - Cucumber, JUnit, testes de casos de uso
 framework - BDD (TDD) - Cucumber, JUnit, testes de casos de uso
