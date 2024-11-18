@@ -1528,5 +1528,27 @@ disponível para SwitchManagementUseCase. Executaremos os seguintes passos pelo 
 Agora, vamos prosseguir e aprender como inicializar o NetworkManagementGenericAdapter
 
 
+======================================================================
+Inicializando NetworkManagementGenericAdapter
+
+Para NetworkManagementGenericAdapter, precisamos apenas carregar uma implementação
+para NetworkManagementUseCase. Siga estas etapas para fazer isso:
+1. O código a seguir mostra como devemos usar o ServiceLoader para obter um objeto NetworkManagementUseCase:
+   ServiceLoader<NetworkManagementUseCase> loaderUseCaseNetwork = ServiceLoader.load(NetworkManagementUseCase.class);
+   NetworkManagementUseCase networkManagementUseCase = loaderUseCaseNetwork.findFirst().get()
+2. Então, devemos reutilizar RouterManagementOutputPort, que carregamos anteriormente, para definir
+   NetworkManagementUseCase:
+   networkManagementUseCase.setOutputPort(routerManagementOutputPort);
+3. Finalmente, podemos iniciar o NetworkManagementGenericAdapter:
+   this.networkManagementGenericAdapter = new NetworkManagementGenericAdapter(switchManagementUseCase, networkManagementUseCase);
+   Para iniciar um novo adaptador NetworkManagementGenericAdapter , precisamos passar
+   referências para os casos de uso SwitchManagementUseCase e NetworkManagementUseCase.
+
+
+Esta seção nos ensinou como recuperar implementações de interface usando ServiceLoader em
+conjunto com provedores de serviço JPMS. Com essa técnica, podemos estruturar código que
+depende apenas de abstrações em vez de implementações.
+
+
 
 
