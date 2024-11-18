@@ -1458,6 +1458,47 @@ que criaremos usando os objetos de portas de entrada e adaptadores de saída que
 Vamos começar inicializando o RouterManagementGenericAdapter.
 
 
+====================================================
+Inicializando RouterManagementGenericAdapter
+
+Começaremos a implementação do método loadPortsAndUseCases usando uma
+instância ServiceLoader para recuperar os objetos que são necessários para
+instanciar RouterManagementGenericAdapter. Executaremos as seguintes etapas para fazer isso:
+1. O código a seguir mostra a implementação inicial do método loadPortsAndUseCases:
+   protected void loadPortsAndUseCases() {
+       // Load router implementations
+       ServiceLoader<RouterManagementUseCase>
+       loaderUseCaseRouter =
+       ServiceLoader.load(RouterManagementUseCase.class);
+       RouterManagementUseCase =
+       loaderUseCaseRouter.findFirst().get();
+       // Code omitted //
+   }
+   O método load do ServiceLoader recebe um RouterManagementUseCase.class
+   como um parâmetro. Este método pode encontrar todas as implementações
+   para a interface RouterManagementUseCase. Como RouterManagementInputPort é a
+   única implementação disponível para a interface de caso de uso, podemos chamar loaderUseCaseRouter.findFirst().get() para obter essa implementação.
+   Além de uma implementação adequada para a interface RouterManagementUseCase , também precisamos
+   fornecer uma implementação para a interface RouterManagementOutputPort.
+2. O código a seguir mostra como recuperar um objeto RouterManagementOutputPort:
+   ServiceLoader<RouterManagementOutputPort> loaderOutputRouter = ServiceLoader.load(RouterManagementOutputPort.class);
+   RouterManagementOutputPort = loaderOutputRouter.findFirst().get();
+   A chamada em loaderOutputRouter.findFirst().get() recupera um objeto RouterManagementH2Adapter , que é a
+   única implementação disponível para a interface RouterManagementOutputPort.
+   Com os objetos RouterManagementInputPort e RouterManagementH2Adapter carregados do
+   ServiceLoader, temos os objetos necessários para criar um adaptador de entrada. Mas
+   primeiro, precisamos configurar a porta de saída para o caso de uso.
+3. É assim que podemos definir um objeto RouterManagementOutputPort em RouterManagementUseCase:
+   routerManagementUseCase.setOutputPort(routerManagementOutputPort);
+   Ao chamar routerManagementUseCase.setOutputPort(routerManagementOutputPort), estamos definindo RouterManagementOutputPort em RouterManagementUseCase.
+4. Agora, podemos criar um novo adaptador RouterManagementGenericAdapter passando RouterManagementUseCase,
+   que acabamos de criar, para seu construtor:
+   this.routerManagementGenericAdapter = new RouterManagementGenericAdapter(routerManagementUseCase);
+
+Agora, vamos prosseguir e aprender como inicializar o SwitchManagementGenericAdapter.
+
+
+
 
 
 
