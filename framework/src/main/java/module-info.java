@@ -10,4 +10,15 @@ module framework {
 
     exports dev.hugodesouzacaramez.topologyinventory.framework.adapters.output.h2.data;
     opens dev.hugodesouzacaramez.topologyinventory.framework.adapters.output.h2.data;
+
+    provides dev.hugodesouzacaramez.topologyinventory.application.ports.output.RouterManagementOutputPort
+            with dev.hugodesouzacaramez.topologyinventory.framework.adapters.output.h2.RouterManagementH2Adapter;
+    provides dev.hugodesouzacaramez.topologyinventory.application.ports.output.SwitchManagementOutputPort
+            with dev.hugodesouzacaramez.topologyinventory.framework.adapters.output.h2.SwitchManagementH2Adapter;
+
+    uses dev.hugodesouzacaramez.topologyinventory.application.usecases.RouterManagementUseCase;
+    uses dev.hugodesouzacaramez.topologyinventory.application.usecases.SwitchManagementUseCase;
+    uses dev.hugodesouzacaramez.topologyinventory.application.usecases.NetworkManagementUseCase;
+    uses dev.hugodesouzacaramez.topologyinventory.application.ports.output.RouterManagementOutputPort;
+    uses dev.hugodesouzacaramez.topologyinventory.application.ports.output.SwitchManagementOutputPort;
 }

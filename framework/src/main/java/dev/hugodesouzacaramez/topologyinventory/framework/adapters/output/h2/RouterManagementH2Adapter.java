@@ -12,12 +12,10 @@ import jakarta.persistence.PersistenceContext;
 
 public class RouterManagementH2Adapter implements RouterManagementOutputPort {
 
-    private static RouterManagementH2Adapter instance;
-
     @PersistenceContext
     private EntityManager em;
 
-    private RouterManagementH2Adapter(){
+    public RouterManagementH2Adapter(){
         setUpH2Database();
     }
 
@@ -47,12 +45,5 @@ public class RouterManagementH2Adapter implements RouterManagementOutputPort {
         EntityManager em =
                 entityManagerFactory.createEntityManager();
         this.em = em;
-    }
-
-    public static RouterManagementH2Adapter getInstance() {
-        if (instance == null) {
-            instance = new RouterManagementH2Adapter();
-        }
-        return instance;
     }
 }

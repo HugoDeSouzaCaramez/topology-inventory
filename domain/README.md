@@ -1338,6 +1338,44 @@ Antes de aprendermos como acessar essas portas de entrada por meio de serviços 
 entrada, vamos aprender como podemos inverter dependências ao trabalhar com portas de saída e adaptadores de saída.
 
 
+==================================================
+Fornecendo serviços com portas de saída e adaptadores de saída
+
+No hexágono do Framework, temos portas de saída como interfaces e adaptadores de saída como suas implementações.
+As portas de entrada dependem das portas de saída. Nesse sentido, as portas de entrada podem ser consideradas componentes de alto nível
+porque eles dependem das abstrações fornecidas pelas portas de saída. Os adaptadores de saída agem
+como componentes de baixo nível que fornecem implementações para abstrações de porta de saída. O
+diagrama a seguir mostra uma ilustração desse arranjo de inversão de dependência.
+
+Observe que tanto a porta de entrada quanto o adaptador de saída apontam para a mesma abstração de porta de saída.
+Isso significa que podemos usar o JPMS para aplicar o princípio de inversão de dependência com esses
+componentes de arquitetura.
+
+Entretanto, há um requisito que precisamos atender para usar adaptadores de saída como provedores de implementação.
+Esse requisito exige que cada classe de provedor tenha um construtor público sem parâmetros, o que não
+é o caso dos adaptadores de saída que implementamos nos capítulos anteriores.
+
+Implementamos o construtor RouterManagementH2Adapter como privado para impor um padrão
+singleton. Para mostrar como usar esse adaptador de saída como um provedor de serviço JPMS,
+precisamos desabilitar o padrão singleton alterando o modificador de acesso do construtor de privado para público.
+
+Agora, podemos atualizar o módulo do framework hexagon (o arquivo info.java ) para definir os serviços.
+Começamos usando a diretiva require para declarar as dependências do módulo nos módulos
+hexagon Domain e Application . Em seguida, usamos a diretiva exports para habilitar o acesso a
+todos os tipos públicos no pacote dev.hugodesouzacaramez.topologyinventory.framework.adapters.output.h2.data .
+Usamos a diretiva opens para permitir acesso reflexivo em tempo de execução aos adaptadores
+de saída. Precisamos desse acesso reflexivo por causa das dependências da biblioteca de banco
+de dados que esses adaptadores de saída têm.
+Por fim, usamos as diretivas provides e with para informar as interfaces de porta de
+saída, RouterManagementOutputPort e SwitchManagementOutputPort, juntamente com
+suas respectivas implementações de adaptador de saída, RouterManagementH2Adapter
+e SwitchManagementH2Adapter.
+Agora que concluímos a configuração necessária para habilitar a inversão de dependência entre as
+portas de saída e os adaptadores, vamos aprender como configurar os adaptadores de entrada para
+acessar dependências por meio de suas abstrações.
+
+
+
 
 
 
