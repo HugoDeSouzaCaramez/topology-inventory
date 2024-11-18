@@ -1498,6 +1498,34 @@ instanciar RouterManagementGenericAdapter. Executaremos as seguintes etapas para
 Agora, vamos prosseguir e aprender como inicializar o SwitchManagementGenericAdapter.
 
 
+=========================================================
+Inicializando SwitchManagementGenericAdapter
+
+Ainda dentro do método loadPortsAndUseCases , precisamos usar o ServiceLoader para encontrar uma implementação
+disponível para SwitchManagementUseCase. Executaremos os seguintes passos pelo mesmo motivo:
+1. No código a seguir, estamos recuperando uma implementação SwitchManagementUseCase:
+   ServiceLoader<SwitchManagementUseCase> loaderUseCaseSwitch = ServiceLoader.load(SwitchManagementUseCase.class);
+   SwitchManagementUseCase switchManagementUseCase = loaderUseCaseSwitch.findFirst().get();
+   Ao chamar ServiceLoader.load(SwitchManagementUseCase.class), estamos
+   recuperando um objeto ServiceLoader contendo todas as implementações
+   disponíveis para SwitchManagementUseCase. No nosso caso, a única implementação
+   disponível é a porta de entrada SwitchManagementInputPort. Para carregar tal
+   implementação, devemos chamar loaderUseCaseSwitch.findFirst().get().
+   Também precisamos de uma implementação para a porta de saída SwitchManagementOutputPort.
+2. O código a seguir mostra como podemos obter uma implementação de SwitchManagementOutputPort:
+   ServiceLoader<SwitchManagementOutputPort> loaderOutputSwitch = ServiceLoader.load(SwitchManagementOutputPort.class);
+   SwitchManagementOutputPort = loaderOutputSwitch.findFirst().get();
+   Adaptadores de saída implementam portas de saída. Então, para obter uma implementação
+   de porta de saída, devemos chamar ServiceLoader.load(SwitchManagementOutputPort.class)
+   para carregar a implementação SwitchManagementH2Adapter e então chamar loaderOutputSwitch.findFirst().get() para recuperar esse objeto de implementação.
+3. Agora, podemos usar o objeto de porta de saída para defini-lo no caso de uso:
+   switchManagementUseCase.setOutputPort(switchManagementOutputPort);
+4. Finalmente, podemos iniciar o adaptador de entrada:
+   this.switchManagementGenericAdapter = new SwitchManagementGenericAdapter(routerManagementUseCase, switchManagementUseCase);
+   Para instanciar SwitchManagementGenericAdapter, precisamos passar referências
+   para os casos de uso RouterManagementUseCase e SwitchManagementUseCase.
+
+Agora, vamos prosseguir e aprender como inicializar o NetworkManagementGenericAdapter
 
 
 
