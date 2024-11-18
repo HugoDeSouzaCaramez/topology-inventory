@@ -1,32 +1,27 @@
 package dev.hugodesouzacaramez.topologyinventory.framework.adapters.input.generic;
 
-import dev.hugodesouzacaramez.topologyinventory.application.ports.input.RouterManagementInputPort;
-import dev.hugodesouzacaramez.topologyinventory.application.ports.input.SwitchManagementInputPort;
 import dev.hugodesouzacaramez.topologyinventory.application.usecases.RouterManagementUseCase;
 import dev.hugodesouzacaramez.topologyinventory.application.usecases.SwitchManagementUseCase;
 import dev.hugodesouzacaramez.topologyinventory.domain.entity.EdgeRouter;
 import dev.hugodesouzacaramez.topologyinventory.domain.entity.Router;
 import dev.hugodesouzacaramez.topologyinventory.domain.entity.Switch;
-import dev.hugodesouzacaramez.topologyinventory.domain.vo.*;
-import dev.hugodesouzacaramez.topologyinventory.framework.adapters.output.h2.RouterManagementH2Adapter;
-import dev.hugodesouzacaramez.topologyinventory.framework.adapters.output.h2.SwitchManagementH2Adapter;
+import dev.hugodesouzacaramez.topologyinventory.domain.vo.IP;
+import dev.hugodesouzacaramez.topologyinventory.domain.vo.Id;
+import dev.hugodesouzacaramez.topologyinventory.domain.vo.Location;
+import dev.hugodesouzacaramez.topologyinventory.domain.vo.Model;
+import dev.hugodesouzacaramez.topologyinventory.domain.vo.RouterType;
+import dev.hugodesouzacaramez.topologyinventory.domain.vo.SwitchType;
+import dev.hugodesouzacaramez.topologyinventory.domain.vo.Vendor;
 
 public class SwitchManagementGenericAdapter {
 
     private SwitchManagementUseCase switchManagementUseCase;
     private RouterManagementUseCase routerManagementUseCase;
 
-    public SwitchManagementGenericAdapter(){
-        setPorts();
-    }
-
-    private void setPorts(){
-        this.routerManagementUseCase = new RouterManagementInputPort(
-                RouterManagementH2Adapter.getInstance()
-        );
-        this.switchManagementUseCase = new SwitchManagementInputPort(
-                SwitchManagementH2Adapter.getInstance()
-        );
+    public SwitchManagementGenericAdapter (
+            RouterManagementUseCase routerManagementUseCase, SwitchManagementUseCase switchManagementUseCase){
+        this.routerManagementUseCase = routerManagementUseCase;
+        this.switchManagementUseCase = switchManagementUseCase;
     }
 
     /**

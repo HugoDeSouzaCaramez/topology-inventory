@@ -1375,6 +1375,60 @@ portas de saída e os adaptadores, vamos aprender como configurar os adaptadores
 acessar dependências por meio de suas abstrações.
 
 
+===========================================================
+Tornando os adaptadores de entrada dependentes de abstrações
+
+O primeiro passo para consumir os serviços que expusemos com as diretivas provides e with é atualizar
+o descritor de módulo do módulo hexagon do framework do consumidor utilizando a diretiva uses .
+Executaremos os seguintes passos para fazer isso:
+1. Vamos começar atualizando o descritor do módulo:
+   module framework {
+       /** Code omitted **/
+       uses dev.hugodesouzacaramez.topologyinventory.application
+       .usecases
+       .RouterManagementUseCase;
+       uses dev.hugodesouzacaramez.topologyinventory.application
+       .usecases
+       .SwitchManagementUseCase;
+       uses dev.hugodesouzacaramez.topologyinventory.application
+       .usecases
+       .NetworkManagementUseCase;
+       uses dev.hugodesouzacaramez.topologyinventory.application
+       .ports.output
+       .RouterManagementOutputPort;
+       uses dev.hugodesouzacaramez.topologyinventory.application
+       .ports.output
+       .SwitchManagementOutputPort;
+   }
+   As três primeiras diretivas uses apontam para os serviços fornecidos pelo módulo
+   Application hexagon. As duas últimas diretivas uses referem-se aos serviços que
+   expusemos no módulo Framework hexagon.
+   Agora que temos os descritores de módulo adequadamente configurados para permitir que o
+   sistema dependa de interfaces em vez de implementações, precisamos refatorar os adaptadores
+   de entrada para que eles dependam apenas de interfaces de caso de uso do módulo hexágono
+   do aplicativo e gerem as interfaces de porta do módulo hexágono do Framework.
+2.  Primeiro, precisamos configurar o adaptador RouterManagementGenericAdapter :
+    Note que RouterManagementGenericAdapter não depende mais de
+    RouterManagementInputPort e RouterManagementH2Adapter, como acontecia
+    anteriormente. Há apenas uma dependência na interface RouterManagementUseCase.
+3. Para o adaptador de entrada SwitchManagementGenericAdapter , é assim que devemos
+   configurar a dependência:
+   O adaptador de entrada SwitchManagementGenericAdapter depende das interfaces
+   de caso de uso RouterManagementUseCase e SwitchManagementUseCase para
+   executar suas atividades.
+4. Para concluir, temos que ajustar a classe do adaptador NetworkManagementGenericAdapter:
+   O adaptador de entrada NetworkManagementGenericAdapter segue o mesmo padrão que
+   usamos nos adaptadores de entrada anteriores e requer referências de caso de uso na entrada
+   construtor do adaptador. Aqui, estamos usando as interfaces de caso de uso
+   SwitchManagementUseCase e NetworkManagementUseCase.
+
+Nesta seção, abordamos um recurso crucial do JPMS: provedores de serviço. Ao usá-los, podemos vincular
+implementações de porta de entrada às interfaces de caso de uso. É assim que organizamos o código. Então, os
+adaptadores de entrada podem contar com abstrações de caso de uso para disparar operações no hexágono Application.
+Agora, vamos aprender como usar o ServiceLoader para recuperar implementações de serviços com base
+nos provedores JPMS que definimos.
+
+
 
 
 
