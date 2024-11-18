@@ -1320,6 +1320,24 @@ Para tornar uma classe de porta de entrada elegível para ser usada como uma cla
 
 Agora, podemos atualizar o descritor do módulo do hexágono do aplicativo para definir os serviços que
 forneceremos usando as interfaces de caso de uso e as implementações de suas portas de entrada.
+Começamos declarando a dependência que o módulo de aplicação tem nos módulos Domain
+hexagon e lombok . Em seguida, usamos exports para habilitar o acesso às portas de entrada, portas de saída e
+casos de uso.
+Em seguida, precisamos declarar os serviços que queremos fornecer. Podemos realizar essa declaração de serviço
+fornecendo uma interface de caso de uso e a porta de entrada que a implementa. Vamos declarar o provedor de serviços
+para gerenciamento de roteador.
+No código anterior, RouterManagementUseCase está sendo fornecido por
+RouterManagementInputPort.
+Em seguida, precisamos definir o provedor de serviços para gerenciamento de switches.
+No código anterior, SwitchManagementUseCase está sendo fornecido por
+SwitchManagementInputPort.
+Por fim, devemos declarar o provedor de serviços para gerenciamento de rede.
+Aqui, temos o NetworkManagementUseCase sendo fornecido pelo NetworkManagementInputPort.
+
+Antes de aprendermos como acessar essas portas de entrada por meio de serviços JPMS em adaptadores de
+entrada, vamos aprender como podemos inverter dependências ao trabalhar com portas de saída e adaptadores de saída.
+
+
 
 
 
