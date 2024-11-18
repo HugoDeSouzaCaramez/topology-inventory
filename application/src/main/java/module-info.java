@@ -1,8 +1,15 @@
 module application {
-    exports dev.hugodesouzacaramez.topologyinventory.application.ports.input;
-    exports dev.hugodesouzacaramez.topologyinventory.application.usecases;
-    exports dev.hugodesouzacaramez.topologyinventory.application.ports.output;
     requires domain;
     requires static lombok;
-    requires com.fasterxml.jackson.annotation;
+
+    exports dev.hugodesouzacaramez.topologyinventory.application.ports.input;
+    exports dev.hugodesouzacaramez.topologyinventory.application.ports.output;
+    exports dev.hugodesouzacaramez.topologyinventory.application.usecases;
+
+    provides dev.hugodesouzacaramez.topologyinventory.application.usecases.RouterManagementUseCase
+            with dev.hugodesouzacaramez.topologyinventory.application.ports.input.RouterManagementInputPort;
+    provides dev.hugodesouzacaramez.topologyinventory.application.usecases.SwitchManagementUseCase
+            with dev.hugodesouzacaramez.topologyinventory.application.ports.input.SwitchManagementInputPort;
+    provides dev.hugodesouzacaramez.topologyinventory.application.usecases.NetworkManagementUseCase
+            with dev.hugodesouzacaramez.topologyinventory.application.ports.input.NetworkManagementInputPort;
 }

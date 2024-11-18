@@ -11,10 +11,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RouterManagementInputPort implements RouterManagementUseCase {
 
-    RouterManagementOutputPort routerManagementOutputPort;
+    private RouterManagementOutputPort routerManagementOutputPort;
 
-    public RouterManagementInputPort(RouterManagementOutputPort routerNetworkOutputPort){
-        this.routerManagementOutputPort = routerNetworkOutputPort;
+    @Override
+    public void setOutputPort(RouterManagementOutputPort routerManagementOutputPort) {
+        this.routerManagementOutputPort = routerManagementOutputPort;
     }
 
     @Override
@@ -57,7 +58,6 @@ public class RouterManagementInputPort implements RouterManagementUseCase {
     @Override
     public Router removeRouterFromCoreRouter(Router router, CoreRouter coreRouter) {
         var removedRouter = coreRouter.removeRouter(router);
-        persistRouter(coreRouter);
-        return removedRouter;
+        return persistRouter(removedRouter);
     }
 }

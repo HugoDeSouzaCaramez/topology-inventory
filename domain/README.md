@@ -1286,7 +1286,40 @@ Vamos ver como podemos usar o JPMS para aplicar esse DIP ao nosso sistema hexago
 Também veremos uma representação para inverter dependências usando adaptadores de entrada, casos de uso e portas de entrada.
 
 
+=============================================================
+Fornecendo serviços com casos de uso e portas de entrada
 
+Ao desenvolver a topologia e o sistema de inventário, projetamos casos de uso como interfaces e portas de
+entrada como implementações para essas interfaces. Podemos considerar casos de uso e portas de entrada
+como componentes de arquitetura hexagonal que correspondem à definição JPMS para um serviço. O módulo
+hexágono Application pode ser considerado o módulo que fornece o serviço. E o consumidor? O módulo
+hexágono Framework é o consumidor direto do módulo hexágono Application.
+
+Com base nesse raciocínio, reimplementaremos os módulos hexagonais Application e Framework para que os
+adaptadores de entrada do hexagono Framework não precisem mais depender das implementações de porta de
+entrada do hexagono Application. Em vez disso, os adaptadores de entrada dependerão apenas dos tipos de
+interface de caso de uso, em vez dos tipos concretos das portas de entrada. Em tal contexto, podemos considerar
+os adaptadores de entrada como componentes de alto nível e as portas de entrada como componentes de baixo
+nível. Os adaptadores de entrada referem-se às interfaces de caso de uso. As portas de entrada implementam esses casos de uso.
+
+O diagrama anterior ilustra como podemos abordar a inversão de dependência na arquitetura
+hexagonal. Este exemplo considera a inversão de dependência entre os hexágonos Framework
+e Application , mas podemos fazer a mesma coisa com o hexágono Domain também.
+
+Vamos considerar como o RouterManagementGenericAdapter está acessando atualmente os detalhes da
+implementação em vez da abstração:
+Ao chamar new RouterManagementInputPort(RouterManagementH2Adapter.
+getInstance()), estamos fazendo com que o adaptador de entrada dependa dos
+detalhes de implementação da porta de entrada RouterManagementInputPort e do
+adaptador de saída expresso por RouterManagementH2Adapter.
+
+Para tornar uma classe de porta de entrada elegível para ser usada como uma classe de provedor no JPMS, precisamos fazer o seguinte:
+1. Primeiro, precisamos adicionar um construtor sem argumentos.
+2. Então, devemos declarar o método setOutputPort na interface do caso de uso.
+3. Por fim, devemos implementar o método setOutputPort na porta de entrada.
+
+Agora, podemos atualizar o descritor do módulo do hexágono do aplicativo para definir os serviços que
+forneceremos usando as interfaces de caso de uso e as implementações de suas portas de entrada.
 
 
 

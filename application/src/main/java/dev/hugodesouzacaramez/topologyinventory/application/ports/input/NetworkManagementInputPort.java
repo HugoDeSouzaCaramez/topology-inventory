@@ -15,10 +15,11 @@ import java.util.function.Predicate;
 @NoArgsConstructor
 public class NetworkManagementInputPort implements NetworkManagementUseCase {
 
-    RouterManagementOutputPort routerManagementOutputPort;
+    private RouterManagementOutputPort routerManagementOutputPort;
 
-    public NetworkManagementInputPort(RouterManagementOutputPort routerNetworkOutputPort){
-        this.routerManagementOutputPort = routerNetworkOutputPort;
+    @Override
+    public void setOutputPort(RouterManagementOutputPort routerManagementOutputPort) {
+        this.routerManagementOutputPort = routerManagementOutputPort;
     }
 
     @Override
