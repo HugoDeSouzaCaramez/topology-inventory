@@ -1429,6 +1429,34 @@ Agora, vamos aprender como usar o ServiceLoader para recuperar implementações 
 nos provedores JPMS que definimos.
 
 
+===================================================================================================
+Usando a classe ServiceLoader da plataforma Java para recuperar Implementações do provedor JPMS
+
+Até agora, configuramos o descritor de módulo dos módulos hexagonais Application e Framework.
+Refatoramos os adaptadores de entrada para que eles dependam somente das abstrações fornecidas pelas
+interfaces de caso de uso. Mas como podemos recuperar as instâncias concretas que implementam essas interfaces de caso de uso?
+É exatamente isso que a classe ServiceLoader faz.
+
+ServiceLoader não é uma nova classe feita exclusivamente para suportar recursos JPMS. Em vez disso, ServiceLoader
+está presente no Java desde a versão 1.6. Do Java 9 em diante, essa classe foi aprimorada para trabalhar com os
+serviços do módulo Java. Ela depende da configuração fornecida pelo descritor do módulo para encontrar
+implementações para uma determinada interface do provedor de serviços.
+
+Para ilustrar como podemos usar o ServiceLoader, vamos atualizar a classe de teste FrameworkTestData
+criando um método chamado loadPortsAndUseCases. Este método usa o ServiceLoader para recuperar
+os objetos que precisamos para instanciar os adaptadores de entrada. Precisamos criar o método loadPortsAndUseCases
+porque o chamaremos para inicializar os adaptadores de entrada por meio do ServiceLoader.
+Antes de criar o método loadPortsAndUseCases , precisamos declarar as variáveis do adaptador de entrada que usaremos
+Vamos começar inicializando o RouterManagementGenericAdapter.
+findFirst().get() para obter essa implementação.
+As variáveis que declaramos aqui são usadas para armazenar referências para os adaptadores de entrada
+que criaremos usando os objetos de portas de entrada e adaptadores de saída que obtivemos da classe ServiceLoader .
+para atribuir os objetos que são instanciados com o auxílio do ServiceLoader.
+As variáveis que declaramos aqui são usadas para armazenar referências para os adaptadores de entrada
+que criaremos usando os objetos de portas de entrada e adaptadores de saída que obtivemos da classe ServiceLoader.
+
+Vamos começar inicializando o RouterManagementGenericAdapter.
+
 
 
 
