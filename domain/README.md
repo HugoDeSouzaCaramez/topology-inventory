@@ -1152,6 +1152,91 @@ seguindo os princípios da arquitetura hexagonal.
 
 
 
+====================================================================================
+====================================================================================
+Aplicando Inversão de Dependência com módulos Java
+
+Nos capítulos anteriores, aprendemos como desenvolver cada hexágono como um módulo Java. Ao
+fazer isso, começamos a impor o escopo e as responsabilidades de cada hexágono na arquitetura.
+No entanto, não fomos muito longe na exploração dos recursos do módulo Java, como
+encapsulamento e inversão de dependência, e como esses recursos podem aprimorar a estrutura
+geral de um sistema hexagonal, tornando -o mais robusto e frouxamente acoplado.
+
+Para entender o papel desempenhado pelo Java Platform Module System (JPMS) no desenvolvimento
+de um sistema hexagonal, precisamos entender quais problemas o JPMS visa resolver. Uma vez que
+saibamos o que podemos fazer com o JPMS em termos de encapsulamento e inversão de dependência,
+podemos aplicar essas técnicas em conjunto com a arquitetura hexagonal.
+
+Então, neste capítulo, aprenderemos como combinar o JPMS com a arquitetura hexagonal para criar
+um sistema bem encapsulado com limites claramente definidos que são reforçados pela estrutura
+modular do sistema e técnicas de inversão de dependência. Abordaremos os seguintes tópicos:
+• Apresentando o JPMS
+• Invertendo dependências em uma aplicação hexagonal
+• Usando a classe ServiceLoader da plataforma Java para recuperar implementações do provedor JPMS
+
+Ao final deste capítulo, você terá aprendido como usar serviços, consumidores e provedores do JPMS
+para aplicar princípios de inversão de dependência e encapsulamento para um sistema hexagonal.
+
+
+===========================================
+Apresentando o JPMS
+
+Antes do Java SE 9, o único mecanismo que tínhamos para lidar com dependências em Java era o classpath
+parâmetro. O parâmetro classpath é onde colocamos dependências na forma de arquivos JAR.
+No entanto, o problema é que não há como determinar de qual arquivo JAR uma dependência específica veio .
+Se você tiver duas classes com o mesmo nome, no mesmo pacote e presentes em dois arquivos JAR diferentes,
+um dos arquivos JAR seria carregado primeiro, fazendo com que um arquivo JAR fosse ofuscado pelo outro.
+
+Shadowing é o termo que usamos para nos referir a uma situação em que dois ou mais arquivos JAR que
+contêm a mesma dependência são colocados no parâmetro classpath , mas apenas um dos arquivos JAR
+é carregado, sombreando o resto. Esse problema de emaranhamento de dependência JAR também é
+conhecido como JAR hell. Um sintoma que indica que as coisas não estão tão boas com dependências que foram carregadas
+no parametro classpath é quando vemos exceções inesperadas de ClassNotFoundException no tempo de execução do sistema.
+
+O JPMS não pode evitar completamente problemas de JAR hell relacionados a incompatibilidades de versão
+de dependência e shadowing. Ainda assim, a abordagem modular nos ajuda a ter uma visão melhor das
+dependências que são necessárias para um sistema. Essa perspectiva de dependência mais ampla é útil para
+prevenir e diagnosticar tais problemas de dependência.
+Antes do JPMS, não havia como controlar o acesso a tipos públicos de diferentes arquivos JAR. O
+comportamento padrão de uma Java Virtual Machine (JVM) é sempre tornar esses tipos públicos disponíveis
+entre outros arquivos JAR, o que frequentemente leva a colisões envolvendo classes com o mesmo nome e pacote.
+
+O JPMS introduziu o caminho do módulo e uma política de encapsulamento estrita que restringe,
+por padrão, o acesso a todos os tipos públicos entre diferentes módulos. Não é mais possível
+acessar todos os tipos públicos de outras dependências. Com o JPMS, o módulo precisa declarar
+quais pacotes que contêm tipos públicos estão disponíveis para outros módulos. Fizemos isso usando a diretiva export
+no modulo de hexagono de domínio.
+module domain {
+    exports dev.hugodesouzacaramez.topologyinventory.domain.entity;
+    exports dev.hugodesouzacaramez.topologyinventory.domain.entity .factory;
+    exports dev.hugodesouzacaramez.topologyinventory.domain .service;
+    exports dev.hugodesouzacaramez.topologyinventory.domain .specification;
+    exports dev.hugodesouzacaramez.topologyinventory.domain.vo;
+    requires static lombok;
+}
+
+Então, para acessar o módulo hexágono de domínio , usamos a diretiva require no modulo de aplicação hexagonal.
+module application {
+    requires domain;
+}
+
+
+Esse mecanismo de modularização monta o código em uma nova construção Java chamada módulo. Como
+vimos anteriormente, o módulo pode ter que determinar qual pacote ele pretende exportar e quais outros
+módulos ele requer. Nesse arranjo, temos mais controle sobre as coisas que nosso aplicativo expõe e
+consome.
+
+Se você está direcionando o desenvolvimento para ambientes baseados em nuvem e se importa com
+desempenho e custo, a natureza do sistema de módulos permite que você construa um Java runtime
+personalizado (conhecido no passado como JRE) contendo apenas os módulos necessários para executar o
+aplicativo. Com um Java runtime menor, tanto o tempo de inicialização do aplicativo quanto o uso de memória
+diminuirão. Digamos que estamos falando de centenas – até milhares – de pods Kubernetes executando
+Java na nuvem. Com um Java runtime menor, podemos obter uma economia considerável em relação ao consumo de recursos computacionais.
+
+Agora que estamos mais familiarizados com as motivações e benefícios do JPMS, vamos voltar a desenvolver
+nossa topologia e sistema de inventário. Aprenderemos como usar recursos mais avançados do JPMS para
+aprimorar o encapsulamento e a aderência aos princípios de inversão de dependência.
+
 
 
 
