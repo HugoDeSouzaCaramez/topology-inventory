@@ -4,12 +4,7 @@ import dev.hugodesouzacaramez.topologyinventory.application.ports.output.SwitchM
 import dev.hugodesouzacaramez.topologyinventory.application.usecases.SwitchManagementUseCase;
 import dev.hugodesouzacaramez.topologyinventory.domain.entity.EdgeRouter;
 import dev.hugodesouzacaramez.topologyinventory.domain.entity.Switch;
-import dev.hugodesouzacaramez.topologyinventory.domain.vo.IP;
-import dev.hugodesouzacaramez.topologyinventory.domain.vo.Id;
-import dev.hugodesouzacaramez.topologyinventory.domain.vo.Location;
-import dev.hugodesouzacaramez.topologyinventory.domain.vo.Model;
-import dev.hugodesouzacaramez.topologyinventory.domain.vo.SwitchType;
-import dev.hugodesouzacaramez.topologyinventory.domain.vo.Vendor;
+import dev.hugodesouzacaramez.topologyinventory.domain.vo.*;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
@@ -17,7 +12,8 @@ public class SwitchManagementInputPort implements SwitchManagementUseCase {
 
     private SwitchManagementOutputPort switchManagementOutputPort;
 
-    public SwitchManagementInputPort(SwitchManagementOutputPort switchManagementOutputPort){
+    @Override
+    public void setOutputPort(SwitchManagementOutputPort switchManagementOutputPort) {
         this.switchManagementOutputPort = switchManagementOutputPort;
     }
 
@@ -39,7 +35,7 @@ public class SwitchManagementInputPort implements SwitchManagementUseCase {
                 .build();
     }
 
-    public Switch retrieveSwitch(Id id){
+    public Switch retrieveSwitch(Id id) {
         return switchManagementOutputPort.retrieveSwitch(id);
     }
 

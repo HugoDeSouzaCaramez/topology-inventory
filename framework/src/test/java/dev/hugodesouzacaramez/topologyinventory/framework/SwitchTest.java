@@ -3,7 +3,6 @@ package dev.hugodesouzacaramez.topologyinventory.framework;
 import dev.hugodesouzacaramez.topologyinventory.domain.entity.EdgeRouter;
 import dev.hugodesouzacaramez.topologyinventory.domain.entity.Switch;
 import dev.hugodesouzacaramez.topologyinventory.domain.vo.*;
-import dev.hugodesouzacaramez.topologyinventory.framework.adapters.input.generic.SwitchManagementGenericAdapter;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -14,10 +13,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SwitchTest extends FrameworkTestData {
 
-    SwitchManagementGenericAdapter switchManagementGenericAdapter;
-
     public SwitchTest(){
-        this.switchManagementGenericAdapter = new SwitchManagementGenericAdapter();
+        loadPortsAndUseCases();
         loadData();
     }
 

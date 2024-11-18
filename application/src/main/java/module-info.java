@@ -1,6 +1,7 @@
 module application {
     requires domain;
     requires static lombok;
+    requires com.fasterxml.jackson.annotation;
 
     exports dev.hugodesouzacaramez.topologyinventory.application.ports.input;
     exports dev.hugodesouzacaramez.topologyinventory.application.ports.output;
