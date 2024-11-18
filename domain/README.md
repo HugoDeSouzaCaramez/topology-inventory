@@ -1238,5 +1238,55 @@ nossa topologia e sistema de inventário. Aprenderemos como usar recursos mais a
 aprimorar o encapsulamento e a aderência aos princípios de inversão de dependência.
 
 
+====================================================
+Invertendo dependências em um aplicativo hexagonal
+
+O princípio de inversão de dependência (DIP), conforme introduzido por Robert C. Martin, afirma que
+componentes de alto nível não devem depender de componentes de baixo nível. Em vez disso,
+ambos devem depender de abstrações. À primeira vista, para alguns, pode não ser tão óbvio
+entender tal conceito. Afinal, o que os componentes de alto e baixo nível significam? E de que tipo de abstrações estamos falando?
+
+Um componente de alto nível tem um conjunto de operações orquestradas para habilitar um comportamento de sistema
+principal. Um componente de alto nível pode depender de componentes de baixo nível para fornecer um comportamento de sistema principal. Um
+componente de baixo nível, por sua vez, utiliza um comportamento especializado que suporta os objetivos
+de um componente de alto nível. Chamamos um pedaço de código cliente que atua como o componente de
+alto nível porque ele depende e consome as funcionalidades fornecidas pelo componente de baixo nível.
+
+O componente de alto nível pode ser um elemento concreto ou abstrato, enquanto o componente de baixo
+nível deve ser concreto porque sempre fornece detalhes de implementação.
+
+Vamos considerar algum código de cliente como um componente de alto nível que chama métodos em um
+código de serviço. O código de serviço, por sua vez, pode ser considerado um componente de baixo nível. Este
+componente de baixo nível contém os detalhes de implementação. Em designs de programação procedural, é
+comum ver componentes de alto nível dependendo diretamente dos detalhes de implementação fornecidos por componentes de baixo nível.
+Martin diz que essa dependência direta em detalhes de implementação é ruim porque torna o sistema
+rígido. Por exemplo, se mudarmos esses detalhes de implementação nos componentes de baixo
+nível, tais mudanças podem causar problemas imediatos para os componentes de alto nível que dependem diretamente deles.
+É daí que vem essa rigidez: não podemos alterar uma parte do código sem causar efeitos colaterais em outras
+partes.
+
+Para inverter a dependência, precisamos fazer o componente de alto nível depender da mesma abstração da qual
+o componente de baixo nível é derivado. Em designs orientados a objetos, podemos conseguir esse feito usando
+classes ou interfaces abstratas. O componente de baixo nível implementa uma abstração, enquanto o componente
+de alto nível se refere a essa abstração em vez da implementação de baixo nível. Então, é isso que temos que
+fazer para inverter as dependências corretamente.
+
+O JPMS introduziu um mecanismo para nos ajudar a evitar essa dependência em detalhes de
+implementação. Esse mecanismo é baseado em consumidores, serviços e provedores. Além
+desses três elementos do JPMS, há mais um, já conhecido em versões anteriores do Java,
+chamado ServiceLoader, que permite ao sistema encontrar e recuperar implementações de uma dada abstração.
+
+Chamamos um consumer com um módulo que declara a necessidade de consumir um serviço fornecido por um
+módulo provider através da diretiva uses . Esta diretiva uses declara o nome de uma interface ou classe abstrata
+que representa o serviço que pretendemos utilizar. O service, por sua vez, é o objeto que implementa a interface
+ou estende a classe abstrata que é informada na diretiva uses . O provider é um módulo que declara a interface
+do serviço e suas implementações com os providers e diretivas, respectivamente.
+
+Vamos ver como podemos usar o JPMS para aplicar esse DIP ao nosso sistema hexagonal, topologia e inventário.
+Também veremos uma representação para inverter dependências usando adaptadores de entrada, casos de uso e portas de entrada.
+
+
+
+
 
 
