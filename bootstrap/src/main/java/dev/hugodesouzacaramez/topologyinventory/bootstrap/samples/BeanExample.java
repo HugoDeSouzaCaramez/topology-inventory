@@ -1,4 +1,4 @@
-package dev.hugodesouzacaramez.topologyinventory.samples;
+package dev.hugodesouzacaramez.topologyinventory.bootstrap.samples;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
