@@ -1945,7 +1945,224 @@ Envie requisições para o servidor usando os comandos curl.
 Essas etapas ajudam a validar se o projeto está funcionando corretamente. Se houver dúvidas ou erros ao seguir o processo, compartilhe os detalhes para que eu possa ajudar.
 
 
+Na solicitação POST anterior , o campo está vazio, o que resulta em uma resposta de falha com
+um código HTTP 400 Bad Request .
+Na próxima solicitação, definimos o valor como um número menor que 10, da seguinte maneira:
+$ curl -s -H "Content-Type: application/json" -d '{"field": "test",
+"value": 9}' localhost:8080/app/request-validation | jq
+{
+"exception": null,
+"propertyViolations": [],
+"classViolations": [],
+"parameterViolations": []
+{
+"constraintType": "PARAMETER",
+"path": "validation.arg0.value",
+"message": "The minimum value is 10",
+"value": "9"
+}
+],
+"returnValueViolations": []
+}
 
+Novamente, a restrição foi violada, e o resultado mostrou que a validação falhou. A falha foi causada porque
+enviamos o número 9, e o valor mínimo aceito é 10.
+
+Aqui está uma solicitação adequada com dados válidos:
+$ curl -s -H "Tipo de conteúdo: aplicativo/json" -d '{"campo": "teste", "valor": 10}' localhost:8080/app/
+validação-de-solicitação | jq {
+"message": "Os dados da solicitação são válidos!",
+
+"sucesso": verdadeiro
+}
+
+O parâmetro de campo não é nulo, nem o valor é menor que 10. Portanto, a solicitação retorna uma resposta válida.
+
+==============================================================
+Configurando uma fonte de dados e usando o Hibernate ORM
+
+O Quarkus permite que você se conecte a uma fonte de dados de duas maneiras. A primeira e tradicional
+maneira é baseada em uma conexão JDBC. Para conectar usando esse método, você precisa da biblioteca agroal
+e do driver JDBC do tipo de banco de dados específico que você deseja conectar. A segunda maneira – e
+reativa – permite que você trate a conexão do banco de dados como um fluxo de dados. Para esse modo, você precisa dos drivers reativos Vert.x
+
+Nas etapas a seguir, configuraremos uma conexão de fonte de dados usando o método JDBC tradicional:
+
+1. Para começar, precisamos das seguintes dependências:
+   <dependency>
+   <groupId>io.quarkus</groupId>
+   <artifactId>quarkus-agroal</artifactId>
+   </dependency>
+   <dependency>
+   <groupId>io.quarkus</groupId>
+   <artifactId>quarkus-jdbc-h2</artifactId>
+   </dependency>
+   <dependency>
+   <groupId>io.quarkus</groupId>
+   <artifactId>quarkus-hibernate-orm</artifactId>
+   </dependency>
+
+quarkus-hibernate-orm se refere à implementação Hibernate ORM do JPA. É essa dependência
+que fornece a capacidade de mapear objetos Java para entidades de banco de dados.
+
+2. Em seguida, precisamos configurar as configurações da fonte de dados no arquivo application.properties,
+como segue:
+   quarkus.datasource.db-kind=h2
+   quarkus.datasource.jdbc.url=jdbc:h2:mem:de
+   fault;DB_CLOSE_DELAY=-1
+   quarkus.hibernate-orm.dialect=org.hibernate.dia
+   lect.H2Dialect
+   quarkus.hibernate-orm.database.generation=drop-and-
+   create
+
+quarkus.datasource.db-kind é opcional, mas usamos isso para enfatizar que o
+aplicativo usa um banco de dados H2 na memória. Usamos quarkus.datasource.jdbc.url
+para informar a string de conexão. A opção quarkus.hibernate-orm.dialect define o
+dialeto usado para a comunicação da fonte de dados e quarkus.hibernate-orm.database.generation=drop-and-create força a criação de uma estrutura de banco de dados na inicialização.
+
+Se houver um arquivo import.sql no classpath, esta opção drop-and-create habilita o uso desse
+arquivo para carregar dados no banco de dados. Algo muito interessante sobre esta opção
+drop - and-create é que cada alteração em entidades do aplicativo ou no arquivo import.sql é
+selecionada automaticamente e aplicada ao banco de dados sem reiniciar o sistema. Para que
+isso funcione , um sistema precisa ser executado no modo de desenvolvimento ao vivo.
+
+Vamos criar uma classe SampleEntity para persistir no banco de dados, como segue:
+@Entity
+@NamedQuery(name = "SampleEntity.findAll",
+query = "SELECT f FROM SampleEntity f ORDER BY
+f.field",
+hints = @QueryHint(name =
+"org.hibernate.cacheable",
+value = "true") )
+public class SampleEntity {
+@Id
+@GeneratedValue(strategy = GenerationType.AUTO)
+private Long id;
+@Getter
+@Setter
+private String field;
+@Getter
+@Setter
+private int value;
+}
+
+A classe SampleEntity corresponde à classe SampleObject que criamos anteriormente. O requisito
+para usar a classe SampleEntity como uma entidade de banco de dados é anotá-la com a anotação
+@Entity . Seguindo essa anotação, temos @NamedQuery, que usaremos mais tarde para
+recuperar todas as entidades do banco de dados. Para gerar automaticamente valores de ID, usaremos GenerationType.AUTO.
+As variáveis de campo e valor de SampleEntity são mapeadas para as mesmas
+variáveis que existem na classe SampleObject.
+
+Vamos agora criar um novo bean chamado PersistenceExample para nos ajudar a criar e recuperar entidades
+de banco de dados. Veja como fazer isso:
+package dev.davivieira.bootstrap.samples;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
+import java.util.List;
+@ApplicationScoped
+public class PersistenceExample {
+@Inject
+EntityManager em;
+/** Code omitted **/
+}
+
+Para interagir com o banco de dados, a primeira coisa que temos que fazer é injetar o EntityManager.
+O Quarkus cuidará de recuperar um objeto EntityManager com todas as configurações de conexão do
+banco de dados que fornecemos no arquivo application.properties . Continuando a implementação do
+PersistenceExample , vamos criar um método para persistir entidades, como segue:
+@Transactional
+public String createEntity(SampleObject sampleObject) {
+SampleEntity sampleEntity = new SampleEntity();
+sampleEntity.setField(sampleObject.field);
+sampleEntity.setValue(sampleObject.value);
+em.persist(sampleEntity);
+return "Entity with field "+sampleObject.field+"
+created!";
+}
+
+O método createEntity persiste uma entidade no banco de dados.
+
+A anotação @Transactional acima da declaração do método fará com que o objeto EntityManager
+limpe a transação assim que a operação do banco de dados for confirmada. Isso é ilustrado
+no seguinte trecho de código:
+@Transactional
+public List<SampleEntity> getAllEntities(){
+return em.createNamedQuery(
+"SampleEntity.findAll", SampleEntity.class)
+.getResultList();
+}
+
+O método getAllEntities recupera todas as entidades do banco de dados.
+
+Agora, vamos retornar ao RestExample para criar endpoints REST para disparar a criação e
+recuperação de entidades do banco de dados. Começaremos injetando PersistenceExample para que
+possamos usar esse bean para iniciar operações no banco de dados. O código é ilustrado no seguinte snippet:
+@Inject
+PersistenceExample persistenceExample;
+
+Em seguida, criamos um endpoint /create-entity, como segue:
+@POST
+@Path("/create-entity")
+@Produces(MediaType.TEXT_PLAIN)
+@Consumes(MediaType.APPLICATION_JSON)
+public String persistData(@Valid SampleObject sampleObject) {
+return persistenceExample.createEntity(sampleObject);
+}
+
+Passamos SampleObject como parâmetro. Este objeto representa o corpo da requisição POST .
+
+Por fim, criamos um endpoint /get-all-entities para recuperar todas as entidades do banco de dados, da seguinte
+maneira:
+@GET
+@Path("/get-all-entities")
+public List<SampleEntity> retrieveAllEntities() {
+return persistenceExample.getAllEntities();
+}
+
+O método retrieveAllEntities chama getAllEntities do PersistenceExample bean. O resultado é uma lista de objetos SampleEntity.
+
+Vamos ver o que obtemos quando clicamos em /create-entity para criar uma nova entidade. Você pode ver a saída aqui:
+$ curl -s -H "Content-Type: application/json" -d '{"field": "item-a",
+"value": 10}' localhost:8080/app/create-entity
+Entity with field item-a created!
+$ curl -s -H "Content-Type: application/json" -d '{"field": "item-b",
+"value": 20}' localhost:8080/app/create-entity
+Entity with field item-b created!
+
+Para ver as entidades que criamos, enviamos uma solicitação para /get-all-entities, da seguinte maneira:
+$ curl -s localhost:8080/app/get-all-entities | jq
+[
+{
+"field": "item-a",
+"value": 10
+},
+{
+"field": "item-b",
+"value": 20
+}
+]
+
+Como esperado, recebemos todas as entidades que persistimos anteriormente no banco de dados em um formato JSON
+
+Quarkus é uma estrutura vasta e em constante crescimento que está absorvendo cada vez mais recursos.
+Os recursos que vimos abrangem algumas das coisas básicas necessárias para desenvolver aplicativos modernos.
+
+Poderemos usar RESTEasy ao reimplementar adaptadores de entrada para dar suporte a REST em nosso aplicativo
+hexagonal. O Quarkus DI nos permitirá gerenciar melhor o ciclo de vida de objetos dos hexágonos Framework e
+Application. Os mecanismos de validação do Quarkus contribuirão para validar os dados que entram no sistema
+hexagonal. A configuração da fonte de dados e o Hibernate ORM darão suporte à reestruturação dos adaptadores
+de saída.
+
+Nesta seção, aprendemos como ajustar o arquivo application.properties para configurar uma conexão de
+banco de dados no Quarkus, e exploramos brevemente os recursos ORM do Hibernate que ajudam a
+mapear classes Java para entidades de banco de dados. Exploraremos esse assunto mais a fundo no
+Capítulo 13, Persistindo Dados com Adaptadores de Saída e Hibernate Reactive.
+
+Vamos agora ver como integrar o Quarkus ao sistema hexagonal.
+
+===========================================
 
 
 
