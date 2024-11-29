@@ -1891,6 +1891,60 @@ $ curl -H "Content-Type: application/json" -d '{"field": "", "value":
 limpar cache: mvn dependency:purge-local-repository
 
 
+Compilar e empacotar o projeto:
+mvn clean package
+
+Este comando usa o Maven para compilar e empacotar o projeto.
+
+mvn clean: Remove os arquivos gerados anteriormente (build anterior).
+mvn package: Compila o código, executa testes (se configurados) e cria um pacote executável (JAR, WAR, etc.).
+O resultado será um arquivo .jar gerado no diretório target/, pronto para ser executado.
+
+Executar o aplicativo:
+java -jar bootstrap/target/bootstrap-1.0-SNAPSHOT-runner.jar
+
+Este comando executa o aplicativo gerado no passo anterior.
+
+java -jar: Executa um arquivo JAR.
+bootstrap/target/bootstrap-1.0-SNAPSHOT-runner.jar: Caminho para o JAR gerado no processo de empacotamento.
+Quando este comando é executado, o servidor Quarkus é iniciado e estará disponível (geralmente em http://localhost:8080).
+
+Testar a aplicação (pode ser via postman também):
+Exemplo 1: Criar uma entidade
+Comando:
+
+bash
+Copiar código
+curl -vv -H "Content-Type: application/json" -d '{"field": "item-a", "value": 20}' localhost:8080/app/create-entity
+Este comando faz uma requisição HTTP POST para o endpoint /app/create-entity e envia os dados JSON:
+
+json
+Copiar código
+{
+"field": "item-a",
+"value": 20
+}
+-vv: Exibe informações detalhadas da requisição.
+-H "Content-Type: application/json": Define o cabeçalho da requisição como JSON.
+-d: Especifica o corpo da requisição (payload).
+Exemplo 2: Obter todas as entidades
+Comando:
+
+bash
+Copiar código
+curl -s localhost:8080/app/get-all-entities | jq
+Este comando faz uma requisição HTTP GET para o endpoint /app/get-all-entities para listar todas as entidades criadas.
+
+curl -s: Faz a requisição sem exibir informações adicionais.
+| jq: Formata e exibe a saída JSON no terminal (é necessário ter o utilitário jq instalado).
+
+Resumo do processo
+Compile e empacote o projeto com mvn clean package.
+Execute o servidor com java -jar bootstrap/target/bootstrap-1.0-SNAPSHOT-runner.jar.
+Envie requisições para o servidor usando os comandos curl.
+Essas etapas ajudam a validar se o projeto está funcionando corretamente. Se houver dúvidas ou erros ao seguir o processo, compartilhe os detalhes para que eu possa ajudar.
+
+
 
 
 
