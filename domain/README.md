@@ -1549,6 +1549,230 @@ Esta seção nos ensinou como recuperar implementações de interface usando Ser
 conjunto com provedores de serviço JPMS. Com essa técnica, podemos estruturar código que
 depende apenas de abstrações em vez de implementações.
 
+===================================================================================================================================
+===================================================================================================================================
+===================================================================================================================================
+Adicionando Quarkus a um Aplicativo Hexagonal modularizado
+
+Este capítulo expandirá nossos horizontes explorando os conceitos e tecnologias para transformar
+nosso aplicativo hexagonal em um nativo da nuvem. Para nos apoiar em nossa jornada para a nuvem, temos o Quarkus como
+nossa técnologia chave, que é uma proeminente estrutura nativa em nuvem Java. Para entender o Quarkus e
+aprender como alavancar seus recursos para aprimorar um sistema hexagonal, precisamos revisitar alguns
+conhecimentos fundamentais relacionados ao funcionamento interno da Java Virtual Machine (JVM). Ao
+entender as principais características da JVM e como elas funcionam, podemos entender melhor os problemas
+que o Quarkus pretende resolver.
+Neste capítulo, também faremos um breve tour pelos principais recursos do Quarkus para termos uma
+ideia do que podemos fazer com um software tão bom. Depois que estivermos familiarizados com o
+Quarkus, daremos o primeiro passo para transformar nosso sistema hexagonal em um nativo da nuvem.
+Para fazer isso, criaremos um módulo Java totalmente novo e configuraremos as dependências do Quarkus.
+Estes são os tópicos que abordaremos neste capítulo:
+• Revisitando a JVM
+• Apresentando o Quarkus
+• Adicionando Quarkus a uma aplicação hexagonal modularizada
+
+Ao final deste capítulo, você saberá como configurar o Quarkus para funcionar com um aplicativo hexagonal.
+Esse é o primeiro passo na preparação de um sistema para receber todos os recursos nativos da nuvem que o Quarkus tem a oferecer.
+
+=======================================
+Revisitando a JVM
+
+O conceito de Máquina Virtual (VM) não era algo novo quando Java chegou em 1995. Antes disso, muitas
+outras linguagens usavam VMs, embora elas não fossem tão populares entre os desenvolvedores. Os
+arquitetos Java decidiram usar VMs porque queriam um mecanismo para criar independência de
+plataforma para melhorar a produtividade do desenvolvedor.
+
+Antes de elaborar o conceito de VM, vamos primeiro verificar o que podemos executar dentro de uma
+VM para Java. Em linguagens como C ou C++, compilamos o código-fonte em código nativo adaptado
+para um sistema operacional específico e arquitetura de CPU. Ao programar em Java, compilamos o código-fonte em bytecode.
+
+A ideia da VM vem do conceito de executar programas em um ambiente intermediário ou virtual sobre
+uma máquina real. Em tal arranjo, o programa não precisa se comunicar diretamente com o sistema
+operacional subjacente – o programa lida apenas com uma VM. A VM então converte instruções de
+bytecode em instruções de código nativo.
+
+Podemos expressar uma das vantagens da JVM com um lema Java bem conhecido: escreva uma vez, execute em qualquer lugar.
+Antigamente, e acho que ainda hoje, era muito atraente usar uma linguagem que permitisse desenvolver
+software que, sem recompilação, pudesse rodar em diferentes sistemas operacionais e arquiteturas de
+CPU. Para outras linguagens como C++, você precisaria ajustar seu código para cada sistema operacional
+e arquitetura de CPU alvo, solicitando mais esforço para tornar seu programa compatível com diferentes
+plataformas.
+
+No mundo atual da computação em nuvem, temos serviços como Docker e Kubernetes que tornam as
+unidades de software mais portáteis do que nunca. Para atingir a portabilidade em Java, temos a
+prerrogativa de executar o mesmo bytecode compilado em diferentes JVMs em execução em diferentes
+sistemas operacionais e arquiteturas de CPU. A portabilidade é possível porque cada implementação de
+JVM deve estar em conformidade com a especificação de JVM, não importa onde ou como ela seja implementada.
+
+Por outro lado, podemos usar a virtualização de contêiner para atingir a portabilidade ao empacotar o software
+compilado com seu ambiente de tempo de execução e dependências em uma imagem de contêiner. Um mecanismo
+de contêiner em execução em diferentes sistemas operacionais e arquiteturas de CPU pode criar contêineres com base em imagens de coneiner.
+
+O apelo da JVM em fazer software portátil às custas da conversão de bytecode em código nativo não é
+mais atraente quando você tem alternativas mais rápidas e baratas. Hoje, você pode empacotar seu
+aplicativo – sem a necessidade de uma JVM e também recompilação – em uma imagem Docker e
+distribuí-la entre diferentes sistemas operacionais e arquiteturas de CPU. No entanto, não devemos
+esquecer o quão robusto e testado pelo tempo é um pedaço de software como a JVM. Retornaremos à
+nossa discussão sobre Docker e Kubernetes em breve, mas por enquanto, vamos examinar algumas características mais interessante.
+
+Outro aspecto importante da JVM está relacionado ao gerenciamento de memória. Com Java, um desenvolvedor
+não precisa se preocupar sobre como o programa lida com liberação e alocação de memória. Tal responsabilidade
+é transferida para a JVM, então o desenvolvedor pode se concentrar mais nos detalhes funcionais do programa
+do que nos técnicos. Pergunte a qualquer desenvolvedor C++ o quanto é divertido depurar vazamentos de memória em sistemas grandes.
+
+O recurso responsável por gerenciar a memória dentro da JVM é chamado de coletor de lixo. Sua finalidade é verificar
+automaticamente quando um objeto não é mais usado ou referenciado para que o programa possa liberar a memória
+não utilizada. Uma JVM pode usar algoritmos que rastreiam referências de objetos e marcam para liberar aqueles que
+não referenciam mais nenhum objeto. Existem diferentes algoritmos de coletor de lixo, como o Concurrent Mark and
+Sweep (CMS) e o Garbage First Garbage Collector (G1 GC). Desde o JDK7 Update 4, o G1 GC substituiu o CMS devido
+à sua ênfase em primeiro identificar e liberar as regiões de heap de objetos Java quase vazias, disponibilizando mais
+memória e fazendo isso mais rápido do que a abordagem do CMS.
+
+Não é necessário que coletores de lixo existam em todas as implementações de JVM, mas enquanto os recursos de
+memória continuarem sendo uma restrição na computação, frequentemente veremos implementações de JVM com coletores de lixo.
+
+A JVM também é responsável por todo o ciclo de vida de um aplicativo. Tudo começa com o carregamento de
+um arquivo de classe Java na VM. Quando compilamos um arquivo de origem Java, o compilador gera um
+arquivo de classe Java contendo bytecode. Bytecode é um formato reconhecível pela JVM. O objetivo principal
+de uma VM é carregar e processar esse bytecode por meio de algoritmos e estruturas de dados que implementam e respeitam uma especificação JVM.
+
+Tudo começa com o arquivo de código-fonte Java que é compilado em um arquivo de classe Java (bytecode)
+pelo compilador Java. Esse bytecode é lido pela JVM e traduzido em instruções que são entendidas pelo SO
+nativo.
+Essa questão do bytecode tem sido objeto de trabalho incansável por parte de pessoas que tentam encontrar maneiras mais
+rápidas de lidar com isso.
+
+Com o passar do tempo, a JVM recebeu boas melhorias e técnicas aprimoradas que melhoraram
+consideravelmente o desempenho do carregamento de bytecode. Entre essas técnicas, podemos citar Just-in-Time
+(JIT) e compilações Ahead-of-Time (AOT). Vamos examinar ambas.
+
+================
+Acelerando o desempenho do tempo de execução com compilação JIT
+
+Os compiladores JIT surgiram da ideia de que certas instruções de programa podem ser otimizadas
+para melhor desempenho enquanto um programa está em execução. Então, para realizar tal
+otimização, o compilador JIT busca instruções de programa com potencial para serem otimizadas.
+Em geral, essas instruções são as mais executadas pelo programa.
+
+Como essas instruções são executadas com tanta frequência, elas consomem uma quantidade significativa
+de tempo e recursos do computador. Lembre-se de que essas instruções estão no formato bytecode. Um
+compilador tradicional compilaria todo o bytecode em código nativo antes de executar o programa. Com
+um compilador JIT, as coisas são diferentes.
+
+Um compilador JIT seleciona, usando seus algoritmos de otimização dinâmica, algumas partes do bytecode.
+Então, ele compila e aplica otimizações a essas partes do bytecode. O resultado é um código nativo
+otimizado que é ajustado para fornecer melhor desempenho para o sistema. O termo JIT é usado porque
+as otimizações são feitas logo antes do código ser executado.
+
+No entanto, não existe almoço grátis ao usar compiladores JIT. Uma das desvantagens mais conhecidas
+dos compiladores JIT é o aumento do tempo de inicialização de um aplicativo devido às otimizações
+iniciais que um compilador JIT faz antes de executar o programa. Para superar esse problema de
+inicialização, há outra técnica chamada compilação AOT. Vários frameworks nativos da nuvem, incluindo
+Quarkus, usaram essa técnica. Vamos ver como a compilação AOT funciona.
+
+=====================
+Melhorando o tempo de inicialização com compilação AOT
+
+AOT é tão atraente no cenário Java porque os sistemas Java tradicionais – principalmente aqueles baseados
+em servidores de aplicativos corporativos como JBoss e WebLogic – levam muito tempo para iniciar. Além
+dos tempos de inicialização mais lentos, temos que considerar a quantidade de poder de computação que esses servidores de aplicação
+consomem. Essas características são um obstáculo para qualquer um que queira migrar cargas de
+trabalho Java para a nuvem, onde instâncias e Pods do Kubernetes são trazidos para cima e para baixo
+freneticamente. Então, ao empregar AOT em Java, desistimos da capacidade multiplataforma fornecida
+pela JVM e seu bytecode para um melhor desempenho fornecido pela AOT e seu código nativo. O problema multiplataforma é
+mitigado até certo ponto com o uso de tecnologias de contêiner, como Docker e Kubernetes.
+
+Nem tudo é uma vantagem com AOT em Java. Um compilador AOT gasta mais tempo gerando um binário nativo
+do que um compilador Java precisa para criar classes de bytecode. Portanto, a compilação AOT pode ter um
+impacto considerável nos pipelines de Integração Contínua (CI). Além disso, o desenvolvedor precisa fazer algumas
+até certo ponto com o uso de tecnologias de contêiner, como Docker e Kubernetes.
+trabalho adicional para fazer as coisas funcionarem corretamente para usar reflexão. GraalVM é o compilador
+AOT usado para fornecer um binário nativo para Java e outras linguagens baseadas em JVM.
+
+Com o Quarkus, temos a prerrogativa de criar aplicativos usando métodos de compilação JIT ou AOT. Cabe a nós
+decidir qual técnica atende melhor às nossas necessidades.
+
+Nesta seção, ganhamos algum conhecimento de fundo sobre o funcionamento interno da JVM e
+como ela tenta melhorar o carregamento de bytecode com compilação JIT e AOT. Esse conhecimento
+é importante para entender como o Quarkus funciona por baixo dos panos e obtém melhorias consideráveis de desempenho.
+
+Agora que estamos familiarizados com alguns fundamentos da JVM e técnicas essenciais de compilação, vamos
+nos aprofundar e aprender mais sobre os principais recursos do Quarkus.
+
+===============================
+Apresentando Quarkus
+
+Se você desenvolve aplicações Java corporativas, você já trabalhou com Spring Boot. Testado
+pelo tempo e amplamente usado na indústria, Spring Boot é um software robusto com uma comunidade vibrante.
+Suas bibliotecas aumentam a produtividade desenvolvida ao fornecer soluções prontas para uso para
+segurança, persistência, APIs e muitas outras coisas que um aplicativo empresarial típico requer. Você pode
+se perguntar por que este livro não discute o Spring Boot, mas o Quarkus. Há dois motivos. Primeiro, há mais
+material disponível cobrindo o Spring Boot do que o Quarkus, o que é compreensível, pois o Spring Boot
+existe há mais tempo e tem uma comunidade maior. O segundo motivo é que o Quarkus foi construído com
+desenvolvimento nativo da nuvem em seu núcleo, enquanto o Spring Boot foi adaptado a ele. E como este
+livro se concentra no desenvolvimento nativo da nuvem com arquitetura hexagonal, o Quarkus foi escolhido
+porque é um framework que prioriza a nuvem.
+
+Focado em desempenho, o Quarkus vem com suporte integrado para executáveis nativos baseados no
+GraalVM, possibilitando tempos de inicialização rápidos.
+
+Para atrair desenvolvedores, ele oferece coisas valiosas, como desenvolvimento ao vivo, um recurso
+que aumenta a produtividade ao evitar a necessidade de reiniciar um aplicativo sempre que algo muda no seu código.
+
+Visando ambientes nativos da nuvem, o Quarkus vem equipado com as ferramentas adequadas, permitindo
+que você lide com restrições e aproveite os benefícios que vêm ao desenvolver software para execução em
+ambientes baseados em contêineres, como o Kubernetes.
+
+Tomando emprestadas boas ideias do desenvolvimento empresarial, o Quarkus é construído
+sobre padrões bem estabelecidos, como a estrutura Contexts and Dependency Injection (CDI),
+a especificação Jakarta Persistence API (JPA) com implementação Hibernate ORM e os Jakarta RESTful Web Service
+(JAX-RS) especificação implementada pelo RESTEasy. Para aqueles imersos no Java Enterprise Edition
+(EE) mundo, isso significa que a curva de aprendizado para dominar o Quarkus é superficial porque muito do
+conhecimento de desenvolvimento empresarial já adquirido pode ser reutilizado para desenvolver aplicativos Quarkus.
+
+Criado pela Red Hat, o Quarkus se diferencia de seus concorrentes por ser um framework de desenvolvimento
+de software projetado do zero para lidar com tecnologias de nuvem. Ao contrário de outros frameworks mais
+antigos que trazem código boilerplate e recursos de uma era mais antiga, o Quarkus se apresenta como um
+software novo e moderno.
+
+Construído sobre outros projetos de código aberto bem estabelecidos, Quarkus é a estrutura nativa da nuvem
+que usaremos para preparar nosso sistema hexagonal para a nuvem. Antes disso, porém, exploraremos alguns dos principais
+recursos que este framework fornece. Vamos começar olhando primeiro como criar endpoints REST com
+Quarkus.
+
+======================
+Criando endpoints REST com JAX-RS
+
+É muito simples criar endpoints REST usando Quarkus. Para fazer isso, o framework depende de
+uma implementação JAX-RS chamada RESTEasy. Essa implementação está disponível na seguinte
+dependência Maven:
+<dependency>
+    <groupId>io.quarkus</groupId>
+    <artifactId>quarkus-resteasy</artifactId>
+</dependency>
+
+Veja o exemplo a seguir, que mostra como usar RESTEasy para criar serviços REST:
+package dev.davivieira.bootstrap.samples;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+@Path("/app")
+public class RestExample {
+@GET
+@Path("/simple-rest")
+@Produces(MediaType.TEXT_PLAIN)
+public String simpleRest() {
+    return "This REST endpoint is provided by Quarkus";
+    }
+}
+
+Definimos o endereço do endpoint com a anotação @Path . Com @GET, definimos o método
+HTTP suportado por esse endpoint. Com @Produces, definimos o tipo de retorno para a solicitação.
+Nesta mesma classe RestExample , podemos injetar dependências para serem usadas junto
+com os endpoints REST. Vamos ver como fazer isso.
+
+
+
 
 
 
