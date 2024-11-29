@@ -29,11 +29,5 @@ public class    RestExample {
     public String simpleRest() {
         return "This REST endpoint is provided by Quarkus";
     }
-
-    @GET
-    @Path("/simple-bean")
-    @Produces(MediaType.TEXT_PLAIN)
-    public String simpleBean() {
-        return beanExample.simpleBean();
-    }
+    
 }
