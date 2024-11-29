@@ -1751,7 +1751,7 @@ dependência Maven:
 </dependency>
 
 Veja o exemplo a seguir, que mostra como usar RESTEasy para criar serviços REST:
-package dev.davivieira.bootstrap.samples;
+package dev.hugodesouzacaramez.bootstrap.samples;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -1771,8 +1771,59 @@ HTTP suportado por esse endpoint. Com @Produces, definimos o tipo de retorno par
 Nesta mesma classe RestExample , podemos injetar dependências para serem usadas junto
 com os endpoints REST. Vamos ver como fazer isso.
 
+=================================
+Empregando injeção de dependência com Quarkus DI
 
+O Quarkus tem seu próprio mecanismo de injeção de dependência baseado no Quarkus ArC, que, por
+sua vez, vem da especificação CDI, que tem suas raízes no Java EE 6. Com o CDI, não precisamos
+mais controlar a criação e o ciclo de vida dos objetos de dependência que fornecemos a um sistema.
+Sem uma estrutura de injeção de dependência, você tem que criar objetos desta forma:
+BeanExample beanExample = new BeanExample();
 
+Ao usar CDI, você só precisa anotar o atributo class com a anotação @Inject , assim:
+@Inject
+BeanExample beanExample
+
+Para que a anotação @Inject funcione, primeiro precisamos declarar a dependência como um bean gerenciado.
+Veja o exemplo aqui:
+package dev.hugodesouzacaramez.bootstrap.samples;
+import javax.enterprise.context.ApplicationScoped;
+import javax.validation.Valid;
+@ApplicationScoped
+public class BeanExample {
+public String simpleBean() {
+    return "This is a simple bean";
+    }
+}
+
+A anotação @ApplicationScoped afirma que esse bean estará disponível enquanto o aplicativo não
+for encerrado. Além disso, esse bean é acessível a partir de diferentes solicitações e chamadas
+em todo o sistema. Vamos atualizar nosso RestExample para injetar esse bean, como segue:
+package dev.hugodesouzacaramez.bootstrap.samples;
+import javax.inject.Inject;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+@Path("/app")
+public class RestExample {
+    @Inject
+    BeanExample beanExample;
+    /** Code omitted **/
+    @GET
+    @Path("/simple-bean")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String simpleBean() {
+        return beanExample.simpleBean();
+        }
+}
+
+Logo no topo, injetamos a dependência BeanExample com a anotação @Inject . Então,
+chamamos o método simpleBean da dependência BeanExample injetada .
+
+A seguir, vamos ver como validar objetos que são criados quando o sistema recebe uma solicitação HTTP.
+
+===========================
 
 
 
