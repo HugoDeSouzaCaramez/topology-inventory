@@ -2163,6 +2163,160 @@ Capítulo 13, Persistindo Dados com Adaptadores de Saída e Hibernate Reactive.
 Vamos agora ver como integrar o Quarkus ao sistema hexagonal.
 
 ===========================================
+Adicionando Quarkus a uma aplicação hexagonal modularizada
+
+Para recapitular, estruturamos o sistema de topologia e inventário em três hexágonos
+modularizados: Domínio, Aplicação e Framework. Uma questão que pode surgir é: qual módulo
+deve ser responsável por iniciar o mecanismo Quarkus? Bem, para evitar confundir as
+responsabilidades de cada módulo no sistema de topologia e inventário, criaremos um módulo
+dedicado cujo único propósito é agregar os outros módulos do sistema hexagonal e inicializar
+o mecanismo Quarkus. Chamaremos esse novo módulo de Bootstrap.
+
+O módulo bootstrap é um módulo agregador que fornece, de um lado, as dependências
+necessárias para inicializar o Quarkus e, do outro lado, as dependências do módulo
+hexagonal para uso em conjunto com o Quarkus.
+
+Vamos criar este novo módulo bootstrap no sistema de topologia e inventário, como segue:
+1. No projeto raiz Maven do sistema de topologia e inventário, você pode executar o seguinte Comando Maven para criar este módulo bootstrap :
+   mvn archetype:generate \
+   -DarchetypeGroupId=de.rieckpil.archetypes \
+   -DarchetypeArtifactId=testing-toolkit \
+   -DarchetypeVersion=1.0.0 \
+   -DgroupId=dev.hugodesouzacaramez \
+   -DartifactId=bootstrap \
+   -Dversion=1.0-SNAPSHOT \
+   -Dpackage=dev.hugodesouzacaramez.topologyinventory.bootstrap \
+   -DinteractiveMode=false
+
+Este comando Maven cria uma estrutura de diretório básica para o módulo bootstrap .
+Definimos artifactId para bootstrap e groupId para dev.hugodesouzacaramez, pois este módulo é
+parte do mesmo projeto Maven que contém os módulos para outros hexágonos de
+topologia e sistema de inventário.
+
+2. Em seguida, precisamos configurar as dependências do Quarkus no arquivo pom.xml raiz do projeto , da seguinte maneira:
+   <dependencyManagement>
+   <dependencies>
+   <dependency>
+   <groupId>io.quarkus</groupId>
+   <artifactId>quarkus-universe-bom</artifactId>
+   <version>${quarkus.platform.version}</version>
+   <type>pom</type>
+   <scope>import</scope>
+   </dependency>
+   </dependencyManagement>
+
+A dependência quarkus-universe-bom torna todas as extensões do Quarkus disponíveis.
+Como estamos trabalhando com um aplicativo multimódulo, precisamos configurar o Quarkus para descobrir
+beans CDI em módulos diferentes.
+
+3. Então, precisamos configurar o jandex-maven-plugin no pom.xml raiz do projeto no arquivo Maven:
+   <plugin>
+   <groupId>org.jboss.jandex</groupId>
+   <artifactId>jandex-maven-plugin</artifactId>
+   <version>${jandex.version}</version>
+   <executions>
+   <execution>
+   <id>make-index</id>
+   <goals>
+   <goal>jandex</goal>
+   </goals>
+   </execution>
+   </executions>
+   </plugin>
+
+Sem o plugin anterior, teríamos um problema ao configurar e usar beans
+CDI nos hexágonos Framework e Application.
+
+4. Agora vem a parte mais crucial – a configuração do quarkus-maven-plugin. Para fazer o módulo
+   bootstrap ser aquele que iniciará o mecanismo Quarkus, precisamos configurar o quarkusmaven-plugin naquele módulo corretamente.
+   Veja como devemos configurar o quarkus-maven-plugin em bootstrap/pom.xml:
+   
+   <dependency>
+   <groupId>dev.hugodesouzacaramez</groupId>
+   <artifactId>domain</artifactId>
+   </dependency>
+   <dependency>
+   <groupId>dev.hugodesouzacaramez</groupId>
+   <artifactId>application</artifactId>
+   </dependency>
+   <dependency>
+   <groupId>dev.hugodesouzacaramez</groupId>
+     <artifactId>framework</artifactId>
+    </dependency>
+
+A parte importante aqui é a linha que contém <goal>build</goal>. Ao definir essa
+meta de build para o módulo bootstrap , tornamos esse módulo responsável por
+iniciar o mecanismo Quarkus.
+
+5. Em seguida, precisamos adicionar as dependências do Maven dos hexágonos do sistema de
+   topologia e inventário. Fazemos isso no arquivo bootstrap/pom.xml , como segue:
+   <dependency>
+   <groupId>dev.davivieira</groupId>
+   <artifactId>domain</artifactId>
+   </dependency>
+   <dependency>
+   <groupId>dev.davivieira</groupId>
+   <artifactId>application</artifactId>
+   </dependency>
+   <dependency>
+   <groupId>dev.davivieira</groupId>
+   <artifactId>framework</artifactId>
+   </dependency>
+
+6. E finalmente, criamos um descritor de módulo Java module-info.java com os requisitos
+   diretivas para Quarkus e os módulos hexagonais de topologia e inventário, como segue:
+   module dev.davivieira.bootstrap {
+   requires quarkus.core;
+   requires domain;
+   requires application;
+   requires framework;
+   }
 
 
+Para agregar os três módulos hexagon em uma unidade de implantação, configuraremos o Quarkus
+para gerar um arquivo uber .jar . Esse tipo de JAR agrupa todas as dependências necessárias para
+executar um aplicativo em um único JAR. Para fazer isso, precisamos definir a seguinte configuração no
+arquivo pom.xml raiz do projeto :
+<quarkus.package.type>uber-jar</quarkus.package.type>
 
+Então, estamos prontos para compilar o aplicativo executando o seguinte comando Maven:
+mvn clean package
+
+Este comando Maven compilará o aplicativo inteiro e criará um arquivo .jar que
+podemos usar para iniciar o aplicativo executando o seguinte comando:
+java -jar bootstrap/target/bootstrap-1.0-SNAPSHOT-runner.jar
+
+Note que o artefato que usamos é gerado a partir do módulo bootstrap , que agrega todos os
+outros módulos.
+
+O aplicativo visto na captura de tela anterior está sendo executado no perfil prod . Nesse perfil, alguns
+recursos são desativados por motivos de segurança. Também podemos ver os recursos instalados
+em execução no aplicativo. Esses recursos são ativados quando adicionamos dependências de extensão Quarkus em pom.xml
+
+O módulo bootstrap atua como uma ponte, permitindo-nos conectar o framework de desenvolvimento
+externo aos módulos hexagon que compõem o sistema hexagonal. Para a aplicação de topologia e
+inventário, usamos o Quarkus, mas também poderíamos usar outros frameworks de desenvolvimento.
+Não podemos dizer que estamos desacoplando totalmente a lógica do sistema do framework de
+desenvolvimento; afinal, haverá alguma lógica do sistema que se beneficia dos recursos do framework.
+No entanto, a abordagem apresentada neste capítulo mostra que parte desse sistema pode ser desenvolvida primeiro e a framework de desenvolvimento introduzido depois.
+
+=================================
+Resumo
+
+Neste capítulo, revisitamos os fundamentos da JVM, avaliando alguns de seus recursos relacionados à
+compilação JIT e à compilação AOT. Aprendemos que o JIT melhora o desempenho do tempo de execução,
+enquanto o AOT ajuda a impulsionar o tempo de inicialização do aplicativo, o que prova ser um recurso
+essencial para frameworks que visam ambientes de nuvem, como neste caso com o Quarkus.
+
+Depois de nos familiarizarmos com alguns conceitos de JVM, passamos a aprender sobre o Quarkus e
+alguns recursos importantes que ele oferece. Finalmente, integramos o Quarkus em nossa topologia e
+inventário de sistema hexagonal já desenvolvidos. Para realizar tal integração, criamos um novo modulo bootstrap
+para atuar como uma ponte entre os módulos do sistema hexagonal e o framework de desenvolvimento.
+Agora sabemos o que é preciso para integrar o Quarkus em um aplicativo hexagonal modularizado.
+
+No próximo capítulo, nos aprofundaremos na integração entre o Quarkus e a arquitetura hexagonal.
+Aprenderemos como refatorar casos de uso e portas do hexágono de aplicativos para aproveitar os recursos
+do Quarkus DI.
+
+================================
+================================

@@ -9,3 +9,7 @@ framework - BDD (TDD) - Cucumber, JUnit, testes de casos de uso
 
 Lembre-se de que o roteador é um agregado (um cluster de objetos de domínio) que controla o
 ciclo de vida de outras entidades e objetos de valor, incluindo objetos do tipo Switch.
+
+O módulo bootstrap é um módulo agregador que fornece, de um lado, as dependências
+necessárias para inicializar o Quarkus e, do outro lado, as dependências do módulo
+hexagonal para uso em conjunto com o Quarkus.
