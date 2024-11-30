@@ -2819,3 +2819,157 @@ os mecanismos Quarkus CDI em nossa aplicação hexagonal.
 Agora, vamos aprender como adaptar o sistema hexagonal para simular e usar beans gerenciados durante os testes.
 
 =========================================
+Testando casos de uso com Quarkus e Cucumber
+
+Ao implementar o Application hexagon no Capítulo 7, Construindo o Application Hexagon, usamos o Cucumber
+para nos ajudar a moldar e testar nossos casos de uso. Ao alavancar as técnicas de design orientadas a
+comportamento fornecidas pelo Cucumber, pudemos expressar casos de uso de forma declarativa. Agora,
+precisamos integrar o Cucumber para que ele funcione com o Quarkus:
+
+1. O primeiro passo é adicionar as dependências de teste do Quarkus ao arquivo pom.xml
+   do hexágono Application:
+   <dependency>
+   <groupId>io.quarkiverse.cucumber</groupId>
+   <artifactId>quarkus-cucumber</artifactId>
+   <version>1.0 .0</version>
+   <scope>test</scope>
+   </dependency>
+   <dependency>
+   <groupId>io.quarkus</groupId>
+   <artifactId>quarkus-junit5</artifactId>
+   <scope>test</scope>
+   </dependency>
+
+A dependência quarkus-cucumber fornece a integração que precisamos para executar testes com o
+Quarkus. Também precisamos da dependência quarkus-junit5 , que nos permite usar a anotação
+@QuarkusTest.
+
+2. Em seguida, devemos adicionar as dependências necessárias do Cucumber:
+
+<dependency>
+ <groupId>io.cucumber</groupId>
+ <artifactId>cucumber-java</artifactId>
+ <version>${cucumber.version}</version>
+ <scope>test</scope>
+</dependency>
+<dependency>
+ <groupId>io.cucumber</groupId>
+ <artifactId>cucumber-junit</artifactId>
+ <version>${cucumber.version}</version>
+ <scope>test</scope>
+</dependency>
+<dependency>
+ <groupId>io.cucumber</groupId>
+ <artifactId>cucumber-picocontainer</artifactId>
+ <version>${cucumber.version}</version>
+ <scope>test</scope>
+</dependency>
+
+Com as dependências cucumber-java, cucumber-junit e cucumber-picocontainer ,
+podemos habilitar o mecanismo Cucumber no sistema.
+
+Vamos ver como o Cucumber é configurado sem o Quarkus:
+
+package dev.hugodesouzacaramez.topologyinventory.application;
+import io.cucumber.junit.Cucumber;
+import io.cucumber.junit.CucumberOptions;
+import org.junit.runner.RunWith;
+@RunWith(Cucumber.class)
+@CucumberOptions(
+plugin = {"pretty", "html:target/cucumber-result"}
+)
+public class ApplicationTest {
+}
+
+A anotação @RunWith(Cucumber.class) é usada para ativar o mecanismo Cucumber.
+Ao usar Quarkus, é assim que ApplicationTest deve ser implementado:
+
+package dev.hugodesouzacaramez.topologyinventory.application;
+import io.quarkiverse.cucumber.CucumberQuarkusTest;
+import io.quarkus.test.junit.QuarkusTest;
+@QuarkusTest
+public class ApplicationTest extends CucumberQuarkusTest {
+}
+
+As anotações @QuarkusTest ativam o mecanismo de teste Quarkus. Ao estender a classe
+CucumberQuarkusTest , também habilitamos o mecanismo de teste Cucumber.
+
+Não há testes na classe ApplicationTest porque esta é apenas uma classe bootstrap. Lembre-se de
+que os testes do Cucumber foram implementados em classes separadas. Antes de alterar essas
+classes, precisamos simular os managed beans que são necessários para fornecer instâncias
+para RouterManagementOutputPort e SwitchManagementOutputPort.
+
+Vamos criar um objeto bean simulado para RouterManagementOutputPort:
+
+package dev.hugodesouzacaramez.topologyinventory.application.mocks;
+import dev.hugodesouzacaramez.topologyinventory.applica
+tion.ports.output.RouterManagementOutputPort;
+import dev.hugodesouzacaramez.topologyinventory.domain.en
+tity.Router;
+import dev.hugodesouzacaramez.topologyinventory.domain.vo.Id;
+import io.quarkus.test.Mock;
+@Mock
+public class RouterManagementOutputPortMock implements
+RouterManagementOutputPort {
+@Override
+public Router retrieveRouter(Id id) {
+return null;
+}
+@Override
+public Router removeRouter(Id id) {
+return null;
+}
+@Override
+public Router persistRouter(Router router) {
+return null;
+}
+}
+
+Este é um mocked bean fictício que criamos para evitar que o Quarkus lance
+Unsatis - fiedResolutionException. Ao usar a anotação @Mock , o Quarkus instanciará
+a classe RouterManagementOutputPortMock e a servirá como um bean a ser injetado durante os testes.
+
+Da mesma forma, faremos mock de SwitchManagementOutputPort:
+
+package dev.hugodesouzacaramez.topologyinventory.application.mocks;
+
+import dev.hugodesouzacaramez.topologyinventory.application.ports.output.SwitchManagementOutputPort;
+import dev.hugodesouzacaramez.topologyinventory.domain.entity.Switch;
+import dev.hugodesouzacaramez.topologyinventory.domain.vo.Id;
+import io.quarkus.test.Mock;
+
+@Mock
+public class SwitchManagementOutputPortMock implements SwitchManagementOutputPort {
+@Override
+public Switch retrieveSwitch(Id id) {
+return null;
+}
+}
+
+Para SwitchManagementOutputPort, criamos SwitchManagementOutputPortMock para
+fornecer um bean gerenciado fictício para que o Quarkus possa usá-lo para injeção durante os testes.
+Sem simulações, precisaríamos de instâncias reais dos adaptadores de saída
+RouterManagementH2Adapter e SwitchManagementH2Adapter.
+
+Embora não façamos referência direta a interfaces de saída e adaptadores de porta de saída durante os
+testes, o Quarkus ainda tenta executar a descoberta de bean neles. É por isso que precisamos fornecer os mocks.
+
+Agora, podemos refatorar os testes para usar a injeção de dependência fornecida pelo Quarkus DI. Vamos
+aprender como fazer isso no teste RouterAdd:
+
+public class RouterAdd extends ApplicationTestData {
+    @Inject
+    RouterManagementUseCase routerManagementUseCase;
+    /** Code omitted **/
+}
+
+Antes de usar o Quarkus DI, foi assim que obtivemos a implementação para RouterManagementUseCase:
+
+this.routerManagementUseCase = new RouterManagementInputPort();
+
+O código anterior pode ser removido depois que a anotação @Inject for implementada.
+
+Podemos seguir a mesma abordagem de adicionar a anotação @Inject e remover a chamada do
+construtor para instanciar objetos de porta de entrada ao refatorar outras classes de teste.
+
+

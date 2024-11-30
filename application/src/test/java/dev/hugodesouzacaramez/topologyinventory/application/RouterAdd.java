@@ -14,21 +14,6 @@ import static dev.hugodesouzacaramez.topologyinventory.domain.vo.RouterType.EDGE
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-
-import dev.hugodesouzacaramez.topologyinventory.domain.entity.CoreRouter;
-import dev.hugodesouzacaramez.topologyinventory.domain.entity.EdgeRouter;
-import dev.hugodesouzacaramez.topologyinventory.domain.vo.IP;
-import dev.hugodesouzacaramez.topologyinventory.domain.vo.Model;
-import dev.hugodesouzacaramez.topologyinventory.domain.vo.Vendor;
-import io.cucumber.java.en.And;
-import io.cucumber.java.en.Given;
-import io.cucumber.java.en.Then;
-
-import static dev.hugodesouzacaramez.topologyinventory.domain.vo.RouterType.CORE;
-import static dev.hugodesouzacaramez.topologyinventory.domain.vo.RouterType.EDGE;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 public class RouterAdd extends ApplicationTestData {
 
     CoreRouter anotherCoreRouter;
