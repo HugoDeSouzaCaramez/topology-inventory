@@ -2350,3 +2350,151 @@ Os seguintes tópicos serão abordados neste capítulo:
 Ao final deste capítulo, você saberá como integrar o Quarkus DI em um aplicativo hexagonal, transformando
 casos de uso e portas em beans gerenciados que podem ser injetados no sistema hexagonal.
 Você também saberá como testar casos de uso usando o Quarkus em conjunto com o Cucumber.
+
+==================================================================
+Aprendendo sobre Quarkus DI
+
+Quarkus DI é a solução de injeção de dependência fornecida pelo framework Quarkus. Esta solução,
+também chamada ArC, é baseada no CDI para a especificação Java 2.0. O Quarkus DI não implementa
+completamente tal especificação. Em vez disso, ele fornece algumas implementações personalizadas e
+alteradas que são mais inclinadas para os objetivos do projeto Quarkus. No entanto, essas mudanças são
+mais visíveis quando você se aprofunda no que o Quarkus DI fornece. Para aqueles que trabalham apenas
+com os recursos básicos e mais recorrentes descritos no CDI para a especificação Java 2.0, a experiência
+do Quarkus DI é semelhante a outras implementações de CDI.
+
+A vantagem que obtemos ao usar o Quarkus DI ou qualquer solução de injeção de dependência é que
+podemos focar mais nos aspectos de negócios do software que estamos desenvolvendo, em vez das
+atividades de encanamento relacionadas ao provisionamento e controle do ciclo de vida dos objetos que
+o aplicativo precisa para fornecer seus recursos. Para habilitar tal vantagem, o Quarkus DI lida com os chamados beans.
+
+=============================
+Trabalhando com feijões (beans)
+
+Beans são tipos especiais de objetos que podemos usar para injetar dependências ou que agem como
+dependências para serem injetadas em outros beans. Essa atividade de injeção ocorre em um ambiente gerenciado por contêiner.
+Este ambiente nada mais é do que o ambiente de execução no qual o aplicativo é executado.
+
+Beans têm um contexto que influencia quando e como seus objetos de instância são criados. A seguir estão
+os principais contextos suportados pelo Quarkus DI:
+• ApplicationScoped: Um bean marcado com tal contexto está disponível para todo o aplicativo. Apenas
+uma instância de bean é criada e compartilhada entre todas as áreas do sistema que injetam esse
+bean. Outro aspecto importante é que os beans ApplicationScoped são carregados preguiçosamente.
+Isso significa que a instância do bean é criada somente quando o método de um bean é chamado
+pela primeira vez. Dê uma olhada neste exemplo:
+@ApplicationScoped
+class MyBean {
+    public String name = "Test Bean";
+    public String getName(){
+        return name;
+    }
+}
+class Consumer {
+    @Inject
+    MyBean myBean;
+    public String getName() {
+        return myBean.getName();
+    }
+}
+
+A classe MyBean está disponível não apenas para a classe Consumer , mas também para outras classes
+que injetam o bean. A instância do bean será criada apenas uma vez quando myBean.getName() for
+chamado pela primeira vez.
+
+• Singleton: Semelhante aos beans ApplicationScoped , para os beans Singleton , apenas um
+objeto bean é criado e compartilhado no sistema. A única diferença, no entanto, é que o Singleton
+beans são carregados avidamente. Isso significa que, uma vez que o sistema é iniciado, a instância
+do bean Singleton também é iniciada. Aqui está o código que exemplifica isso:
+@Singleton
+class EagerBean { ... }
+
+class Consumer {
+    @Inject
+    EagerBean eagerBean;
+}
+
+O objeto EagerBean será criado durante a inicialização do sistema.
+
+• RequestScoped: Normalmente marcamos um bean como RequestScope quando queremos
+tornar esse bean disponível apenas enquanto a solicitação associada a esse bean estiver
+ativa. A seguir, um exemplo de como podemos usar RequestScope:
+
+@RequestScoped
+class RequestData {
+    public String getResponse(){
+        return "string response";
+    }
+}
+
+@Path("/")
+class Consumer {
+    @Inject
+    RequestData requestData;
+    @GET
+    @Path("/request")
+    public String loadRequest(){
+        return requestData.getResponse();
+    }
+}
+
+Toda vez que uma solicitação chega em /request, um novo objeto bean RequestData será
+criado e destruído assim que a solicitação for concluída.
+
+• Dependent: Beans marcados como Dependent têm seu escopo restrito aos lugares onde
+são usados. Então, beans Dependent não são compartilhados entre outros beans no
+sistema. Além disso, seu ciclo de vida é o mesmo que o definido no bean que os injeta.
+Por exemplo, se você injetar um bean com anotação Dependent em um bean
+RequestScoped , o bean anterior usa o escopo do último:
+@Dependent
+class DependentBean { ... }
+
+@ApplicationScoped
+class ConsumerApplication {
+    @Inject
+    DependentBean dependentBean;
+}
+
+@RequestScoped
+class ConsumerRequest {
+    @Inject
+    DependentBean dependentBean;
+}
+
+A classe DependentBean se tornará ApplicationScoped quando injetada em
+ConsumerApplication e RequestScoped em ConsumerRequest.
+
+• SessionScoped: Usamos esse escopo para compartilhar o contexto do bean entre todas as
+requisições da mesma sessão HTTP. Precisamos da extensão quarkus-undertow para habilitar o SessionScoped
+sobre Quarkus:
+@SessionScoped
+class SessionBean implements Serializable {
+    public String getSessionData(){
+        return "sessionData";
+    }
+}
+
+@Path("/")
+class Consumer {
+    @Inject
+    SessionBean sessionBean;
+    @GET
+    @Path("/sessionData")
+    public String test(){
+        return sessionBean.getSessionData();
+    }
+}
+
+No exemplo anterior, uma instância SessionBean será criada após a primeira solicitação ser enviada
+para /sessionData. Essa mesma instância estará disponível para outras solicitações vindas da mesma
+sessão.
+
+Para resumir, o Quarkus oferece os seguintes escopos de bean: ApplicationScoped, RequestScoped, Singleton,
+Dependent e SessionScoped. Para aplicativos sem estado, na maioria das vezes, você pode precisar apenas de
+ApplicationScoped e RequestScoped. Ao entender como esses escopos funcionam, podemos selecioná-los de
+acordo com as necessidades do nosso sistema.
+
+Agora que conhecemos as vantagens do Quarkus DI e os princípios básicos de como ele funciona, vamos aprender como
+empregar técnicas de injeção de dependência com as portas e casos de uso da arquitetura hexagonal.
+
+=======================
+
+
