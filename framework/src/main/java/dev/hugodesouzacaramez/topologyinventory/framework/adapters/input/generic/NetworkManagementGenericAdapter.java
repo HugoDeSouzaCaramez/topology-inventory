@@ -5,17 +5,16 @@ import dev.hugodesouzacaramez.topologyinventory.application.usecases.SwitchManag
 import dev.hugodesouzacaramez.topologyinventory.domain.entity.Switch;
 import dev.hugodesouzacaramez.topologyinventory.domain.vo.Id;
 import dev.hugodesouzacaramez.topologyinventory.domain.vo.Network;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
+@ApplicationScoped
 public class NetworkManagementGenericAdapter {
 
+    @Inject
     private SwitchManagementUseCase switchManagementUseCase;
+    @Inject
     private NetworkManagementUseCase networkManagementUseCase;
-
-    public NetworkManagementGenericAdapter(
-            SwitchManagementUseCase switchManagementUseCase, NetworkManagementUseCase networkManagementUseCase) {
-        this.switchManagementUseCase = switchManagementUseCase;
-        this.networkManagementUseCase = networkManagementUseCase;
-    }
 
     /**
      * POST /network/add

@@ -2724,3 +2724,98 @@ A próxima seção é sobre as operações relacionadas ao gerenciamento de rede
 devemos alterá-las.
 
 ============================
+Implementando CDI para classes e interfaces de gerenciamento de rede
+
+Temos menos coisas para mudar na parte de rede porque não criamos uma porta de saída específica
+e adaptador para as operações relacionadas à rede. Então, as mudanças de implementação só ocorrerão
+nos casos de uso, portas de entrada e adaptadores de entrada:
+
+1. Vamos começar analisando a interface do caso de uso NetworkManagementUseCase:
+   public interface NetworkManagementUseCase {
+       void setOutputPort(
+       RouterManagementOutputPort
+       routerNetworkOutputPort);
+       /** Code omitted **/
+   }
+
+Como fizemos nos outros casos de uso, também definimos o método setOutputPort para permitir a
+inicialização do RouterManagementOutputPort. Após implementar o Quarkus DI, esse método não
+será mais necessário.
+
+2. É assim que o NetworkManagementInputPort é implementado sem o Quarkus DI:
+   import jakarta.enterprise.context.ApplicationScoped;
+   import jakarta.inject.Inject;
+   public class NetworkManagementInputPort implements
+   NetworkManagementUseCase {
+   private RouterManagementOutputPort
+   routerManagementOutputPort;
+   @Override
+   public void setOutputPort(
+   RouterManagementOutputPort
+   routerManagementOutputPort) {
+   this.routerManagementOutputPort =
+   routerManagementOutputPort;
+   }
+   /** Code omitted **/
+   }
+
+A porta de entrada NetworkManagementInputPort depende apenas de
+RouterManagementOutputPort , que, sem injeção de dependência, é inicializada pelo
+método setOutputPort.
+
+3. É assim que o NetworkManagementInputPort se parece após a implementação do Quarkus DI:
+   @ApplicationScoped
+   public class NetworkManagementInputPort implements
+   NetworkManagementUseCase {
+   @Inject
+   private RouterManagementOutputPort
+   routerManagementOutputPort;
+   /** Code omitted **/
+   }
+
+Como você pode ver, o método setOutputPort foi removido. O Quarkus DI agora está
+fornecendo uma implementação para RouterManagementOutputPort por meio da anotação @Inject.
+A anotação @ApplicationScoped converte NetworkManagementInputPort em um bean
+gerenciado.
+
+4. Por fim, temos que alterar o adaptador de entrada NetworkManagementGenericAdapter:
+   
+   import jakarta.enterprise.context.ApplicationScoped;
+   import jakarta.inject.Inject;
+   @ApplicationScoped
+   public class NetworkManagementGenericAdapter {
+   @Inject
+   private SwitchManagementUseCase
+   switchManagementUseCase;
+   @Inject
+   private NetworkManagementUseCase
+   networkManagementUseCase;
+   /** Code omitted **/
+   }
+
+O adaptador de entrada NetworkManagementGenericAdapter depende dos casos de uso
+SwitchManagementUseCase e NetworkManagementUseCase para disparar operações
+relacionadas à rede no sistema. Como fizemos nas implementações anteriores, aqui,
+estamos usando @Inject para fornecer as dependências em tempo de execução.
+
+O código a seguir mostra como essas dependências eram fornecidas antes do Quarkus DI:
+
+public NetworkManagementGenericAdapter(
+SwitchManagementUseCase switchManagementUseCase, Net
+workManagementUseCase networkManagementUseCase) {
+    this.switchManagementUseCase =
+    switchManagementUseCase;
+    this.networkManagementUseCase =
+    networkManagementUseCase;
+}
+
+Após implementar o mecanismo de injeção , podemos remover com segurança este construtor
+NetworkManagementGenericAdapter .
+
+Concluímos todas as alterações necessárias para converter as portas de entrada, casos de uso e
+adaptadores em componentes que podem ser usados para injeção de dependência. Essas alterações nos mostraram como integrar
+os mecanismos Quarkus CDI em nossa aplicação hexagonal.
+
+Agora, vamos aprender como adaptar o sistema hexagonal para simular e usar beans gerenciados durante os testes.
+
+=========================================
