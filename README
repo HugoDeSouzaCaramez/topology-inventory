@@ -14,6 +14,8 @@ O módulo bootstrap é um módulo agregador que fornece, de um lado, as dependê
 necessárias para inicializar o Quarkus e, do outro lado, as dependências do módulo
 hexagonal para uso em conjunto com o Quarkus.
 
+Para compilar e gerar o .jar
 mvn clean package
 
+Para executar o .jar
 java -jar bootstrap/target/bootstrap-1.0-SNAPSHOT-runner.jar
