@@ -2496,5 +2496,24 @@ Agora que conhecemos as vantagens do Quarkus DI e os princípios básicos de com
 empregar técnicas de injeção de dependência com as portas e casos de uso da arquitetura hexagonal.
 
 =======================
+Transformando portas, casos de uso e adaptadores em beans CDI
 
+Ao projetar o hexágono Application para o sistema de topologia e inventário, definimos os casos
+de uso como interfaces e portas de entrada como suas implementações. Também definimos
+portas de saída como interfaces e adaptadores de saída como suas implementações no hexágono
+Framework. Nesta seção, refatoraremos componentes dos hexágonos Application e Framework para habilitar o uso
+de injeção de dependência com Quarkus DI.
+
+O primeiro passo para trabalhar com o Quarkus DI é adicionar a seguinte dependência Maven ao pom.xml raiz do projeto:
+<dependency>
+<groupId>io.quarkus</groupId>
+<artifactId>quarkus-resteasy</artifactId>
+</dependency>
+
+Além das bibliotecas RESTEasy, esta biblioteca quarkus-resteasy também fornece as bibliotecas
+necessárias para trabalhar com o Quarkus DI.
+
+Vamos começar nossos esforços de refatoração com as classes e interfaces relacionadas ao gerenciamento de roteadores.
+
+==============================
 
