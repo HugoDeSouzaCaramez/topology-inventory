@@ -2251,21 +2251,21 @@ iniciar o mecanismo Quarkus.
 5. Em seguida, precisamos adicionar as dependências do Maven dos hexágonos do sistema de
    topologia e inventário. Fazemos isso no arquivo bootstrap/pom.xml , como segue:
    <dependency>
-   <groupId>dev.davivieira</groupId>
+   <groupId>dev.hugodesouzacaramez</groupId>
    <artifactId>domain</artifactId>
    </dependency>
    <dependency>
-   <groupId>dev.davivieira</groupId>
+   <groupId>dev.hugodesouzacaramez</groupId>
    <artifactId>application</artifactId>
    </dependency>
    <dependency>
-   <groupId>dev.davivieira</groupId>
+   <groupId>dev.hugodesouzacaramez</groupId>
    <artifactId>framework</artifactId>
    </dependency>
 
 6. E finalmente, criamos um descritor de módulo Java module-info.java com os requisitos
    diretivas para Quarkus e os módulos hexagonais de topologia e inventário, como segue:
-   module dev.davivieira.bootstrap {
+   module dev.hugodesouzacaramez.bootstrap {
    requires quarkus.core;
    requires domain;
    requires application;

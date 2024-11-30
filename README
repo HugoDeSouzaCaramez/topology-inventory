@@ -13,3 +13,7 @@ ciclo de vida de outras entidades e objetos de valor, incluindo objetos do tipo 
 O módulo bootstrap é um módulo agregador que fornece, de um lado, as dependências
 necessárias para inicializar o Quarkus e, do outro lado, as dependências do módulo
 hexagonal para uso em conjunto com o Quarkus.
+
+mvn clean package
+
+java -jar bootstrap/target/bootstrap-1.0-SNAPSHOT-runner.jar
