@@ -1,8 +1,9 @@
 module application {
     requires domain;
     requires static lombok;
-    requires com.fasterxml.jackson.annotation;
     requires jakarta.cdi;
+    requires jakarta.inject;
+    requires arc;
 
     exports dev.hugodesouzacaramez.topologyinventory.application.ports.input;
     exports dev.hugodesouzacaramez.topologyinventory.application.ports.output;

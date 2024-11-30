@@ -1,15 +1,7 @@
-module dev.davivieira.bootstrap {
-    requires quarkus.core;
+module bootstrap {
     requires domain;
+    requires framework;
     requires application;
-    requires jakarta.ws.rs;
-    requires jakarta.cdi;
-    requires jakarta.el;
-    requires jakarta.inject;
-    requires jakarta.validation;
-    requires quarkus.hibernate.orm;
-    requires quarkus.jdbc.h2;
     requires jakarta.persistence;
-    requires jakarta.transaction;
-    requires lombok;
+    requires transitive quarkus.core;
 }

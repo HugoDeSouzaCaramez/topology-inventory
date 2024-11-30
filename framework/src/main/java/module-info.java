@@ -7,6 +7,8 @@ module framework {
     requires jakarta.persistence;
     requires com.fasterxml.jackson.databind;
     requires com.fasterxml.jackson.core;
+    requires jakarta.cdi;
+    requires jakarta.inject;
 
     exports dev.hugodesouzacaramez.topologyinventory.framework.adapters.output.h2.data;
     opens dev.hugodesouzacaramez.topologyinventory.framework.adapters.output.h2.data;
