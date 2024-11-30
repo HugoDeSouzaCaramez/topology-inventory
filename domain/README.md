@@ -2516,4 +2516,108 @@ necessárias para trabalhar com o Quarkus DI.
 Vamos começar nossos esforços de refatoração com as classes e interfaces relacionadas ao gerenciamento de roteadores.
 
 ==============================
+Implementando CDI para objetos de gerenciamento de roteador
+
+Ao desenvolver a topologia e o sistema de inventário, definimos um conjunto de portas, casos de uso e adaptadores para
+gerenciar operações relacionadas ao roteador. Vamos percorrer as alterações necessárias para habilitar a injeção de
+dependência em tais operações:
+
+1. Começamos transformando o adaptador de saída RouterManagementH2Adapter em um bean gerenciado:
+   import jakarta.enterprise.context.ApplicationScoped;
+   @ApplicationScoped
+   public class RouterManagementH2Adapter implements
+   RouterManagementOutputPort {
+   @PersistenceContext
+   private EntityManager em;
+   /** Code omitted **/
+   private void setUpH2Database() {
+   EntityManagerFactory entityManagerFactory =
+   Persistence.createEntityManagerFactory(
+   "inventory");
+   EntityManager em =
+   entityManagerFactory.createEntityManager();
+   this.em = em;
+   }
+}
+
+Transformamos essa classe em um bean gerenciado colocando a anotação @ApplicationScoped
+no topo da classe RouterManagementH2Adapter . Observe o atributo EntityManager – podemos
+usar injeção de dependência nesse atributo também. Faremos isso no Capítulo 13,
+Persistindo Dados com Adaptadores de Saída e Hibernate Reactive, mas não tocaremos nisso por enquanto.
+
+2. Antes de alterar a interface RouterManagementUseCase e sua implementação,
+   RouterManagementInputPort, vamos analisar alguns aspectos da implementação atual:
+   public interface RouterManagementUseCase {
+   void setOutputPort(
+   RouterManagementOutputPort
+   routerManagementOutputPort);
+   /** Code omitted **/
+   }
+
+Definimos o método setOutputPort para receber e definir um tipo de instância de
+RouterManagementOutputPort, que é preenchido por um RouterManagementH2Adapter
+adaptador de saída. Como não precisaremos mais fornecer explicitamente esse
+objeto adaptador de saída (porque o Quarkus DI o injetará), podemos remover o
+método setOutputPort da interface RouterManagementUseCase.
+
+O código a seguir demonstra como RouterManagementInputPort é implementado sem
+Quarkus DI:
+@NoArgsConstructor
+public class RouterManagementInputPort implements
+RouterManagementUseCase {
+private RouterManagementOutputPort
+routerManagementOutputPort;
+@Override
+public void setOutputPort(
+RouterManagementOutputPort
+routerManagementOutputPort) {
+this.routerManagementOutputPort =
+routerManagementOutputPort;
+}
+/** Code omitted **/
+}
+
+Para fornecer um objeto do tipo RouterManagementOutputPort , precisamos usar o
+método setOutputPort mencionado anteriormente . Após implementar o Quarkus DI,
+isso não será mais necessário, como veremos na próxima etapa.
+
+3. É assim que o RouterManagementOutputPort deve ficar após a implementação
+do Quarkus DI:
+   import jakarta.enterprise.context.ApplicationScoped;
+   import jakarta.inject.Inject;
+   @ApplicationScoped
+   public class RouterManagementInputPort implements
+   RouterManagementUseCase {
+   @Inject
+   RouterManagementOutputPort
+   routerManagementOutputPort;
+   /** Code omitted **/
+   }
+
+Primeiro, adicionamos ApplicationScoped em cima de RouterManagementInputPort para
+permitir que ele seja injetado em outras partes do sistema. Então, usando a anotação
+@Inject , injetamos RouterManagementOutputPort. Não precisamos nos referir à implementação
+do adaptador de saída. O Quarkus DI encontrará uma implementação adequada para essa
+interface de porta de saída, que por acaso é o adaptador de saída RouterManagementH2Adapter
+que transformamos em um bean gerenciado anteriormente.
+
+4. Por fim, precisamos atualizar o adaptador de entrada RouterManagementGenericAdapter :
+   @ApplicationScoped
+   public class RouterManagementGenericAdapter {
+   @Inject
+   private RouterManagementUseCase
+   routerManagementUseCase;
+   /** Code omitted **/
+   }
+
+Em vez de inicializar RouterManagementUseCase usando um construtor, precisamos fornecer a
+dependência por meio da anotação @Inject . No tempo de execução, o Quarkus DI criará e atribuirá um
+objeto RouterManagementInputPort a essa referência de caso de uso.
+
+É isso para as mudanças que devemos fazer nas classes e interfaces relacionadas ao gerenciamento do roteador.
+Agora, vamos aprender o que precisamos mudar em relação às classes e interfaces para gerenciamento de switches.
+
+====================================
+
+
 

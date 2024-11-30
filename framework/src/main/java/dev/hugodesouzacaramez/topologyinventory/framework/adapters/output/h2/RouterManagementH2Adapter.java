@@ -9,7 +9,9 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import jakarta.persistence.PersistenceContext;
+import jakarta.enterprise.context.ApplicationScoped;
 
+@ApplicationScoped
 public class RouterManagementH2Adapter implements RouterManagementOutputPort {
 
     @PersistenceContext

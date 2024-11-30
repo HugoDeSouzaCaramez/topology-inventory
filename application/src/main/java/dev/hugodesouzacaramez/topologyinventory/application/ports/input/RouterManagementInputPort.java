@@ -5,18 +5,20 @@ import dev.hugodesouzacaramez.topologyinventory.application.usecases.RouterManag
 import dev.hugodesouzacaramez.topologyinventory.domain.entity.CoreRouter;
 import dev.hugodesouzacaramez.topologyinventory.domain.entity.Router;
 import dev.hugodesouzacaramez.topologyinventory.domain.entity.factory.RouterFactory;
-import dev.hugodesouzacaramez.topologyinventory.domain.vo.*;
-import lombok.NoArgsConstructor;
+import dev.hugodesouzacaramez.topologyinventory.domain.vo.IP;
+import dev.hugodesouzacaramez.topologyinventory.domain.vo.Id;
+import dev.hugodesouzacaramez.topologyinventory.domain.vo.Location;
+import dev.hugodesouzacaramez.topologyinventory.domain.vo.Model;
+import dev.hugodesouzacaramez.topologyinventory.domain.vo.RouterType;
+import dev.hugodesouzacaramez.topologyinventory.domain.vo.Vendor;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
-@NoArgsConstructor
+@ApplicationScoped
 public class RouterManagementInputPort implements RouterManagementUseCase {
 
-    private RouterManagementOutputPort routerManagementOutputPort;
-
-    @Override
-    public void setOutputPort(RouterManagementOutputPort routerManagementOutputPort) {
-        this.routerManagementOutputPort = routerManagementOutputPort;
-    }
+    @Inject
+    RouterManagementOutputPort routerManagementOutputPort;
 
     @Override
     public Router createRouter(Id id,

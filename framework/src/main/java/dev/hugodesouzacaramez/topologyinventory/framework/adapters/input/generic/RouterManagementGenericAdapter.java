@@ -9,14 +9,14 @@ import dev.hugodesouzacaramez.topologyinventory.domain.vo.Location;
 import dev.hugodesouzacaramez.topologyinventory.domain.vo.Model;
 import dev.hugodesouzacaramez.topologyinventory.domain.vo.RouterType;
 import dev.hugodesouzacaramez.topologyinventory.domain.vo.Vendor;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
+@ApplicationScoped
 public class RouterManagementGenericAdapter {
 
+    @Inject
     private RouterManagementUseCase routerManagementUseCase;
-
-    public RouterManagementGenericAdapter(RouterManagementUseCase routerManagementUseCase) {
-        this.routerManagementUseCase = routerManagementUseCase;
-    }
 
     /**
      * GET /router/retrieve/{id}
