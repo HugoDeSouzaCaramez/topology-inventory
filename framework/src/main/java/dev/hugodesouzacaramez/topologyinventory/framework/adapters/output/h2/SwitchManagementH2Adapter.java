@@ -5,11 +5,13 @@ import dev.hugodesouzacaramez.topologyinventory.domain.entity.Switch;
 import dev.hugodesouzacaramez.topologyinventory.domain.vo.Id;
 import dev.hugodesouzacaramez.topologyinventory.framework.adapters.output.h2.data.SwitchData;
 import dev.hugodesouzacaramez.topologyinventory.framework.adapters.output.h2.mappers.RouterH2Mapper;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import jakarta.persistence.PersistenceContext;
 
+@ApplicationScoped
 public class SwitchManagementH2Adapter implements SwitchManagementOutputPort {
 
     @PersistenceContext

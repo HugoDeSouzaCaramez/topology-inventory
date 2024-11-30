@@ -5,17 +5,14 @@ import dev.hugodesouzacaramez.topologyinventory.application.usecases.SwitchManag
 import dev.hugodesouzacaramez.topologyinventory.domain.entity.EdgeRouter;
 import dev.hugodesouzacaramez.topologyinventory.domain.entity.Switch;
 import dev.hugodesouzacaramez.topologyinventory.domain.vo.*;
-import lombok.NoArgsConstructor;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
-@NoArgsConstructor
+@ApplicationScoped
 public class SwitchManagementInputPort implements SwitchManagementUseCase {
 
-    private SwitchManagementOutputPort switchManagementOutputPort;
-
-    @Override
-    public void setOutputPort(SwitchManagementOutputPort switchManagementOutputPort) {
-        this.switchManagementOutputPort = switchManagementOutputPort;
-    }
+    @Inject
+    SwitchManagementOutputPort switchManagementOutputPort;
 
     @Override
     public Switch createSwitch(

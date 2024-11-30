@@ -1,13 +1,10 @@
 package dev.hugodesouzacaramez.topologyinventory.application.usecases;
 
-import dev.hugodesouzacaramez.topologyinventory.application.ports.output.SwitchManagementOutputPort;
 import dev.hugodesouzacaramez.topologyinventory.domain.entity.EdgeRouter;
 import dev.hugodesouzacaramez.topologyinventory.domain.entity.Switch;
 import dev.hugodesouzacaramez.topologyinventory.domain.vo.*;
 
 public interface SwitchManagementUseCase {
-
-    void setOutputPort(SwitchManagementOutputPort switchManagementOutputPort);
 
     Switch createSwitch(
             Vendor vendor,

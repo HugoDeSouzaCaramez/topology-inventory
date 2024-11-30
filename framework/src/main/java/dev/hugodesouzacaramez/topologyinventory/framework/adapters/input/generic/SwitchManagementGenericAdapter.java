@@ -12,17 +12,16 @@ import dev.hugodesouzacaramez.topologyinventory.domain.vo.Model;
 import dev.hugodesouzacaramez.topologyinventory.domain.vo.RouterType;
 import dev.hugodesouzacaramez.topologyinventory.domain.vo.SwitchType;
 import dev.hugodesouzacaramez.topologyinventory.domain.vo.Vendor;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
+@ApplicationScoped
 public class SwitchManagementGenericAdapter {
 
+    @Inject
     private SwitchManagementUseCase switchManagementUseCase;
+    @Inject
     private RouterManagementUseCase routerManagementUseCase;
-
-    public SwitchManagementGenericAdapter (
-            RouterManagementUseCase routerManagementUseCase, SwitchManagementUseCase switchManagementUseCase){
-        this.routerManagementUseCase = routerManagementUseCase;
-        this.switchManagementUseCase = switchManagementUseCase;
-    }
 
     /**
      * GET /switch/retrieve/{id}

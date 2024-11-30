@@ -2618,6 +2618,109 @@ objeto RouterManagementInputPort a essa referência de caso de uso.
 Agora, vamos aprender o que precisamos mudar em relação às classes e interfaces para gerenciamento de switches.
 
 ====================================
+Implementando CDI para objetos de gerenciamento de switch
 
+Nesta seção, seguiremos um caminho semelhante ao que seguimos quando refatoramos as portas, casos
+de uso e adaptadores relacionados ao gerenciamento do roteador:
 
+1. Começamos transformando o adaptador de saída SwitchManagementH2Adapter em um
+bean gerenciado:
+   import jakarta.enterprise.context.ApplicationScoped;
+   @ApplicationScoped
+   public class SwitchManagementH2Adapter implements
+   SwitchManagementOutputPort {
+       @PersistenceContext
+       private EntityManager em;
+       /** Code omitted **/
+   }
 
+O adaptador SwitchManagementH2Adapter também faz uso do EntityManager. Não modificaremos como
+o objeto EntityManager é fornecido, mas no Capítulo 13, Persistindo Dados com Adaptadores de Saída
+e Hibernate Reactive, o alteraremos para usar injeção de dependência.
+
+2. Alteramos a definição da interface SwitchManagementUseCase no Capítulo 9,
+   Aplicando Inversão de Dependência com Módulos Java, e definimos o método setOutputPort:
+   public interface SwitchManagementUseCase {
+       void setOutputPort(
+       SwitchManagementOutputPort
+       switchManagementOutputPort)
+       /** Code omitted **/
+   }
+
+Como o Quarkus DI fornecerá uma instância SwitchManagementOutputPort adequada , não precisaremos
+mais desse método setOutputPort , então podemos removê-lo.
+
+3. O código a seguir mostra como SwitchManagementInputPort é implementado sem
+   injeção de dependência:
+
+@NoArgsConstructor
+public class SwitchManagementInputPort implements
+SwitchManagementUseCase {
+private SwitchManagementOutputPort
+switchManagementOutputPort;
+@Override
+public void setOutputPort(
+SwitchManagementOutputPort
+switchManagementOutputPort) {
+this.switchManagementOutputPort =
+switchManagementOutputPort;
+}
+/** Code omitted **/
+}
+
+Chamamos o método setOutputPort para inicializar um objeto SwitchManagementOutputPort .
+Ao usar técnicas de injeção de dependência, não há necessidade de instanciar ou
+inicializar objetos explicitamente.
+
+4. A seguir está a aparência que SwitchManagementInputPort deve ter após a implementação
+da injeção de dependência:
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+@ApplicationScoped
+public class SwitchManagementInputPort implements
+SwitchManagementUseCase {
+    @Inject
+    private SwitchManagementOutputPort
+    switchManagementOutputPort;
+    /** Code omitted **/
+}
+
+Usamos a anotação @ApplicationScoped para converter SwitchManagementInputPort em um bean
+gerenciado e a anotação @Inject para fazer o Quarkus DI descobrir um objeto de bean
+gerenciado que implementa a interface SwitchManagementOutputPort , que por acaso é o
+adaptador de saída SwitchManagementH2Adapter .
+
+5. Ainda precisamos ajustar o adaptador de entrada SwitchManagementGenericAdapter:
+
+public class SwitchManagementGenericAdapter {
+@Inject
+private SwitchManagementUseCase
+switchManagementUseCase;
+@Inject
+private RouterManagementUseCase
+routerManagementUseCase;
+/** Code omitted **/
+}
+
+Aqui, estamos injetando dependências para ambos os objetos SwitchManagementUseCase
+e RouterManagementUseCase . Antes de usar anotações, essas dependências eram
+fornecidas desta forma:
+
+public SwitchManagementGenericAdapter (
+    RouterManagementUseCase routerManagementUseCase,
+    SwitchManagementUseCase switchManagementUseCase){
+    this.routerManagementUseCase =
+    routerManagementUseCase;
+    this.switchManagementUseCase =
+    switchManagementUseCase;
+}
+
+A melhoria que obtemos é que não precisamos mais depender do construtor para
+inicializar as dependências do SwitchManagementGenericAdapter . O Quarkus DI fornecerá
+automaticamente as instâncias necessárias para nós.
+
+A próxima seção é sobre as operações relacionadas ao gerenciamento de rede. Vamos aprender como
+devemos alterá-las.
+
+============================
