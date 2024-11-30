@@ -2320,3 +2320,33 @@ do Quarkus DI.
 
 ================================
 ================================
+Aproveitando os CDI Beans para Gerenciar portas e casos de uso
+
+A Quarkus fornece sua própria solução de injeção de dependência chamada Quarkus DI. Ela deriva
+da especificação Contexts and Dependency Injection (CDI) para Java 2.0. Empregamos CDI para
+delegar a responsabilidade de fornecer instâncias de objeto para uma dependência externa e
+gerenciar seu ciclo de vida em um aplicativo. Várias soluções de injeção de dependência no mercado assumem essa responsabilidade.
+Quarkus DI é um deles.
+
+O valor de usar um mecanismo de injeção de dependência é que não precisamos mais nos preocupar sobre
+como e quando fornecer uma instância de objeto. Uma solução de injeção de dependência nos permite criar e
+fornecer objetos automaticamente como dependências em classes que dependem desses objetos, geralmente
+usando atributos de anotação.
+
+No contexto da arquitetura hexagonal, os hexágonos Framework e Application são bons candidatos para
+alavancar os benefícios que uma solução CDI pode fornecer. Em vez de usar construtores que injetam
+dependências usando classes concretas, podemos usar os mecanismos de descoberta CDI para procurar
+automaticamente implementações de interface e fornecê-las ao aplicativo.
+
+Neste capítulo, aprenderemos como aprimorar o provisionamento de portas e casos de uso transformandoos em beans. Exploraremos os escopos de bean e seus ciclos de vida e entenderemos como e quando
+usar os escopos de bean disponíveis. Depois que soubermos sobre os fundamentos do CDI,
+aprenderemos como aplicá-los a um sistema hexagonal.
+
+Os seguintes tópicos serão abordados neste capítulo:
+• Aprendendo sobre Quarkus DI
+• Transformando portas, casos de uso e adaptadores em beans CDI
+• Testando casos de uso com Quarkus e Cucumber
+
+Ao final deste capítulo, você saberá como integrar o Quarkus DI em um aplicativo hexagonal, transformando
+casos de uso e portas em beans gerenciados que podem ser injetados no sistema hexagonal.
+Você também saberá como testar casos de uso usando o Quarkus em conjunto com o Cucumber.
