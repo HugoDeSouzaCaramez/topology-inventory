@@ -2055,7 +2055,7 @@ variáveis que existem na classe SampleObject.
 
 Vamos agora criar um novo bean chamado PersistenceExample para nos ajudar a criar e recuperar entidades
 de banco de dados. Veja como fazer isso:
-package dev.davivieira.bootstrap.samples;
+package dev.hugodesouzacaramez.bootstrap.samples;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
