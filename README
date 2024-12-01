@@ -19,3 +19,5 @@ mvn clean package
 
 Para executar o .jar
 java -jar bootstrap/target/bootstrap-1.0-SNAPSHOT-runner.jar
+
+Adicionado framework Quarkus para injeção de dependência
