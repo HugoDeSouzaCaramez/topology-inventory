@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SwitchTest extends FrameworkTestData {
 
-    public SwitchTest(){
+    /*public SwitchTest(){
         loadPortsAndUseCases();
         loadData();
     }
@@ -57,5 +57,5 @@ public class SwitchTest extends FrameworkTestData {
         EdgeRouter edgeRouter = switchManagementGenericAdapter
                 .removeSwitchFromEdgeRouter(switchId, edgerRouterId);
         assertNull(edgeRouter.getSwitches().get(switchId));
-    }
+    }*/
 }

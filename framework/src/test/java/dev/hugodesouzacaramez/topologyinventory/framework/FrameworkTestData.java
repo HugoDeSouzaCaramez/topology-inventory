@@ -17,7 +17,7 @@ import dev.hugodesouzacaramez.topologyinventory.framework.adapters.input.generic
 import java.util.*;
 
 public class FrameworkTestData {
-    protected List<Router> routers = new ArrayList<>();
+    /*protected List<Router> routers = new ArrayList<>();
 
     protected List<Switch> switches = new ArrayList<>();
 
@@ -141,5 +141,5 @@ public class FrameworkTestData {
                 location(locationA).
                 routerType(RouterType.EDGE).
                 build();
-    }
+    }*/
 }

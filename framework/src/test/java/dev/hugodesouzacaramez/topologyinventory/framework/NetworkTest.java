@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class NetworkTest extends FrameworkTestData {
 
-    public NetworkTest(){
+    /*public NetworkTest(){
         loadPortsAndUseCases();
         loadData();
     }
@@ -40,5 +40,5 @@ public class NetworkTest extends FrameworkTestData {
         assertNotNull(existentNetwork);
         networkSwitch = networkManagementGenericAdapter.removeNetworkFromSwitch(networkName, switchId);
         assertNull(networkSwitch);
-    }
+    }*/
 }

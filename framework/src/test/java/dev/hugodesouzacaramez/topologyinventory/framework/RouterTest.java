@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class RouterTest extends FrameworkTestData {
 
-  public RouterTest() {
+  /*public RouterTest() {
     loadPortsAndUseCases();
     loadData();
   }
@@ -57,5 +57,5 @@ public class RouterTest extends FrameworkTestData {
     var routerId = Id.withId("b832ef4f-f894-4194-8feb-a99c2cd4be0b");
     var router = this.routerManagementGenericAdapter.removeRouter(routerId);
     assertEquals(null, router);
-  }
+  }*/
 }

@@ -12,7 +12,6 @@ import static dev.hugodesouzacaramez.topologyinventory.domain.vo.RouterType.EDGE
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 
-
 public class RouterRemove extends ApplicationTestData {
 
     CoreRouter coreRouterToBeRemoved;
