@@ -3399,3 +3399,97 @@ createAndAddSwitchToEdgeRouter e removeSwitchFromEdgeRouter, podemos começar a 
 o adaptador de entrada reativo para gerenciamento de rede.
 
 =============================
+Implementando o adaptador de entrada reativa para gerenciamento de rede
+
+Como você pode imaginar, o adaptador de entrada Reactive da rede segue o mesmo padrão usado pelos
+adaptadores Reactive do roteador e do switch. Nas etapas a seguir, habilitaremos o comportamento Reactive
+para endpoints relacionados ao gerenciamento de rede:
+
+1. Vamos começar habilitando o JAX-RS no adaptador de entrada NetworkManagementAdapter:
+
+@ApplicationScoped
+@Path("/network")
+public class NetworkManagementAdapter {
+@Inject
+SwitchManagementUseCase switchManagementUseCase;
+@Inject
+NetworkManagementUseCase networkManagementUseCase;
+/** Code omitted **/
+}
+
+Neste ponto, você pode estar familiarizado com a anotação @Path no nível de classe. Injetamos os
+casos de uso SwitchManagementUseCase e NetworkManagementUseCase para auxiliar nas operações
+que são executadas por este adaptador de entrada.
+
+2. Em seguida, devemos definir um endpoint reativo para que redes possam ser adicionadas a um switch:
+
+@POST
+@Path("/add/{switchId}")
+public Uni<Response> addNetworkToSwitch(AddNetwork
+addNetwork, @PathParam("switchId") Id switchId) {
+/** Code omitted **/
+return Uni.createFrom()
+.item(
+networkManagementUseCase.
+addNetworkToSwitch(
+network, networkSwitch))
+.onItem()
+.transform(
+f -> f != null ?
+Response.ok(f) :
+Response.ok(null))
+.onItem()
+.transform(Response.Response
+Builder::build);
+}
+
+A ideia que aplicamos aqui é a mesma que aplicamos às implementações anteriores.
+Dentro do método addNetworkToSwitch , adicionamos algum código Reactive que usará um Mutiny
+pipeline para chamar networkManagementUseCase.addNetworkToSwitch( network, networkSwitch) e retornar
+Uni<Response>.
+
+3. Por fim, devemos definir o endpoint Reativo para remover uma rede de um switch:
+
+@DELETE
+@Path("/{networkName}/from/{switchId}")
+public Uni<Response> removeNetworkFromSwitch(@Path
+Param("networkName") String networkName, @Path
+Param("switchId") Id switchId) {
+/** Code omitted **/
+return Uni.createFrom()
+.item(
+networkManagementUseCase.
+removeNetworkFromSwitch(
+networkName, networkSwitch))
+.onItem()
+.transform(
+f -> f != null ?
+Response.ok(f) :
+Response.ok(null))
+.onItem()
+.transform(Response.Response
+Builder::build);
+}
+
+Aqui, usamos a anotação @DELETE e dois parâmetros de caminho, networkName e
+switchId, para remover uma rede de um switch. Dentro do pipeline Mutiny , chamamos
+networkManagementUseCase.removeNetworkFromSwitch(networkName, networkSwitch). O
+resultado do pipeline é Uni<Response>.
+
+Com isso, finalizamos a implementação do adaptador de entrada Reactive para gerenciamento
+de rede. Agora, os adaptadores de entrada RouterManagementAdapter, SwitchManagementAdapter
+e NetworkManagementAdapter estão prontos para atender requisições HTTP de forma Reactive.
+
+Esses três adaptadores de entrada e seus endpoints formam a API do sistema hexagonal.
+
+Nesta seção, não apenas aprendemos como criar endpoints REST comuns, mas também fomos além usando o RESTEasy
+Reactive para habilitar o comportamento Reactive nos endpoints do adaptador de entrada. Essa é uma etapa fundamental
+para aproveitar as vantagens que uma abordagem Reactive pode fornecer. Com a abordagem Reactive, não precisamos
+mais depender de threads de bloqueio de E/S, que podem consumir mais recursos de computação do que threads de
+não bloqueio de E/S. Threads de bloqueio de E/S precisam esperar que as operações de E/S terminem. Threads de não
+bloqueio de E/S são mais eficientes porque a mesma thread pode manipular várias operações de E/S ao mesmo tempo.
+
+A próxima seção abordará como usar o OpenAPI e o Swagger UI para publicar a API do sistema.
+
+========================================================
+
