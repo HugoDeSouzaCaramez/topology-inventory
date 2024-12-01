@@ -5,9 +5,9 @@
              version="2.0">
     <persistence-unit name="inventory" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <class>dev.davivieira.topologyinventory.framework.adapters.output.h2.data.RouterData</class>
-        <class>dev.davivieira.topologyinventory.framework.adapters.output.h2.data.SwitchData</class>
-        <class>dev.davivieira.topologyinventory.framework.adapters.output.h2.data.LocationData</class>
+        <class>dev.hugodesouzacaramez.topologyinventory.framework.adapters.output.h2.data.RouterData</class>
+        <class>dev.hugodesouzacaramez.topologyinventory.framework.adapters.output.h2.data.SwitchData</class>
+        <class>dev.hugodesouzacaramez.topologyinventory.framework.adapters.output.h2.data.LocationData</class>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
             <property name="jakarta.persistence.jdbc.driver"
