@@ -3290,5 +3290,112 @@ framework e suas bibliotecas.
 Agora, vamos prosseguir e implementar adaptadores de entrada reativos para gerenciamento de switches.
 
 ================================================
+Implementando o adaptador de entrada reativa para gerenciamento de switch
 
+Seguindo uma abordagem semelhante à que seguimos na seção anterior, podemos implementar os
+Adaptadores de entrada reativos para gerenciamento de switches executando as seguintes etapas:
 
+1. Começaremos habilitando o JAX-RS na classe SwitchManagementAdapter:
+
+@ApplicationScoped
+@Path("/switch")
+public class SwitchManagementAdapter {
+@Inject
+SwitchManagementUseCase switchManagementUseCase;
+@Inject
+RouterManagementUseCase routerManagementUseCase;
+/** Code omitted **/
+}
+
+Esta classe é anotada com @Path("/switch"), então todas as requisições relacionadas ao
+gerenciamento de switch serão direcionadas a ela. Depois disso, injetamos SwitchManagementUseCase
+e RouterManagementUseCase para executar operações no hexágono Application.
+
+2. Para habilitar a recuperação do switch no sistema de topologia e inventário, precisamos implementar o
+   Comportamento reativo no método retrieveSwitch:
+
+@GET
+@Path("/{id}")
+public Uni<Response> retrieveSwitch(@PathParam("id")
+Id switchId) {
+return Uni.createFrom()
+.item(
+switchManagementUseCase.
+retrieveSwitch(switchId))
+.onItem()
+.transform(
+aSwitch -> aSwitch != null ?
+Response.ok(aSwitch) :
+Response.ok(null))
+.onItem()
+.transform(Response.Response
+Builder::build);
+}
+
+Ao adicionar as anotações @GET e @Path , ativamos o JAX-RS no método
+retrieveSwitch . Colocamos switchManagementUseCase.retrieveSwitch(switchId) para
+que ele seja executado dentro de um pipeline Mutiny que retorna Uni<Response>.
+A chamada em item retorna imediatamente. Ela dispara a operação que é executada
+pelo método retrieveSwitch e permite que o thread continue atendendo outras
+solicitações. O resultado é obtido quando chamamos onItem, que representa a
+continuação da operação que é disparada quando chamamos item.
+
+3. Em seguida, precisamos adicionar o comportamento Reativo ao método createAndAddSwitchToEdgeRouter:
+
+@POST
+@Path("/create/{edgeRouterId}")
+public Uni<Response> createAndAddSwitchToEdgeRouter(
+CreateSwitch createSwitch,
+@PathParam("edgeRouterId") Id
+edgeRouterId){
+/** Code omitted **/
+return Uni.createFrom()
+.item((EdgeRouter)
+routerManagementUseCase.
+persistRouter(router))
+.onItem()
+.transform(
+router -> router != null ?
+Response.ok(f) :
+Response.ok(null))
+.onItem()
+.transform(Response.Response
+Builder::build);
+}
+
+O método anterior manipula as solicitações HTTP POST para criar um objeto switch e adicionálo a um roteador de borda. Chamamos o método routerManagementUseCase.persistRouter(router)
+aqui, que é encapsulado dentro de um pipeline Mutiny , para retornar Uni<Response>.
+
+4. Por fim, precisamos definir o endpoint Reativo para remover um switch de um roteador de borda:
+
+@DELETE
+@Path("/{switchId}/from/{edgeRouterId}")
+public Uni<Response> removeSwitchFromEdgeRouter(
+@PathParam("switchId") Id switchId,
+@PathParam("edgeRouterId") Id
+edgeRouterId) {
+/** Code omitted **/
+return Uni.createFrom()
+.item(
+(EdgeRouter)routerManagementUseCase.
+persistRouter(router))
+.onItem()
+.transform(
+router -> router != null ?
+Response.ok(f) :
+Response.ok(null))
+.onItem()
+.transform(Response.Response
+Builder::build);
+}
+
+Assim como fizemos com nossa operação de remoção anterior, onde removemos um roteador de um
+roteador core, usamos a anotação @DELETE para fazer o método removeSwitchFromEdgeRouter aceitar
+apenas as solicitações HTTP DELETE . Passamos os parâmetros Path , switchId e edgeRouterId, para
+obter os objetos switch e edge router necessários para a operação.
+
+Depois de definir os endpoints reativos para retrieveSwitch,
+createAndAddSwitchToEdgeRouter e removeSwitchFromEdgeRouter, podemos começar a implementar
+o adaptador de entrada reativo para gerenciamento de rede.
+
+=============================
