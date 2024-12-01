@@ -2972,4 +2972,38 @@ O código anterior pode ser removido depois que a anotação @Inject for impleme
 Podemos seguir a mesma abordagem de adicionar a anotação @Inject e remover a chamada do
 construtor para instanciar objetos de porta de entrada ao refatorar outras classes de teste.
 
+========================================
+========================================
+========================================
+========================================
+Usando RESTEasy Reactive para Implementar adaptadores de entrada
+
+Um adaptador de entrada é como uma porta da frente que expõe todos os recursos fornecidos por um sistema hexagonal.
+Sempre que um usuário ou outro aplicativo deseja se comunicar com um sistema hexagonal, eles alcançam um dos
+adaptadores de entrada disponíveis. Com esses adaptadores, podemos fornecer diferentes maneiras de acessar a
+mesma funcionalidade dentro do sistema hexagonal. Se um cliente não suportar comunicação HTTP, podemos
+implementar um adaptador usando um protocolo diferente. A vantagem significativa aqui é que remover ou adicionar
+novos adaptadores não influencia a lógica do domínio.
+
+Devido à natureza de desacoplamento e encapsulamento adequado da arquitetura hexagonal, podemos mudar
+tecnologias sem que ocorram grandes mudanças na lógica do domínio do sistema.
+
+Neste capítulo, continuaremos nossa jornada explorando os recursos interessantes do Quarkus. Um recurso que se
+encaixa muito bem com a implementação de adaptadores de entrada é a implementação RESTEasy Reactive JAX-RS,
+que é parte da estrutura Quarkus. O RESTEasy Reactive propõe uma maneira assíncrona e orientada a eventos para
+expor endpoints HTTP. Então, aprenderemos como integrar esses recursos do Reactive com adaptadores de entrada
+de um sistema hexagonal.
+
+Abordaremos os seguintes tópicos neste capítulo:
+
+• Explorar as abordagens para lidar com solicitações do servidor
+• Implementação de adaptadores de entrada com RESTEasy Reactive
+• Adicionando OpenAPI e Swagger UI
+• Testando adaptadores de entrada reativos
+
+Ao final deste capítulo, você saberá como implementar e testar adaptadores de entrada com comportamento reativo.
+Você também saberá como publicar a API para esses adaptadores de entrada usando OpenAPI e Swagger UI.
+
+
+
 
