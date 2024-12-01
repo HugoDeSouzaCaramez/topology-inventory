@@ -3075,6 +3075,37 @@ A seguir, aprenderemos como implementar adaptadores de entrada reativos usando a
 RESTEasy Reactive JAX-RS fornecida pela Quarkus.
 
 ==================
+Implementando adaptadores de entrada com RESTEasy Reactive
+
+RESTEasy Reactive é uma implementação JAX-RS que suporta endpoints HTTP imperativos e reativos . Tal
+implementação integra-se com Vert.x, que é um kit de ferramentas que podemos usar para construir sistemas
+Reactive distribuídos. RESTEasy Reactive e Vert.x trabalham juntos no Quarkus para fornecer capacidades
+Reactive.
+
+Para entender a aparência de um endpoint reativo, integraremos o RESTEasy Reactive com os adaptadores
+de entrada do sistema de topologia e inventário.
+
+Vamos começar configurando as dependências necessárias do Maven:
+
+<dependencies>
+ <dependency>
+ <groupId>io.quarkus</groupId>
+ <artifactId>quarkus-resteasy-reactive</artifactId>
+ </dependency>
+ <dependency>
+ <groupId>io.quarkus</groupId>
+ <artifactId>quarkus-resteasy-reactive-
+ jackson</artifactId>
+ </dependency>
+</dependencies>
+
+Com quarkus-resteasy-reactive, trazemos as bibliotecas Reactive, incluindo Reactive
+RESTEasy e a biblioteca Mutiny , que usaremos para criar código de forma reativa.
+Usaremos quarkus - resteasy-reactive-jackson para tarefas de desserialização envolvendo as respostas Reactive.
+
+Depois de configurar as dependências, podemos começar a implementar o adaptador de entrada reativo para
+gerenciamento de roteadores no sistema de topologia e inventário.
+
 
 
 
