@@ -3004,6 +3004,77 @@ Abordaremos os seguintes tópicos neste capítulo:
 Ao final deste capítulo, você saberá como implementar e testar adaptadores de entrada com comportamento reativo.
 Você também saberá como publicar a API para esses adaptadores de entrada usando OpenAPI e Swagger UI.
 
+================================
+Explorando as abordagens para lidar com solicitações do servidor
+
+Na comunicação cliente-servidor, temos um fluxo de processo em que um cliente envia uma solicitação, o
+servidor a recebe e começa a fazer algum trabalho. Assim que o servidor termina seu trabalho, ele responde
+ao cliente com um resultado. Da perspectiva do cliente, esse fluxo não muda. É sempre sobre enviar uma
+solicitação e receber uma resposta. O que pode mudar, no entanto, é como o servidor pode lidar internamente
+com o processamento de uma solicitação.
+
+Há duas abordagens para lidar com o processamento de requisições do servidor: reativa e imperativa. Então,
+vamos ver como um servidor pode lidar com requisições imperativamente.
+
+===========================
+Imperativo
+
+Em um aplicativo web tradicional em execução no Tomcat, cada solicitação recebida pelo servidor aciona a
+criação de um thread de trabalho em algo chamado de pool de threads. No Tomcat, um pool de threads é um
+mecanismo que controla o ciclo de vida e a disponibilidade de threads de trabalho que atendem a solicitações
+de aplicativos. Então, quando você faz uma solicitação de servidor, o Tomcat puxa um thread dedicado do pool
+de threads para atender à sua solicitação. Esse thread de trabalho depende do bloqueio de E/S para acessar bancos de dados e outros sistemas.
+
+Conforme mostrado no diagrama anterior, o servidor precisa criar um novo thread de trabalho de bloqueio de E/
+S para cada solicitação.
+
+Depois que um thread de trabalho é criado e alocado para atender a uma solicitação, ele é bloqueado até
+que a solicitação seja atendida. O servidor tem um número limitado de threads. Se você tiver muitas
+solicitações de execução longa e continuar enviando essas solicitações antes que o servidor possa
+finalizá-las, o servidor ficará sem threads, o que levará a falhas no sistema.
+
+A criação e o gerenciamento de threads também são caros. O servidor gasta recursos valiosos na criação
+e troca entre threads para atender às solicitações do cliente.
+
+Então, o ponto principal da abordagem imperativa é que um thread de trabalho é bloqueado para atender
+a uma – e somente uma – solicitação por vez. Para atender a mais solicitações simultaneamente, você
+precisa fornecer mais threads de trabalho. Além disso, a abordagem imperativa influencia como o código
+é escrito. O código imperativo é um pouco mais direto de entender porque as coisas são tratadas sequencialmente.
+
+Agora, vamos ver como a abordagem reativa contrasta com a imperativa.
+
+=================================
+Reativo
+
+Como você pode imaginar, a ideia por trás da abordagem reativa é que você não precisa bloquear um thread para
+atender a uma solicitação. Em vez disso, o sistema pode usar o mesmo thread para processar diferentes solicitações simultaneamente.
+Na abordagem imperativa, temos threads de trabalho que lidam com apenas uma solicitação por vez, enquanto
+na abordagem reativa, temos threads não bloqueantes de E/S que lidam com várias solicitações simultaneamente.
+
+Conforme mostrado no diagrama anterior, um único thread não bloqueante pode manipular diversas solicitações.
+
+Na abordagem reativa, temos uma sensação de continuação. Em vez da natureza sequencial da abordagem
+imperativa, com Reactive, podemos ver que as coisas têm continuidade. Por continuação, queremos dizer
+que sempre que um servidor pronto para Reactive recebe uma solicitação, tal solicitação é despachada como
+uma operação de E/S com uma continuação anexada. Essa continuação funciona como um retorno de
+chamada que é acionado e continua a executar a solicitação assim que o servidor retorna com uma resposta.
+Se essa solicitação precisar buscar um banco de dados ou qualquer sistema remoto, o servidor não bloqueará o thread de E/S enquanto espera pela resposta.
+Em vez disso, o thread de E/S acionará uma operação de E/S com uma continuação anexada e liberará o
+thread de E/S para aceitar outras solicitações.
+
+Como podemos ver, um thread de E/S chama uma tarefa não bloqueante que dispara uma operação de E/S e
+retorna imediatamente. Isso acontece porque o thread de E/S não precisa esperar a primeira operação de E/S
+terminar para chamar uma segunda. Enquanto a primeira operação de E/S ainda está em execução, o mesmo
+thread de E/S chama outra tarefa não bloqueante. Uma vez que a operação de E/S tenha sido concluída, o
+thread de E/S retoma a execução ao finalizar as tarefas não bloqueantes.
+
+Ao evitar o desperdício de tempo e recursos existentes na abordagem imperativa, a abordagem reativa otimiza
+o uso de threads, já que eles não o fazem enquanto esperam a conclusão de uma operação de E/S.
+
+A seguir, aprenderemos como implementar adaptadores de entrada reativos usando a implementação
+RESTEasy Reactive JAX-RS fornecida pela Quarkus.
+
+==================
 
 
 
