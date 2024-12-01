@@ -9,6 +9,9 @@ module framework {
     requires com.fasterxml.jackson.core;
     requires jakarta.cdi;
     requires jakarta.inject;
+    requires io.smallrye.mutiny;
+    requires microprofile.openapi.api;
+    requires jakarta.ws.rs;
 
     exports dev.hugodesouzacaramez.topologyinventory.framework.adapters.output.h2.data;
     opens dev.hugodesouzacaramez.topologyinventory.framework.adapters.output.h2.data;
