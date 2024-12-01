@@ -3106,6 +3106,189 @@ Usaremos quarkus - resteasy-reactive-jackson para tarefas de desserialização e
 Depois de configurar as dependências, podemos começar a implementar o adaptador de entrada reativo para
 gerenciamento de roteadores no sistema de topologia e inventário.
 
+=========================
+Implementando o adaptador de entrada reativa para gerenciamento de roteador
 
+Trabalharemos em cima dos adaptadores de entrada existentes que criamos no Capítulo 8, Construindo o
+Framework Hexagon. Alteraremos esses adaptadores de entrada para habilitar os recursos JAX-RS e Reactive. Executaremos
+os seguintes passos para fazer isso:
+
+1. Vamos começar definindo o caminho de nível superior para solicitações relacionadas ao gerenciamento do roteador
+   na classe RouterManagementAdapter:
+
+@ApplicationScoped
+@Path("/router")
+public class RouterManagementAdapter {
+    @Inject
+    RouterManagementUseCase routerManagementUseCase;
+    /** Code omitted **/
+}
+
+Usamos a anotação @Path para mapear um caminho de URL para um recurso no sistema. Podemos
+usar essa anotação em cima de uma classe ou método.
+
+O único campo dessa classe é RouterManagementUseCase, que é injetado usando a anotação
+@Inject . Ao utilizar essa referência de caso de uso, obtemos acesso a recursos do sistema
+relacionados ao gerenciamento de roteador.
+
+2. Em seguida, vamos definir um endpoint reativo para recuperar um roteador:
+
+@GET
+@Path("/{id}")
+public Uni<Response> retrieveRouter(Id id) {
+return Uni.createFrom()
+.item(
+routerManagementUseCase.
+retrieveRouter(id))
+.onItem()
+.transform(
+router -> router != null ?
+Response.ok(f) :
+Response.ok(null))
+.onItem()
+.transform(Response.Response
+Builder::build);
+
+A anotação @GET diz que apenas requisições HTTP GET são permitidas. O @Path("/{id}")
+a anotação do nível do método é concatenada com a anotação @Path("/router") do nível
+da classe. Então, para alcançar esse método retrieveRouter , temos que enviar uma
+requisição para /router/{id}.
+
+Observe também a anotação @PathParam("id") , que usamos para capturar um parâmetro da URL
+
+O que torna esse endpoint um Reactive é seu tipo de resposta Uni<Response> . Uni
+é um dos dois tipos fornecidos pela biblioteca Mutiny . Além de Uni, há também o tipo Multi.
+
+Usamos os tipos Uni e Multi para representar com que tipo de dados estamos lidando. Por
+exemplo, se sua resposta retornar apenas um item, você deve usar Uni. Caso contrário, se sua
+resposta for como um fluxo de dados, como aqueles que vêm de um servidor de mensagens,
+então Multi pode ser mais adequado para seu propósito.
+
+Ao chamar Uni.createFrom().item(routerManagementUseCase.retrieveRouter(id)), estamos criando um pipeline que executa routerManagementUseCase.
+retrieveRouter(id). O resultado é capturado em transform(f -> f != null ? Response.ok(f) :
+Response.ok(null)). Se a solicitação for bem-sucedida, obtemos Response.ok(f);
+caso contrário, obtemos Response.ok(null). Finalmente, chamamos transform
+(Response.ResponseBuilder::build) para transformar o resultado em um Uni<-
+Resposta> objeto.
+
+Response.ResponseBuilder::build é uma referência de método que pode ser escrita como a
+seguinte expressão lambda: (Response.ResponseBuilder responseBuilder) ->
+responseBuilder.build(). responseBuilder representa o parâmetro de objeto que recebemos,
+seguido pela chamada do método build para criar um novo objeto Response . Favorecemos
+a abordagem de referência de método porque escrevemos menos código para realizar a mesma coisa.
+
+Os endpoints restantes que estamos prestes a implementar seguem uma abordagem
+semelhante à descrita anteriormente.
+
+3. Depois de implementar um endpoint para recuperar um roteador, podemos implementar um endpoint
+   para remover um roteador do sistema:
+
+@DELETE
+@Path("/{id}")
+public Uni<Response> removeRouter(@PathParam("id") Id
+id) {
+return Uni.createFrom()
+.item(
+routerManagementUseCase.removeRouter(id))
+.onItem()
+.transform(
+router -> router != null ?
+Response.ok(router) :
+Response.ok(null))
+.onItem()
+.transform(Response.Response
+Builder::build);
+}
+
+A anotação @DELETE corresponde ao método HTTP DELETE . Novamente, estamos
+definindo um parâmetro Path na anotação @Path("/{id}") . O corpo do método tem um
+pipeline Uni que executa routerManagementUseCase.removeRouter(id) e retorna
+Uni<Response>.
+
+4. Vamos implementar o endpoint para criar um novo roteador:
+
+@POST
+@Path("/")
+public Uni<Response> createRouter(CreateRouter cre
+ateRouter) {
+/** Code omitted **/
+return Uni.createFrom()
+.item(
+routerManagementUseCase.
+persistRouter(router))
+.onItem()
+.transform(
+router -> router != null ?
+Response.ok(f) :
+Response.ok(null))
+.onItem()
+.transform(Response.Response
+Builder::build);
+}
+
+Usamos a anotação @POST porque estamos criando um novo recurso. A anotação
+@Path("/") no nível do método, quando concatenada com a anotação @Path("/router") no
+nível da classe, gera o caminho /router/ . Temos o código Reactive no corpo do método
+para manipular a solicitação e retornar Uni<Response>.
+
+5. Em seguida, implementaremos o endpoint para que um roteador possa ser adicionado a um roteador principal:
+
+@POST
+@Path("/add")
+public Uni<Response> addRouterToCoreRouter(AddRouter
+addRouter) {
+/** Code omitted **/
+return Uni.createFrom()
+.item(routerManagementUseCase.
+addRouterToCoreRouter(router,
+coreRouter))
+.onItem()
+.transform(
+router -> router != null ?
+Response.ok(router) :
+Response.ok(null))
+.onItem()
+.transform(Response.Response
+Builder::build);
+}
+
+Novamente, usamos a anotação @POST aqui. A anotação @Path("/add") no nível do
+método, quando concatenada com @Path("/router") no nível da classe, gera o
+caminho /router/ add . O código Reactive cria um pipeline para executar
+routerManagementUseCase. addRouterToCoreRouter(router, coreRouter) e retornar Uni<Response>.
+
+6. Por fim, precisamos implementar o endpoint para remover um roteador de um roteador principal:
+
+@DELETE
+@Path("/{routerId}/from/{coreRouterId}")
+public Uni<Response> removeRouterFromCoreRouter(
+/** Code omitted **/
+return Uni.createFrom()
+.item(routerManagementUseCase.
+removeRouterFromCoreRouter(
+router, coreRouter))
+.onItem()
+.transform(
+router -> router != null ?
+Response.ok(f) :
+Response.ok(null))
+.onItem()
+.transform(Response.Response
+Builder::build);
+}
+
+Aqui, usamos a anotação @DELETE para manipular solicitações HTTP DELETE . No @Path
+anotação, temos dois parâmetros de caminho – routerId e coreRouterId. Usamos esses
+dois parâmetros para obter os objetos Router e CoreRouter quando chamamos
+routerManagementUseCase. removeRouterFromCoreRouter(router, coreRouter) dentro do
+pipeline fornecido pela Uni.
+
+Como podemos ver, ao usar Quarkus, não é preciso muito para mudar de uma maneira imperativa para uma
+forma Reativa de implementar endpoints REST. Grande parte do trabalho é feito nos bastidores pelo
+framework e suas bibliotecas.
+
+Agora, vamos prosseguir e implementar adaptadores de entrada reativos para gerenciamento de switches.
+
+================================================
 
 
