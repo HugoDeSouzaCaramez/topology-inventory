@@ -3492,4 +3492,95 @@ bloqueio de E/S são mais eficientes porque a mesma thread pode manipular vária
 A próxima seção abordará como usar o OpenAPI e o Swagger UI para publicar a API do sistema.
 
 ========================================================
+Adicionando OpenAPI e Swagger UI
+
+Entender e interagir com sistemas de terceiros às vezes é uma tarefa nada trivial. No melhor
+cenário, podemos ter a documentação do sistema, uma base de código organizada e um
+conjunto de APIs que, juntos, nos ajudam a entender o que o sistema faz. No pior cenário, não
+temos nada disso . Essa situação desafiadora requer coragem, paciência e persistência para
+se aventurar a tentar entender uma base de código emaranhada com complexidades intrincadas.
+
+OpenAPI representa um esforço honroso para aumentar nossa capacidade de expressar e entender o que
+um sistema faz. Originalmente baseada na especificação Swagger, a especificação OpenAPI padroniza
+como as APIs são documentadas e descritas para que qualquer um possa compreender os recursos oferecidos por um sistema
+sem muito esforço.
+
+Passamos a seção anterior implementando os adaptadores de entrada Reactive que formam a API do
+nosso sistema hexagonal. Para tornar esse sistema mais compreensível para outras pessoas e sistemas,
+usaremos o OpenAPI para descrever as funcionalidades fornecidas pelos adaptadores de entrada e seus
+endpoints. Além disso, habilitaremos o Swagger UI, um aplicativo da web que apresenta uma visão clara e organizada das APIs.
+
+O Quarkus vem com suporte integrado para a especificação OpenAPI v3. Para habilitá-lo, precisamos da
+seguinte dependência Maven:
+
+<dependencies>
+ <dependency>
+ <groupId>io.quarkus</groupId>
+ <artifactId>quarkus-smallrye-openapi</artifactId>
+ </dependency>
+</dependencies>
+
+A dependência quarkus-smallrye-openapi fornece as bibliotecas que contêm as anotações OpenAPI que
+podemos usar para descrever os métodos de endpoint Reactive nas classes do adaptador de entrada.
+Essa dependência nos permite configurar o Swagger UI também.
+
+Lembre-se de que configuramos quatro módulos Java: domínio, aplicativo,
+framework e bootstrap. Para ativar e configurar o Swagger UI, precisamos criar o resource/application.properties
+s dentro do módulo bootstrap . Aqui está como podemos configurar este arquivo:
+
+quarkus.swagger-ui.always-include=true
+quarkus.swagger-ui.urls-primary-name=Topology & Inventory
+quarkus.swagger-ui.theme=material
+quarkus.swagger-ui.title=Topology & Inventory - Network
+Management System
+quarkus.swagger-ui.footer=&#169; 2021 | Hugo de Souza Caramez
+quarkus.swagger-ui.display-operation-id=true
+mp.openapi.extensions.smallrye.info.title=Topology & Inven
+tory API
+mp.openapi.extensions.smallrye.info.version=1.0
+mp.openapi.extensions.smallrye.info.description=Manage net
+works assets
+
+Definimos quarkus.swagger-ui.always-include como true para garantir que o Swagger UI
+também estará disponível quando o aplicativo for iniciado usando o perfil prod (produção)
+– um dos perfis Quarkus integrados . Com quarkus.swagger-ui.theme, podemos configurar o tema da interface
+Usaremos as propriedades restantes para fornecer uma descrição de alto nível da API.
+
+Vamos aprender como usar as anotações do OpenAPI para expor e descrever os endpoints do sistema hexagonal.
+Veja o exemplo a seguir da classe RouterManagementAdapter:
+
+@ApplicationScoped
+@Path("/router")
+@Tag(name = "Router Operations", description = "Router man
+agement operations")
+public class RouterManagementAdapter {
+@GET
+@Path("/retrieve/{id}")
+@Operation(operationId = "retrieveRouter",
+description = "Retrieve a router from the network
+inventory")
+public Uni<Response> retrieveRouter(@PathParam("id")
+Id id) {
+/** Code omitted **/
+}
+
+A anotação @Tag , que é usada no nível de classe, nos permite definir as informações de
+metadados que são aplicadas para todos os endpoints definidos na classe
+RouterManagementAdapter . Isso significa que os endpoints do método, como o método retrieveRouter no RouterManagementAdapter
+classe, herdará a anotação @Tag de nível de classe.
+
+Usamos a anotação @Operation para fornecer detalhes de uma operação. No código
+anterior, estamos descrevendo a operação que é realizada no caminho /retrieve/{id} . Temos o operationId
+parâmetro aqui, que é usado para identificar exclusivamente o endpoint, e o parâmetro de
+descrição , que é usado para fornecer uma descrição significativa da operação.
+
+Para fazer com que o Quarkus e o Swagger UI exibam uma interface de usuário sofisticada da API do nosso
+sistema hexagonal, precisamos apenas adicionar essas anotações OpenAPI às classes e métodos (configurados
+corretamente com JAX-RS) que queremos expor no Swagger UI.
+
+$ mvn clean package
+$ java -jar bootstrap/target/bootstrap-1.0-SNAPSHOT-runner.jar
+
+http://localhost:8080/q/swagger-ui/
+
 
