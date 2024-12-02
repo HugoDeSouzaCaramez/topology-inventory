@@ -1,6 +1,11 @@
 package dev.hugodesouzacaramez.topologyinventory.domain.entity;
 
-import dev.hugodesouzacaramez.topologyinventory.domain.vo.*;
+import dev.hugodesouzacaramez.topologyinventory.domain.vo.IP;
+import dev.hugodesouzacaramez.topologyinventory.domain.vo.Id;
+import dev.hugodesouzacaramez.topologyinventory.domain.vo.Location;
+import dev.hugodesouzacaramez.topologyinventory.domain.vo.Model;
+import dev.hugodesouzacaramez.topologyinventory.domain.vo.RouterType;
+import dev.hugodesouzacaramez.topologyinventory.domain.vo.Vendor;
 import lombok.Getter;
 
 import java.util.function.Predicate;
