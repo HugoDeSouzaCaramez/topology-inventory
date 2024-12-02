@@ -3578,9 +3578,146 @@ Para fazer com que o Quarkus e o Swagger UI exibam uma interface de usuário sof
 sistema hexagonal, precisamos apenas adicionar essas anotações OpenAPI às classes e métodos (configurados
 corretamente com JAX-RS) que queremos expor no Swagger UI.
 
+Você pode compilar e executar o aplicativo usando:
 $ mvn clean package
 $ java -jar bootstrap/target/bootstrap-1.0-SNAPSHOT-runner.jar
 
+Isso abrirá o seguinte URL no seu navegador:
 http://localhost:8080/q/swagger-ui/
+
+Na captura de tela anterior, as operações são agrupadas em Network Operations, Router Operations e
+Switch Operations. Esses grupos vêm da anotação @Tag que inserimos para cada uma das classes de
+adaptador de entrada. Cada endpoint herdou suas respectivas informações de metadados @Tag.
+
+Até agora, temos nosso sistema hexagonal configurado corretamente com endpoints reativos que são bem
+documentados com OpenAPI e Swagger UI. Agora, vamos aprender como testar esses endpoints para
+garantir que estejam funcionando conforme o esperado.
+
+==========================================
+Testando adaptadores de entrada reativos
+
+Nossos esforços de teste começaram no hexágono Domain testando a unidade dos componentes
+principais do sistema. Então, passamos para o hexágono Application, onde pudemos testar os casos de
+uso usando técnicas de design orientadas por comportamento. Agora que implementamos endpoints
+REST reativos no hexágono Framework, precisamos encontrar uma maneira de testá-los.
+
+Felizmente, o Quarkus vem bem equipado quando se trata de testes de endpoint. Para começar,
+precisamos da seguinte dependência:
+
+<dependencies>
+ <dependency>
+ <groupId>io.rest-assured</groupId>
+ <artifactId>rest-assured</artifactId>
+ <scope>test</scope>
+ </dependency>
+</dependencies>
+
+A dependência rest-assured nos permite testar endpoints HTTP. Ela fornece uma biblioteca
+intuitiva que é muito útil para fazer solicitações e extrair respostas de chamadas HTTP.
+
+Para ver como funciona, vamos implementar um teste para o endpoint /router/retrieve/{routerId}:
+
+@Test
+@Order(1)
+public void retrieveRouter() throws IOException {
+var expectedRouterId =
+"b832ef4f-f894-4194-8feb-a99c2cd4be0c";
+var routerStr = given()
+.contentType("application/json")
+.pathParam("routerId", expectedRouterId)
+.when()
+.get("/router/retrieve/{routerId}")
+.then()
+.statusCode(200)
+.extract()
+.asString();
+var actualRouterId =
+getRouterDeserialized(routerStr).getId().getUuid()
+.toString();
+assertEquals(expectedRouterId, actualRouterId);
+}
+
+Para criar uma solicitação, podemos usar o método estático io.restassured.RestAssured.given.
+Podemos especificar o tipo de conteúdo, parâmetros, método HTTP e corpo de uma solicitação com o dado
+método. Após enviar a solicitação, podemos verificar seu status com statusCode. Para obter a
+resposta, chamamos extract. No exemplo a seguir, estamos obtendo a resposta na forma de uma
+string. Isso ocorre porque o tipo de retorno do endpoint Reactive é Uni<Response>. Portanto, o resultado é uma string JSON.
+
+Precisamos desserializar a string JSON em um objeto Router antes de executar asserções. O trabalho
+de desserialização é realizado pelo método getRouterDeserialized:
+
+public static Router getRouterDeserialized(String jsonStr)
+throws IOException {
+var mapper = new ObjectMapper();
+var module = new SimpleModule();
+module.addDeserializer(Router.class, new
+RouterDeserializer());
+mapper.registerModule(module);
+var router = mapper.readValue(jsonStr, Router.class);
+return router;
+}
+
+Este método recebe uma string JSON como parâmetro. Esta string JSON é passada para um ObjectMapper
+mapper quando chamamos mapper.readValue(jsonStr, Router.class). Além de fornecer um mapper,
+também precisamos estender e implementar o método deserialize da classe
+com.fasterxml.jackson.databind.deser.std.StdDeserializer . No exemplo anterior, essa implementação é
+fornecida pelo RouterDeserializer. Esse desserializador transformará a string JSON em um objeto
+Router , conforme mostrado no código a seguir:
+
+public class RouterDeserializer extends StdDeserial
+izer<Router> {
+/** Code omitted **/
+@Override
+public Router deserialize(JsonParser jsonParser,
+DeserializationContext ctxt)
+throws IOException {
+JsonNode node =
+jsonParser.getCodec().readTree(jsonParser);
+var id = node.get("id").get("uuid").asText();
+var vendor = node.get("vendor").asText();
+var model = node.get("model").asText();
+var ip = node.get("ip").get("ipAddress").asText();
+var location = node.get("location");
+var routerType = RouterType.valueOf(
+node.get("routerType").asText());
+var routersNode = node.get("routers");
+var switchesNode = node.get("switches");
+/** Code omitted **/
+}
+
+O método deserialize pretende mapear cada atributo JSON relevante para um tipo de domínio.
+Realizamos esse mapeamento recuperando os valores que queremos de um objeto JsonNode . Após
+mapear os valores que queremos, podemos criar um objeto roteador , conforme mostrado no código a seguir:
+
+var router = RouterFactory.getRouter(
+Id.withId(id),
+Vendor.valueOf(vendor),
+Model.valueOf(model),
+IP.fromAddress(ip),
+getLocation(location),
+routerType);
+
+Depois que todos os valores foram recuperados, chamamos RouterFactory.getRouter para produzir um roteador
+objeto. Como um roteador pode ter roteadores e switches filhos, chamamos fetchChildRouters e
+fetchChildSwitches para que eles também tenham implementações de StdDeserializer:
+
+fetchChildRouters(routerType, routersNode, router);
+fetchChildSwitches(routerType, switchesNode, router);
+
+Chamamos os métodos fetchChildRouters e fetchChildSwitches porque um roteador pode ter roteadores e
+switches filhos que precisam ser desserializados. Esses métodos executarão a desserialização necessária.
+
+Depois de desserializar a resposta da string JSON, podemos executar a asserção em um objeto Router :
+
+var actualRouterId = getRouterDeserialized(router
+Str).getId().getUuid().toString();
+assertEquals(expectedRouterId, actualRouterId);
+
+Para testar o endpoint /router/retrieve/{routerId} , estamos verificando se o ID do
+roteador que foi recuperado pelo endpoint Reativo é igual ao que passamos na solicitação.
+
+Você pode executar este e outros testes com:
+mvn test
+
 
 
