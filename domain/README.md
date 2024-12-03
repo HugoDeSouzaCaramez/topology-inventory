@@ -4231,6 +4231,38 @@ entre switches e um local.
 Agora, vamos configurar a classe de entidade Network.
 
 ===============================================
+A entidade da rede
+
+Embora não consideremos redes como entidades no modelo de domínio, elas têm uma tabela separada no banco de
+dados. Então, no nível do hexágono do Framework, nós as tratamos como entidades do banco de dados, mas quando
+elas alcançam o hexágono do Domínio, nós as tratamos como objetos de valor. Este exemplo mostra que o sistema
+hexagonal determina como os dados serão tratados no nível do hexágono do Domínio. Ao fazer isso, o sistema
+hexagonal protege o modelo de domínio de detalhes técnicos.
+
+Implementamos a classe de entidade Network da seguinte maneira:
+
+@Entity
+@Table(name = "networks")
+public class NetworkData {
+@ManyToOne
+@JoinColumn(name="switch_id")
+private SwitchData switchData;
+@Id
+@GeneratedValue(strategy = GenerationType.IDENTITY)
+@Column(name="network_id")
+private int id;
+/**Code omitted**/
+}
+
+Esta é uma classe de entidade simples com um relacionamento muitos-para-um entre redes e um switch
+Para redes, confiamos no banco de dados para gerar IDs de rede. Além disso, redes não são consideradas entidades no modelo de
+domínio. Em vez disso, tratamos redes como objetos de valor que são controlados por um agregado. Para agregados, precisamos
+manipular o UUID, mas para objetos de valor, não. É por isso que não manipulamos UUIDs para entidades de banco de dados de
+rede.
+
+Ainda precisamos implementar uma última entidade para localização. Vamos fazer isso.
+
+
 
 
 
