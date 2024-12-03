@@ -4356,6 +4356,77 @@ Switch retrieveSwitch(Id id);
 
 Vamos começar implementando o adaptador de saída reativa para gerenciamento do roteador.
 
+===============================================
+Gerenciamento reativo do roteador do adaptador de saída MySQL
+
+Para habilitar o sistema hexagonal a se comunicar com um banco de dados MySQL, precisamos criar um novo
+adaptador de saída para permitir tal integração (porque estamos usando Quarkus, tal implementação de
+adaptador de saída é bem simples). Usaremos os seguintes passos para fazer isso:
+
+1. Começamos injetando a classe de repositório RouterManagementRepository:
+
+@ApplicationScoped
+public class RouterManagementMySQLAdapter implements
+RouterManagementOutputPort {
+@Inject
+RouterManagementRepository
+routerManagementRepository;
+/** Code omitted **/
+}
+
+Usaremos o repositório RouterManagementRepository para fazer operações de banco de dados.
+
+2. Em seguida, implementamos o método retrieveRouter:
+
+@Override
+public Router retrieveRouter(Id id) {
+var routerData =
+routerManagementRepository.findById(id.getUuid())
+.subscribe()
+.asCompletionStage()
+.join();
+return RouterMapper.routerDataToDomain(router
+Data);
+}
+
+Quando chamamos routerManagementRepository.findById(id.getUuid()), o sistema inicia
+uma operação de E/S não bloqueante. Esta chamada subscribe tenta resolver o item
+produzido pela operação findById . Então, chamamos asCompletionStage para receber
+o item. Finalmente, chamamos join, que retorna o valor do resultado quando a operação é concluída.
+
+3. Agora, precisamos implementar o método removeRouter:
+
+@Override
+public Router removeRouter(Id id) {
+return routerManagementRepository
+.deleteById(
+id.getUuid())
+.subscribe().asCompletionStage().join();
+}
+
+Aqui, chamamos routerManagementRepository.deleteById(id.getUuid())
+Gerenciamento de switch reativo do adaptador de saída MySQL
+Operação Panache para remover um roteador do banco de dados. Depois disso, chamamos subscribe,
+asCompletionStage e join para executar as operações de forma reativa.
+
+4. Por fim, implementamos o método persistRouter:
+
+@Override
+public Router persistRouter(Router router) {
+var routerData =
+RouterH2Mapper.routerDomainToData(router);
+Panache.withTransaction(
+()->routerManagementRepository.persist
+(routerData));
+return router;
+}
+
+A construção é diferente aqui. Para garantir que a transação não será perdida entre o cliente e o
+servidor durante a solicitação, encapsulamos a operação de persistência dentro de Panache.
+withTransaction. Este é um requisito para operações em que precisamos persistir dados.
+
+Vamos agora implementar o adaptador de saída reativa para gerenciamento de switches.
+
 
 
 
