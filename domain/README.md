@@ -3776,4 +3776,361 @@ No próximo capítulo, continuaremos explorando os recursos reativos oferecidos 
 aspectos de persistência de dados com o Hibernate Reactive.
 
 
+========================================================
+========================================================
+========================================================
+Dados persistentes com Adaptadores de saída e Hibernar Reativo
+
+No capítulo anterior, aprendemos sobre algumas das vantagens que podem ser trazidas a um sistema usando as
+capacidades reativas do Quarkus. Nosso primeiro passo na estrada reativa foi implementar o Reactive
+adaptadores de entrada usando RESTEasy Reactive. Embora os endpoints dos adaptadores de entrada estejam sendo
+atendidos de forma reativa, ainda temos os adaptadores de saída trabalhando de forma síncrona e bloqueante.
+
+Para transformar o sistema hexagonal em um mais reativo, neste capítulo, primeiro aprenderemos como configurar o
+Mapeamento Objeto-Relacional (ORM) em entidades do sistema usando o Hibernate Reactive e o Panache.
+Depois que as entidades do sistema estiverem configuradas corretamente, aprenderemos como usá-las para se conectar
+a um banco de dados MySQL de forma reativa.
+
+A seguir estão os tópicos que abordaremos neste capítulo:
+• Apresentando Hibernate Reactive e Panache
+• Habilitando comportamento reativo em adaptadores de saída
+• Teste de adaptadores de saída reativa
+
+Como já implementamos adaptadores de entrada reativos no capítulo anterior, nosso objetivo aqui é estender o
+comportamento reativo em um sistema hexagonal implementando adaptadores de saída reativos. Essa implementação
+ocorre no hexágono do Framework, que é o elemento de arquitetura onde nos concentramos em adaptadores.
+
+Ao final deste capítulo, você terá aprendido como integrar o Quarkus com um sistema hexagonal para
+acessar bancos de dados de forma reativa. Ao entender as etapas de configuração necessárias e os detalhes
+fundamentais de implementação, você será capaz de implementar adaptadores de saída reativos. Esse
+conhecimento ajudará você a lidar com situações em que solicitações de E/S não bloqueantes oferecem mais vantagens do que as E/S bloqueantes.
+
+======================================
+Apresentando Hibernate Reactive e Panache
+
+As tecnologias e técnicas disponíveis para lidar com operações de banco de dados em Java evoluíram muito nos
+últimos anos. Com base na especificação Java Persistence API (JPA), fomos apresentados a diferentes implementações
+de ORM, como Spring Data JPA, EclipseLink e, claro, Hibernate. Essas tecnologias tornam nossas vidas mais fáceis
+ao abstrair muito do trabalho de encanador necessário para lidar com bancos de dados.
+
+O Quarkus é integrado com o Hibernate ORM e sua contraparte reativa, o Hibernate Reactive. Além disso, o Quarkus
+vem com uma biblioteca chamada Panache, que simplifica nossa interação com bancos de dados.
+
+A seguir, daremos uma breve olhada nos principais recursos do Hibernate Reactive e do Panache.
+
+==============================================
+Recursos do Hibernate Reactive
+
+É raro, se não impossível, encontrar uma solução mágica que resolva todos os problemas relacionados ao acesso ao
+banco de dados. Quando falamos sobre as abordagens reativa e imperativa para o manuseio do banco de dados, é
+fundamental entender as vantagens e desvantagens de ambas as abordagens.
+
+O que é tão atraente sobre a abordagem imperativa para acesso ao banco de dados é a simplicidade com a qual você
+desenvolve seu código. Há menos coisas para ajustar e pensar quando você precisa ler ou persistir coisas usando
+uma abordagem imperativa. No entanto, essa abordagem pode causar contratempos quando sua natureza de bloqueio
+começa a impactar os casos de uso do seu sistema. Para evitar tais contratempos, temos a abordagem reativa,
+permitindo-nos lidar com bancos de dados de forma não bloqueante, mas não sem complexidades adicionais em
+nosso desenvolvimento e os novos problemas e desafios que surgem ao lidar com bancos de dados de forma reativa.
+
+A implementação original do Hibernate foi concebida para resolver os problemas com os quais os desenvolvedores
+tinham que lidar ao mapear objetos Java para entidades de banco de dados. A implementação original depende de
+comunicação síncrona de bloqueio de E/S para interagir com bancos de dados. Foi, e ainda é, a maneira mais
+convencional de acessar bancos de dados em Java. Por outro lado, o Hibernate Reactive surgiu da necessidade de
+movimentos de programação reativa e da comunicação assíncrona para acesso ao banco de dados. Em vez de
+bloqueio de E/S, o Hibernate Reactive depende de comunicação não bloqueante de E/S para interagir com bancos de
+dados.
+
+As propriedades de mapeamento de entidade permanecem as mesmas em uma implementação reativa. No entanto, o
+que muda é como abrimos a conexão Reactive de um banco de dados e como devemos estruturar o código do software
+para manipular entidades de banco de dados de forma reativa.
+
+Ao usar o Quarkus, não há necessidade de fornecer uma configuração de persistência reativa com base no
+arquivo persistence.xml porque o Quarkus já o configura para nós. Ainda assim, exploraremos brevemente para
+ter uma ideia de como o Hibernate Reactive funciona sozinho.
+
+Para configurar o Hibernate Reactive, você pode seguir a abordagem padrão para configurar o arquivo METAINF/ persistence.xml , conforme mostrado no exemplo a seguir:
+<persistence-unit name="mysql">
+<provider>
+org.hibernate.reactive.provider
+.ReactivePersistenceProvider
+</provider>
+<class>dev.davivieria.SomeObject</class>
+<properties>
+<property name=»javax.persistence.jdbc.url»
+value=»jdbc:mysql://localhost/hreact"/>
+</properties>
+</persistence-unit>
+
+Note que estamos usando ReactivePersistenceProvider para abrir uma conexão reativa com o banco de dados.
+Depois que o arquivo persistence.xml estiver configurado corretamente, podemos começar a usar o Hibernate
+Reactive em nosso código:
+
+import static javax.persistence.Persistence.createEntityManagerFactory;
+SessionFactory factory = createEntityManagerFactory (
+persistenceUnitName ( args ) ).unwrap(SessionFac
+tory.class);
+/** Code omitted **/
+public static String persistenceUnitName(String[] args) {
+return args.length > 0 ?
+args[0] : "postgresql-example";
+}
+
+Começamos importando o método estático javax.persistence.Persistence.createEntityMan - agerFactory fornecido pelo
+Hibernate Reactive. Este método estático facilita a criação de objetos SessionFactory.
+
+Para criar um objeto SessionFactory , o sistema usa as propriedades definidas pelo arquivo persistence.xml .
+Com SessionFactory, podemos iniciar a comunicação reativa com o banco de dados:
+
+SomeObject someObject = new SomeObject();
+factory.withTransaction(
+(
+org.hibernate.reactive.mutiny.Mutiny.
+Transaction session,
+org.hibernate.reactive.mutiny.Mutiny.Transaction tx) ->
+session.persistAll(someObject)).subscribe();
+
+Para persistir dados, primeiro precisamos criar uma transação chamando o método withTransaction.
+Dentro de uma transação, chamamos o método persistAll de SessionFactory para persistir um
+objeto. Chamamos o método subscribe para disparar a operação de persistência de forma não bloqueante.
+
+Ao estabelecer uma camada entre o aplicativo e o banco de dados, o Hibernate fornece todas as coisas básicas que
+precisamos para manipular bancos de dados em Java.
+
+Agora, vamos ver como o Panache pode tornar as coisas ainda mais simples.
+
+Características do Panache
+
+O Panache fica em cima do Hibernate e o aprimora ainda mais ao fornecer uma interface simples para lidar
+com as entidades do banco de dados. O Panache foi desenvolvido principalmente para trabalhar com o
+framework Quarkus, e é uma biblioteca que visa abstrair grande parte do código boilerplate necessário para
+lidar com as entidades do banco de dados. Com o Panache, você pode facilmente aplicar padrões de banco
+de dados como Active Record e Repository. Vamos ver brevemente como fazer isso.
+
+Aplicando o padrão Active Record
+
+No padrão Active Record, usamos a classe que representa a entidade do banco de dados para fazer
+alterações no banco de dados. Para habilitar esse comportamento, precisamos estender o PanacheEntity. Veja o exemplo a seguir:
+
+@Entity
+@Table(name="locations")
+public class Location extends PanacheEntity {
+@Id @GeneratedValue
+private Integer id;
+@NotNull @Size(max=100)
+public String country;
+@NotNull @Size(max=100)
+public String state;
+@NotNull @Size(max=100)
+public String city;
+}
+
+A classe Location anterior é uma entidade regular baseada no Hibernate que estende PanacheEntity.
+Além de estender PanacheEntity, não há nada de novo nessa classe Location . Temos anotações como @NotNull
+e @Size que usamos para validar os dados.
+
+A seguir estão algumas coisas que podemos fazer com uma entidade do Active Record:
+
+• Para listar entidades, podemos chamar o método listAll . Este método está disponível em Location
+porque estamos estendendo a classe PanacheEntity:
+
+List<Location> locations = Location.listAll();
+
+• Para excluir todas as entidades Location , podemos chamar o método deleteAll:
+
+Location.deleteAll();
+
+• Para encontrar uma entidade Location específica por seu ID, podemos usar o método findByIdOptional:
+
+Optional<Location> optional = Location.findByIdOptional(locationId);
+
+• Para persistir uma entidade Location , temos que chamar o método persist na instância
+Location que pretendemos persistir:
+
+Location location = new Location();
+location.country = "Brazil";
+location.state = "Sao Paulo";
+location.city = "Santo Andre";
+location.persist();
+
+Toda vez que executamos uma das operações descritas anteriormente, elas são imediatamente confirmadas
+no banco de dados.
+
+Agora, vamos ver como usar o Panache para aplicar o padrão Repositório.
+
+================================
+Aplicando o padrão Repositório
+
+Em vez de usar uma classe de entidade para executar ações no banco de dados, usamos uma classe separada que
+geralmente é dedicada a fornecer operações de banco de dados no padrão Repository. Esse tipo de classe funciona
+como uma interface de repositório para o banco de dados.
+
+Para aplicar o padrão Repositório, devemos usar entidades regulares do Hibernate:
+
+@Entity
+@Table(name="locations")
+public class Location {
+/** Code omitted **/
+}
+
+Observe que, neste momento, não estamos estendendo a classe PanacheEntity . No padrão Repository, não
+chamamos as operações do banco de dados diretamente por meio da classe entity. Em vez disso, as
+chamamos por meio da classe repository. Aqui está um exemplo de como podemos implementar uma classe repository:
+
+@ApplicationScoped
+public class LocationRepository implements PanacheRepository<Location> {
+public Location findByCity(String city){
+return find ("city", city).firstResult();
+}
+public Location findByState(String state){
+return find("state", state).firstResult();
+}
+public void deleteSomeCountry(){
+delete ("country", "SomeCountry");
+}
+}
+
+Ao implementar PanacheRepository na classe LocationRepository , estamos habilitando todas as operações
+padrão, como findById, delete, persist, e assim por diante, que estão presentes na classe PanacheEntity .
+Além disso, podemos definir nossas próprias consultas personalizadas, como fizemos no exemplo
+anterior, usando os métodos find e delete fornecidos pela classe PanacheEntity.
+
+Note que anotamos a classe do repositório como um bean @ApplicationScoped . Isso significa que
+podemos injetá-lo e usá-lo em outras classes:
+
+@Inject
+LocationRepository locationRepository;
+public Location findLocationByCity(City city){
+return locationRepository.findByCity(city);
+}
+
+Aqui, temos as operações mais comuns disponíveis na classe de repositório:
+
+• Para listar todas as entidades Location , precisamos chamar o método listAll
+de LocationRepository:
+
+List<Location> locations = locationRepository.listAll();
+
+• Ao chamar deleteAll em LocationRepository, removemos todas as entidades Location:
+
+locationRepository.deleteAll();
+
+• Para encontrar uma entidade Location pelo seu ID, chamamos o método findByIdOptional
+em LocalizaçãoRepositório:
+
+Optional<Location> optional = locationRepository.findByIdOptional(locationId);
+
+• Para persistir uma entidade Location , precisamos passar uma instância Location para o método persist
+de LocationRepository:
+
+Location location = new Location();
+location.country = "Brazil";
+location.state = "Sao Paulo";
+location.city = "Santo Andre";
+locationRepository.persist(location);
+
+Nos exemplos anteriores, estamos executando todas as operações do banco de dados usando a classe de repositório. O
+Os métodos que chamamos aqui são os mesmos presentes na classe de entidade da abordagem Active Record.
+A única diferença aqui é o uso da classe de repositório.
+
+Ao aprender como usar o Panache para aplicar os padrões Active Record e Repository, aumentamos
+nossa capacidade de fornecer boas abordagens para lidar com entidades de banco de dados. Não há melhor ou pior
+padrão. As circunstâncias do projeto acabarão por ditar qual padrão é mais adequado.
+
+Panache é uma biblioteca feita especialmente para Quarkus. Então, a melhor maneira de conectar
+objetos Hibernate Reactive como SessionFactory e Transaction ao Panache é delegando a
+configuração do banco de dados para Quarkus, que fornecerá automaticamente esses objetos para você.
+
+Agora que estamos familiarizados com o Hibernate Reactive e o Panache, vamos ver como podemos
+implementar adaptadores de saída em um sistema hexagonal.
+
+=================================
+Habilitando comportamento reativo em adaptadores de saída
+
+Um dos benefícios mais importantes do uso da arquitetura hexagonal é a flexibilidade melhorada
+para mudar tecnologias sem refatoração significativa. O sistema hexagonal é projetado para que
+sua lógica de domínio e regras de negócios sejam alheias às tecnologias utilizadas para executá-las.
+
+Não existe almoço grátis – quando decidimos usar a arquitetura hexagonal, temos que pagar o preço pelos
+benefícios que essa arquitetura pode fornecer. (Por preço, quero dizer um aumento considerável no esforço e
+na complexidade necessários para estruturar o código do sistema seguindo os princípios hexagonais.)
+
+Se você está preocupado com a reutilização de código, pode achar algumas práticas estranhas para desacoplar
+código de tecnologias específicas. Por exemplo, considere um cenário em que temos uma classe de entidade
+de domínio e uma classe de entidade de banco de dados. Podemos argumentar, por que não ter apenas uma
+classe que atenda a ambos os propósitos? Bem, no final, é tudo uma questão de prioridades. Se o acoplamento
+das classes específicas de domínio e tecnologia não for um problema para você, vá em frente. Nesse caso,
+você não terá o fardo de manter um modelo de domínio mais todo o código de infraestrutura que o suporta. No entanto, o mesmo código
+serviria a diferentes propósitos, violando assim o Princípio da Responsabilidade Única (SRP). Caso contrário, se você vir um risco
+em usar o mesmo código para servir propósitos diferentes, então os adaptadores de saída podem ajudar.
+
+No Capítulo 2, Encapsulando Regras de Negócios Dentro do Hexágono de Domínio, introduzimos um adaptador
+de saída que integrava o aplicativo com o sistema de arquivos. No Capítulo 4, Criando Adaptadores para
+Interagir com o Mundo Exterior, criamos um adaptador de saída mais elaborado para se comunicar com um
+banco de dados H2 na memória . Agora que temos o kit de ferramentas Quarkus à nossa disposição, podemos criar adaptadores de saída reativos.
+
+===================================================================
+Configurando fontes de dados reativas
+
+Para continuar o esforço reativo que iniciamos no capítulo anterior implementando adaptadores de entrada
+reativos, criaremos e conectaremos adaptadores de saída reativos a esses adaptadores de entrada reativos
+executando as seguintes etapas:
+
+1. Vamos começar configurando as dependências necessárias no arquivo pom.xml
+   do Framework hexagon:
+
+<dependencies>
+ <dependency>
+ <groupId>io.quarkus</groupId>
+ artifactId>quarkus-reactive-mysql-client
+ </artifactId>
+ </dependency>
+ <dependency>
+ <groupId>io.quarkus</groupId>
+ <artifactId>quarkus-hibernate-reactive-panache</artifactId>
+ </dependency>
+</dependencies>
+
+A dependência quarkus-reactive-mysql-client contém as bibliotecas que precisamos para abrir
+uma conexão reativa com bancos de dados MySQL e a dependência quarkus-hibernatereactive-panache contém Hibernate Reactive e Panache. É importante notar que esta
+biblioteca é especialmente adequada para atividades reativas. Para atividades não reativas,
+o Quarkus oferece uma biblioteca diferente.
+
+2. Agora, precisamos configurar a conexão do banco de dados no application.properties
+   arquivo do hexágono Bootstrap. Vamos começar com as propriedades da fonte de dados:
+
+quarkus.datasource.db-kind = mysql
+quarkus.datasource.reactive = true
+quarkus.datasource.reactive.url = mysql://lo
+calhost:3306/inventory
+quarkus.datasource.username = root
+quarkus.datasource.password = password
+
+A propriedade quarkus.datasource.db-kind não é obrigatória porque o Quarkus pode inferir o
+tipo de banco de dados ao olhar para o cliente de banco de dados específico que é
+carregado das dependências do Maven. Com quarkus.datasource.reactive definido como true,
+estamos impondo conexões reativas. Precisamos especificar a URL de conexão de banco de dados reativa no quarkus.datasource.reactive.url.
+
+3. Por fim, temos que definir a configuração do Hibernate:
+
+quarkus.hibernate-orm.sql-load-script=inventory.sql
+quarkus.hibernate-orm.database.generation = drop-and-
+create
+quarkus.hibernate-orm.log.sql = true
+
+Depois que o Quarkus tiver criado o banco de dados e suas tabelas, você pode carregar um arquivo .sql
+para executar mais instruções no banco de dados. Por padrão, ele procura e carrega um arquivo chamado import.
+sql. Podemos alterar esse comportamento usando a propriedade quarkus.hibernateorm.sql-load -script .
+
+Esteja ciente de não usar quarkus.hibernate-orm.database.generation = drop- and-create em produção.
+Caso contrário, ele removerá todas as suas tabelas de banco de dados. Se você não definir nenhum
+valor, o padrão, none, será usado. O comportamento padrão não faz nenhuma alteração no banco de
+dados.
+
+E, finalmente, habilitamos quarkus.hibernate-orm.log.sql para ver quais consultas SQL o Hibernate está
+executando nos bastidores. Recomendo que você habilite o recurso de log apenas para fins de
+desenvolvimento. Ao executar o aplicativo em produção, não esqueça de desabilitar esta opção.
+
+Vamos agora ver como configurar entidades de aplicação para trabalhar com um banco de dados MySQL.
+
+
 

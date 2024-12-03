@@ -7,7 +7,6 @@
     <artifactId>topology-inventory</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <groupId>dev.hugodesouzacaramez</groupId>
   <artifactId>framework</artifactId>
   <version>1.0-SNAPSHOT</version>
   <dependencies>
@@ -20,19 +19,20 @@
       <artifactId>application</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId>
-      <version>1.4.200</version>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-reactive-mysql-client</artifactId>
     </dependency>
     <dependency>
-      <groupId>jakarta.persistence</groupId>
-      <artifactId>jakarta.persistence-api</artifactId>
-      <version>3.0.0</version>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-hibernate-reactive-panache</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.eclipse.persistence</groupId>
-      <artifactId>org.eclipse.persistence.jpa</artifactId>
-      <version>3.0.1</version>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-vertx</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -41,6 +41,11 @@
     <dependency>
       <groupId>io.rest-assured</groupId>
       <artifactId>rest-assured</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-junit5-mockito</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
