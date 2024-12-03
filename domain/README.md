@@ -4427,7 +4427,54 @@ withTransaction. Este é um requisito para operações em que precisamos persist
 
 Vamos agora implementar o adaptador de saída reativa para gerenciamento de switches.
 
+================================================================================
+Gerenciamento de switch reativo do adaptador de saída MySQL
 
+A abordagem usada aqui é a mesma utilizada quando implementamos o adaptador de saída reativa para
+gerenciamento de roteador. Executaremos as seguintes etapas para implementar o adaptador de saída reativa:
+
+1. Vamos começar injetando a classe de repositório SwitchManagementRepository:
+
+@ApplicationScoped
+public class SwitchManagementMySQLAdapter implements
+SwitchManagementOutputPort {
+@Inject
+SwitchManagementRepository
+switchManagementRepository;
+/** Code omitted **/
+}
+
+Como já vimos, a injeção de uma classe de repositório é necessária para que possamos usá-la para acionar
+operações de banco de dados.
+
+2. Depois disso, implementamos o método retrieveSwitch:
+
+@Override
+public Switch retrieveSwitch(Id id) {
+var switchData =
+switchManagementRepository.findById(id.getUuid())
+.subscribe()
+.asCompletionStage()
+.join();
+return RouterMapper.switchDataToDo
+main(switchData);
+}
+
+Usamos esse método para recuperar um objeto Switch reativo. Não há métodos de persistência porque
+todas as operações de gravação devem sempre ocorrer por meio de um adaptador de saída de gerenciamento de roteador.
+
+Ao implementar adaptadores de saída reativos no sistema hexagonal, podemos aproveitar as vantagens
+das técnicas de programação reativa. Com a arquitetura hexagonal, não é um grande problema ter
+adaptadores de saída reativos e imperativos atendendo a necessidades diferentes no mesmo sistema.
+
+Os recursos reativos do Quarkus para bancos de dados são primordiais para qualquer um que se
+aventure no desenvolvimento de sistemas reativos. Podemos fornecer uma alternativa reativa para como
+nosso aplicativo lida com bancos de dados ao entender como usar esses recursos. Isso não significa
+que a abordagem reativa seja sempre uma escolha melhor do que a tradicional imperativa; cabe a você e às necessidades do seu projeto
+decidir qual abordagem é mais adequada.
+
+Agora que implementamos os adaptadores de saída RouterManagementMySQLAdapter
+e SwitchManagementMySQLAdapter , vamos testá-los.
 
 
 
