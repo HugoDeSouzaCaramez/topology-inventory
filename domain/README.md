@@ -4132,5 +4132,68 @@ desenvolvimento. Ao executar o aplicativo em produção, não esqueça de desabi
 
 Vamos agora ver como configurar entidades de aplicação para trabalhar com um banco de dados MySQL.
 
+=======================
+Configurando entidades
+
+O sistema de topologia e inventário requer quatro tabelas de banco de dados para armazenar seus dados:
+roteadores, switches, redes e localização. Cada uma dessas tabelas será mapeada para uma classe de entidade
+Hibernate configurada corretamente para trabalhar com uma fonte de dados MySQL.
+
+Aplicaremos o padrão Repositório, para que não tenhamos entidades para executar operações no banco de dados.
+Em vez disso, criaremos classes de repositório separadas para acionar ações no banco de dados, mas antes
+de criar classes de repositório, vamos começar implementando entidades do Hibernate para o sistema de topologia e inventário.
+Configuraremos essas entidades para trabalhar com bancos de dados MySQL.
+
+===========================================================
+A entidade Roteador
+
+Para esta entidade e as outras que serão implementadas posteriormente, devemos criar classes no
+dev.hugodesouzacaramez.topologyinventory.framework.adapters.output.mysql.data
+pacote de dados do Framework hexagon.
+
+Veja como a classe de entidade Router deve se parecer:
+
+@Entity(name = "RouterData")
+@Table(name = "routers")
+@EqualsAndHashCode(exclude = "routers")
+public class RouterData implements Serializable {
+@Id
+@Column(name="router_id", columnDefinition =
+«BINARY(16)")
+private UUID routerId;
+@Column(name="router_parent_core_id",
+columnDefinition = "BINARY(16)")
+private UUID routerParentCoreId;
+/** Code omitted **/
+}
+
+Para os campos routerId e routerParentCoreId , precisamos definir columnDefinition, o parâmetro de anotação @Column ,
+como BINARY(16). É um requisito para fazer atributos UUID funcionarem em bancos de dados MySQL.
+
+Em seguida, criamos o mapeamento de relacionamento entre roteadores e outras tabelas:
+
+{
+/**Code omitted**/
+@ManyToOne(cascade = CascadeType.ALL)
+@JoinColumn(name="location_id")
+private LocationData routerLocation;
+@OneToMany(cascade = {CascadeType.MERGE},
+fetch = FetchType.EAGER)
+@JoinColumn(name="router_id")
+private List<SwitchData> switches;
+@OneToMany(cascade = CascadeType.ALL, fetch =
+FetchType.EAGER)
+@JoinColumn(name="router_parent_core_id")
+private Set<RouterData> routers;
+/**Code omitted**/
+}
+
+Aqui, definimos uma relação muitos-para-um entre roteadores e localização. Depois disso, temos
+duas relações um-para-muitos com switches e roteadores, respectivamente. A propriedade fetch =
+FetchType.EAGER é usada para evitar quaisquer erros de mapeamento que possam ocorrer durante as conexões reativas.
+
+Vamos passar para a configuração da classe de entidade Switch.
+
+
 
 
