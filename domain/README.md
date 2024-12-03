@@ -4291,6 +4291,45 @@ Agora que temos todas as entidades necessárias configuradas adequadamente, pode
 para criar classes de repositório reativas, que usaremos para acionar operações de banco de dados com as entidades
 que configuramos.
 
+===========================
+Implementando classes de repositório reativa
+
+Ao implementar a interface PanacheRepositoryBase , você cria uma classe de repositório reativa.
+Precisaremos de uma classe de repositório para operações de roteador e outra para operações de switch.
+
+É fundamental definir apenas um repositório para a raiz agregada. No nosso caso, a entidade
+Router é a raiz agregada para operações de gerenciamento de roteador, e Switch é a raiz agregada
+para operações de gerenciamento de switch. O propósito de um agregado é garantir a consistência
+em todos os objetos que são controlados por tal agregado. O ponto de entrada para qualquer agregado é sempre a raiz agregada.
+Para garantir a consistência agregada em uma transação de banco de dados, definimos apenas uma classe de repositório, que
+é dedicado a controlar as operações do banco de dados com base na raiz agregada.
+
+As classes que estamos prestes a implementar estão localizadas no pacote
+dev.hugodesouzacaramez.topologyinventory.framework.adapters.output.mysql.repository:
+
+• O código a seguir implementa a classe RouterManagementRepository:
+
+@ApplicationScoped
+public class RouterManagementRepository implements PanacheRepositoryBase<RouterData, UUID> {
+}
+
+Note que estamos passando RouterData como a entidade na qual estamos trabalhando e UUID como o
+tipo de atributo mapeado para ser usado pelo ID. Se não precisarmos de nenhuma consulta personalizada,
+podemos deixar essa classe vazia porque o Panache já fornece muitas operações de banco de dados padrão.
+
+Observe que também estamos anotando essa classe com @ApplicationScoped, para que possamos
+injetar esse componente em outros lugares, como no adaptador de saída, que implementaremos em breve.
+
+• O código a seguir implementa a classe SwitchManagementRepository:
+
+@ApplicationScoped
+public class SwitchManagementRepository implements PanacheRepositoryBase<SwitchData, UUID> {
+}
+
+Aqui, estamos seguindo a mesma abordagem que usamos para a classe RouterManagementRepository .
+
+Com as classes de repositório reativo implementadas corretamente, estamos prontos para criar adaptadores
+de saída reativos. Vamos fazer isso!
 
 
 
