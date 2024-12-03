@@ -13,8 +13,8 @@ public class RouterManagementOutputPortMock implements RouterManagementOutputPor
     }
 
     @Override
-    public Router removeRouter(Id id) {
-        return null;
+    public boolean removeRouter(Id id) {
+        return true;
     }
 
     @Override

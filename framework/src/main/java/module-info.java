@@ -1,31 +1,41 @@
+import dev.hugodesouzacaramez.topologyinventory.framework.adapters.output.mysql.RouterManagementMySQLAdapter;
+import dev.hugodesouzacaramez.topologyinventory.framework.adapters.output.mysql.SwitchManagementMySQLAdapter;
+
 module framework {
     requires domain;
     requires application;
     requires static lombok;
-    requires org.eclipse.persistence.core;
     requires java.sql;
-    requires jakarta.persistence;
     requires com.fasterxml.jackson.databind;
     requires com.fasterxml.jackson.core;
+    requires quarkus.hibernate.reactive.panache;
+    requires jakarta.persistence;
     requires jakarta.cdi;
     requires jakarta.inject;
-    requires io.smallrye.mutiny;
-    requires microprofile.openapi.api;
     requires jakarta.ws.rs;
-    requires quarkus.hibernate.reactive.panache;
+    requires io.smallrye.mutiny;
+    requires io.vertx.core;
     requires quarkus.hibernate.reactive.panache.common;
+    requires jakarta.xml.bind;
+    requires io.smallrye.common.annotation;
+    requires com.fasterxml.jackson.annotation;
+    requires microprofile.openapi.api;
+    requires jakarta.transaction;
+    requires quarkus.vertx;
+    requires microprofile.context.propagation.api;
 
-    exports dev.hugodesouzacaramez.topologyinventory.framework.adapters.output.h2.data;
-    opens dev.hugodesouzacaramez.topologyinventory.framework.adapters.output.h2.data;
+    exports dev.hugodesouzacaramez.topologyinventory.framework.adapters.output.mysql.data;
+    opens dev.hugodesouzacaramez.topologyinventory.framework.adapters.output.mysql.data;
 
     provides dev.hugodesouzacaramez.topologyinventory.application.ports.output.RouterManagementOutputPort
-            with dev.hugodesouzacaramez.topologyinventory.framework.adapters.output.h2.RouterManagementH2Adapter;
+            with RouterManagementMySQLAdapter;
     provides dev.hugodesouzacaramez.topologyinventory.application.ports.output.SwitchManagementOutputPort
-            with dev.hugodesouzacaramez.topologyinventory.framework.adapters.output.h2.SwitchManagementH2Adapter;
+            with SwitchManagementMySQLAdapter;
 
     uses dev.hugodesouzacaramez.topologyinventory.application.usecases.RouterManagementUseCase;
     uses dev.hugodesouzacaramez.topologyinventory.application.usecases.SwitchManagementUseCase;
     uses dev.hugodesouzacaramez.topologyinventory.application.usecases.NetworkManagementUseCase;
     uses dev.hugodesouzacaramez.topologyinventory.application.ports.output.RouterManagementOutputPort;
     uses dev.hugodesouzacaramez.topologyinventory.application.ports.output.SwitchManagementOutputPort;
+
 }

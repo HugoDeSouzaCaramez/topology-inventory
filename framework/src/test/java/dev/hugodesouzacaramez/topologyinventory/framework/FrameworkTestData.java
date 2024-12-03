@@ -1,21 +1,5 @@
 package dev.hugodesouzacaramez.topologyinventory.framework;
 
-import dev.hugodesouzacaramez.topologyinventory.application.ports.output.RouterManagementOutputPort;
-import dev.hugodesouzacaramez.topologyinventory.application.ports.output.SwitchManagementOutputPort;
-import dev.hugodesouzacaramez.topologyinventory.application.usecases.NetworkManagementUseCase;
-import dev.hugodesouzacaramez.topologyinventory.application.usecases.RouterManagementUseCase;
-import dev.hugodesouzacaramez.topologyinventory.application.usecases.SwitchManagementUseCase;
-import dev.hugodesouzacaramez.topologyinventory.domain.entity.CoreRouter;
-import dev.hugodesouzacaramez.topologyinventory.domain.entity.EdgeRouter;
-import dev.hugodesouzacaramez.topologyinventory.domain.entity.Router;
-import dev.hugodesouzacaramez.topologyinventory.domain.entity.Switch;
-import dev.hugodesouzacaramez.topologyinventory.domain.vo.*;
-import dev.hugodesouzacaramez.topologyinventory.framework.adapters.input.generic.NetworkManagementGenericAdapter;
-import dev.hugodesouzacaramez.topologyinventory.framework.adapters.input.generic.RouterManagementGenericAdapter;
-import dev.hugodesouzacaramez.topologyinventory.framework.adapters.input.generic.SwitchManagementGenericAdapter;
-
-import java.util.*;
-
 public class FrameworkTestData {
     /*protected List<Router> routers = new ArrayList<>();
 

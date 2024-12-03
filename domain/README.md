@@ -4476,5 +4476,68 @@ decidir qual abordagem é mais adequada.
 Agora que implementamos os adaptadores de saída RouterManagementMySQLAdapter
 e SwitchManagementMySQLAdapter , vamos testá-los.
 
+===================================================================
+Testando os adaptadores de saída reativa
 
+Precisamos implementar testes de unidade para garantir que os métodos dos adaptadores de saída estejam funcionando conforme o esperado.
+
+Aqui está um exemplo de como podemos criar testes de unidade para RouterManagementMySQLAdapter:
+
+@QuarkusTest
+public class RouterManagementMySQLAdapterTest {
+@InjectMock
+RouterManagementMySQLAdapter
+routerManagementMySQLAdapter;
+@Test
+public void testRetrieveRouter() {
+Router router = getRouter();
+Mockito.when(
+routerManagementMySQLAdapter.
+retrieveRouter(router.getId())).thenReturn(router);
+Router retrievedRouter =
+routerManagementMySQLAdapter.
+retrieveRouter(router.getId());
+Assertions.assertSame(router, retrievedRouter);
+}
+/** Code omitted **/
+}
+
+É possível usar a anotação @InjectMock para simular o RouterManagementMySQLAdapter
+adaptador de saída. Ao executar o método de teste testRetrieveRouter , podemos simular
+uma chamada para routerManagementMySQLAdapter.retrieveRouter(router.getId) usando
+Mockito.when. O método thenReturn retorna o objeto que nosso teste simulado deve retornar. Neste caso, é um objeto Router .
+Com Assertions.assertSame(router, retrievedRouter), podemos afirmar o resultado para a execução de
+retrieveRouter(router.getId).
+
+Não precisaremos implementar novas classes de teste para executar testes de integração para adaptadores de saída reativos.
+Podemos confiar nos mesmos testes usados no capítulo anterior para testar os adaptadores de entrada reativos.
+Esses testes chamam os adaptadores de entrada, que, por sua vez, chamam os adaptadores de saída usando as operações de caso de uso.
+
+No entanto, o que muda é que precisaremos de um banco de dados MySQL para testar os adaptadores de saída reativos.
+
+O Quarkus fornece contêineres baseados em Docker que podemos usar para fins de desenvolvimento ou teste. Para
+habilitar tal contêiner de banco de dados, não há necessidade de fornecer uma conexão detalhada de fonte de dados
+configuração no arquivo application.properties . Aqui está como devemos configurar esse arquivo para fins de teste:
+
+quarkus.datasource.db-kind=mysql
+quarkus.datasource.reactive=true
+quarkus.hibernate-orm.database.generation=drop-and-create
+quarkus.hibernate-orm.sql-load-script=inventory.sql
+quarkus.vertx.max-event-loop-execute-time=100
+
+Observe que não estamos especificando uma URL de conexão de banco de dados. Ao fazer isso,
+o Quarkus entende que precisa fornecer um banco de dados. O arquivo application.properties
+descrito anteriormente deve ser colocado no diretório tests/resource/ . Dentro desse diretório,
+também devemos colocar o arquivo inventory.sql , que carrega dados no banco de dados.
+
+Você pode substituir entradas em application.properties para usar variáveis de
+ambiente. Isso pode ser útil para configurações como quarkus.hibernate-orm.database.generation
+onde você pode definir o valor da propriedade com base nas variáveis de ambiente do aplicativo. Por
+exemplo, para propósitos locais ou de desenvolvimento, você pode usar ${DB_GENERATION}, uma
+variável de ambiente que resolve para drop-and-create. Na produção, essa variável de ambiente pode resolver para none.
+
+Depois de configurar corretamente os arquivos application.properties e inventory.sql , podemos
+testar o aplicativo executando o seguinte comando no diretório raiz do projeto:
+
+mvn test
 
