@@ -3720,4 +3720,60 @@ Você pode executar este e outros testes com:
 mvn test
 
 
+A saída do código anterior será semelhante à seguinte:
+
+[INFO] -------------------------------------------------------
+[INFO] T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running dev.hugodesouzacaramez.topologyinventory.framework.adapters.
+input.rest.NetworkManagementAdapterTest
+2021-09-29 00:47:36,825 INFO [io.quarkus] (main) Quarkus 2.2.1.Final
+on JVM started in 2.550s. Listening on: http://localhost:8081
+2021-09-29 00:47:36,827 INFO [io.quarkus] (main) Profile test
+activated.
+2021-09-29 00:47:36,827 INFO [io.quarkus] (main) Installed features:
+[cdi, resteasy-reactive, resteasy-reactive-jackson, smallrye-contextpropagation, smallrye-openapi, swagger-ui]
+[EL Info]: 2021-09-29 00:47:38.812--ServerSession(751658062)-
+-EclipseLink, version: Eclipse Persistence Services -
+3.0.1.v202104070723
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed:
+5.418 s - in dev.hugodesouzacaramez.topologyinventory.framework.adapters.
+input.rest.NetworkManagementAdapterTest
+[INFO] Running dev.hugodesouzacaramez.topologyinventory.framework.adapters.
+input.rest.RouterManagementAdapterTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed:
+0.226 s - in dev.hugodesouzacaramez.topologyinventory.framework.adapters.
+input.rest.RouterManagementAdapterTest
+[INFO] Running dev.hugodesouzacaramez.topologyinventory.framework.adapters.
+input.rest.SwitchManagementAdapterTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed:
+0.085 s - in dev.hugodesouzacaramez.topologyinventory.framework.adapters.
+input.rest.SwitchManagementAdapterTest
+2021-09-29 00:47:39,675 INFO [io.quarkus] (main) Quarkus stopped in
+0.032s
+
+
+A saída anterior descreve a execução dos testes de endpoint reativo para
+os adaptadores de entrada RouterManagementAdapter, SwitchManagementAdapter e
+NetworkManagementAdapter.
+
+Um benefício de executar esses testes de endpoint é que não estamos apenas testando a funcionalidade
+do endpoint no hexágono do Framework, mas também realizando testes abrangentes que verificam o
+comportamento de todos os hexágonos do sistema.
+
+==============================
+Resumo
+
+Neste capítulo, tivemos a oportunidade de nos aprofundar em mais recursos do Quarkus, especialmente o RESTEasy Reactive.
+Começamos revisando o que imperativo e reativo significam no contexto da comunicação cliente-servidor.
+
+Então, aprendemos que o Quarkus fornece RESTEasy Reactive como sua implementação JAX-RS, permitindo- nos
+implementar endpoints Reactive em adaptadores de entrada. Depois disso, expusemos a API do sistema hexagonal
+usando OpenAPI e Swagger UI. Para garantir que implementamos os endpoints Reactive corretamente, escrevemos
+os testes de endpoint usando a biblioteca rest-assured.
+
+No próximo capítulo, continuaremos explorando os recursos reativos oferecidos pelo Quarkus e enfatizaremos os
+aspectos de persistência de dados com o Hibernate Reactive.
+
+
 
