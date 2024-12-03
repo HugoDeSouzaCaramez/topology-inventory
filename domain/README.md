@@ -4331,6 +4331,31 @@ Aqui, estamos seguindo a mesma abordagem que usamos para a classe RouterManageme
 Com as classes de repositório reativo implementadas corretamente, estamos prontos para criar adaptadores
 de saída reativos. Vamos fazer isso!
 
+=================================
+Implementando adaptadores de saída reativos
+
+Só para recapitular, precisamos fornecer uma implementação de adaptador para a interface de porta de saída
+RouterManagementOutputPort:
+
+public interface RouterManagementOutputPort {
+Router retrieveRouter(Id id);
+boolean removeRouter(Id id);
+Router persistRouter(Router router);
+}
+
+Ao implementar o adaptador de saída do MySQL, forneceremos uma implementação reativa para cada uma
+das declarações de método anteriores.
+
+Também precisamos implementar a interface do adaptador de saída SwitchManagementOutputPort:
+
+public interface SwitchManagementOutputPort {
+Switch retrieveSwitch(Id id);
+}
+
+É mais simples, pois há apenas um método para o qual precisamos fornecer uma implementação reativa.
+
+Vamos começar implementando o adaptador de saída reativa para gerenciamento do roteador.
+
 
 
 
