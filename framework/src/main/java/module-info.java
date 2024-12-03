@@ -12,6 +12,8 @@ module framework {
     requires io.smallrye.mutiny;
     requires microprofile.openapi.api;
     requires jakarta.ws.rs;
+    requires quarkus.hibernate.reactive.panache;
+    requires quarkus.hibernate.reactive.panache.common;
 
     exports dev.hugodesouzacaramez.topologyinventory.framework.adapters.output.h2.data;
     opens dev.hugodesouzacaramez.topologyinventory.framework.adapters.output.h2.data;
