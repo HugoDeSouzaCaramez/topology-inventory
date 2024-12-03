@@ -4262,6 +4262,35 @@ rede.
 
 Ainda precisamos implementar uma última entidade para localização. Vamos fazer isso.
 
+==================================
+A entidade Localização
+
+Em redes, a localização não é considerada uma entidade no nível do hexágono do Domínio, mas como temos uma tabela
+separada para localização, precisamos tratá-la como uma entidade de banco de dados no nível do hexágono da Estrutura.
+
+O código a seguir é usado para implementar a classe de entidade Location:
+
+Entity
+@Table(name = "location")
+public class LocationData {
+@Id
+@Column(name="location_id")
+@GeneratedValue(strategy = GenerationType.IDENTITY)
+private int locationId;
+@Column(name="address")
+private String address;
+@Column(name="city")
+private String city;
+/**Code omitted**/
+}
+
+Novamente, contamos com o mecanismo de geração de ID integrado ao banco de dados para manipular IDs para dados de localização.
+Depois disso, temos atributos como endereço e cidade que fazem parte de um local.
+
+Agora que temos todas as entidades necessárias configuradas adequadamente, podemos prosseguir e usar o Panache
+para criar classes de repositório reativas, que usaremos para acionar operações de banco de dados com as entidades
+que configuramos.
+
 
 
 
