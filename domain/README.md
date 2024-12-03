@@ -4194,6 +4194,44 @@ FetchType.EAGER é usada para evitar quaisquer erros de mapeamento que possam oc
 
 Vamos passar para a configuração da classe de entidade Switch.
 
+==========================================
+A entidade Switch
+
+O código a seguir nos mostra como devemos implementar a classe de entidade Switch:
+
+@Entity
+@Table(name = "switches")
+public class SwitchData {
+@ManyToOne
+private RouterData router;
+@Id
+@Column(name="switch_id", columnDefinition =
+«BINARY(16)")
+private UUID switchId;
+@Column(name="router_id", columnDefinition =
+«BINARY(16)")
+private UUID routerId;
+@OneToMany(cascade = CascadeType.ALL, fetch =
+FetchType.EAGER)
+@JoinColumn(name="switch_id")
+private Set<NetworkData> networks;
+@ManyToOne
+@JoinColumn(name="location_id")
+private LocationData switchLocation;
+/**Code omitted**/
+}
+
+Omitimos outros atributos de coluna para focar apenas nos IDs e relacionamentos. Começamos definindo um
+relacionamento muitos-para-um entre switches e um roteador. A chave primária é o campo switchId , que por acaso é um
+atributo UUID . Temos outro atributo UUID para mapear o campo routerId .
+
+Além disso, há uma relação de um para muitos entre um switch e redes, e uma relação de muitos para um
+entre switches e um local.
+
+Agora, vamos configurar a classe de entidade Network.
+
+===============================================
+
 
 
 
