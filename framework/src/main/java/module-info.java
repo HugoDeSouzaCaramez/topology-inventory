@@ -1,5 +1,10 @@
 import dev.hugodesouzacaramez.topologyinventory.framework.adapters.output.mysql.RouterManagementMySQLAdapter;
 import dev.hugodesouzacaramez.topologyinventory.framework.adapters.output.mysql.SwitchManagementMySQLAdapter;
+import dev.hugodesouzacaramez.topologyinventory.application.ports.output.RouterManagementOutputPort;
+import dev.hugodesouzacaramez.topologyinventory.application.ports.output.SwitchManagementOutputPort;
+import dev.hugodesouzacaramez.topologyinventory.application.usecases.NetworkManagementUseCase;
+import dev.hugodesouzacaramez.topologyinventory.application.usecases.RouterManagementUseCase;
+import dev.hugodesouzacaramez.topologyinventory.application.usecases.SwitchManagementUseCase;
 
 module framework {
     requires domain;
@@ -27,15 +32,14 @@ module framework {
     exports dev.hugodesouzacaramez.topologyinventory.framework.adapters.output.mysql.data;
     opens dev.hugodesouzacaramez.topologyinventory.framework.adapters.output.mysql.data;
 
-    provides dev.hugodesouzacaramez.topologyinventory.application.ports.output.RouterManagementOutputPort
+    provides RouterManagementOutputPort
             with RouterManagementMySQLAdapter;
-    provides dev.hugodesouzacaramez.topologyinventory.application.ports.output.SwitchManagementOutputPort
+    provides SwitchManagementOutputPort
             with SwitchManagementMySQLAdapter;
 
-    uses dev.hugodesouzacaramez.topologyinventory.application.usecases.RouterManagementUseCase;
-    uses dev.hugodesouzacaramez.topologyinventory.application.usecases.SwitchManagementUseCase;
-    uses dev.hugodesouzacaramez.topologyinventory.application.usecases.NetworkManagementUseCase;
-    uses dev.hugodesouzacaramez.topologyinventory.application.ports.output.RouterManagementOutputPort;
-    uses dev.hugodesouzacaramez.topologyinventory.application.ports.output.SwitchManagementOutputPort;
-
+    uses RouterManagementUseCase;
+    uses SwitchManagementUseCase;
+    uses NetworkManagementUseCase;
+    uses RouterManagementOutputPort;
+    uses SwitchManagementOutputPort;
 }

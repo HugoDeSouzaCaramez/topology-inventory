@@ -7,17 +7,18 @@ import dev.hugodesouzacaramez.topologyinventory.domain.vo.IP;
 import dev.hugodesouzacaramez.topologyinventory.domain.vo.Id;
 import dev.hugodesouzacaramez.topologyinventory.domain.vo.Network;
 import dev.hugodesouzacaramez.topologyinventory.framework.adapters.input.rest.request.network.AddNetwork;
+import io.smallrye.mutiny.Uni;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.core.Response;
-import org.eclipse.microprofile.openapi.annotations.Operation;
-import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-import io.smallrye.mutiny.Uni;
 
 @ApplicationScoped
 @Path("/network")
@@ -29,6 +30,7 @@ public class NetworkManagementAdapter {
     @Inject
     NetworkManagementUseCase networkManagementUseCase;
 
+    @Transactional
     @POST
     @Path("/add/{switchId}")
     @Operation(operationId = "addNetworkToSwitch", description = "Add network to a switch")
@@ -49,6 +51,7 @@ public class NetworkManagementAdapter {
                 .transform(Response.ResponseBuilder::build);
     }
 
+    @Transactional
     @DELETE
     @Path("/{networkName}/from/{switchId}")
     @Operation(operationId = "removeNetworkFromSwitch", description = "Remove network from a switch")

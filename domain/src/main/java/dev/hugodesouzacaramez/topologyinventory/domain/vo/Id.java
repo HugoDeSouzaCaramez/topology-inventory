@@ -13,24 +13,15 @@ public class Id {
 
     private final UUID uuid;
 
-    private Id(UUID uuid) {
+    private Id(UUID uuid){
         this.uuid = uuid;
     }
 
-    public static Id withId(String id) {
+    public static Id withId(String id){
         return new Id(UUID.fromString(id));
     }
 
-    public static Id withoutId() {
+    public static Id withoutId(){
         return new Id(UUID.randomUUID());
-    }
-
-    public static Id fromString(String id) {
-        return withId(id); // Reutiliza o método já existente
-    }
-
-    @Override
-    public String toString() {
-        return uuid.toString();
     }
 }

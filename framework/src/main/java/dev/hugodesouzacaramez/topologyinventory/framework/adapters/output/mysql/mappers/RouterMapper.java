@@ -44,7 +44,7 @@ public class RouterMapper {
                 locationDataToLocation(routerData.getRouterLocation()),
                 RouterType.valueOf(routerData.getRouterType().name()));
         if(routerData.getRouterParentCoreId()!=null)
-            router.setParentRouterId(Id.withId(routerData.getRouterParentCoreId().toString()));
+        router.setParentRouterId(Id.withId(routerData.getRouterParentCoreId().toString()));
         if(routerData.getRouterType().equals(RouterTypeData.CORE)){
             var coreRouter = (CoreRouter) router;
             coreRouter.setRouters(getRoutersFromData(routerData.getRouters()));
@@ -138,10 +138,10 @@ public class RouterMapper {
 
     private static Set<RouterData>  getRoutersFromDomain(Map<Id, Router> routers){
         Set<RouterData> routerDataList = new HashSet<>();
-        routers.values().stream().forEach(router -> {
-            var routerData = routerDomainToData(router);
-            routerDataList.add(routerData);
-        });
+         routers.values().stream().forEach(router -> {
+             var routerData = routerDomainToData(router);
+             routerDataList.add(routerData);
+         });
         return routerDataList;
     }
 

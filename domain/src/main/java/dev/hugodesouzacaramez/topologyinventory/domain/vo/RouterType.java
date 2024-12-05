@@ -4,4 +4,3 @@ public enum RouterType {
     EDGE,
     CORE;
 }
-

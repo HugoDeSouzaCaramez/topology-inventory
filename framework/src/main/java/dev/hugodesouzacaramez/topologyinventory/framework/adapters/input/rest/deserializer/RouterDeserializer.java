@@ -24,6 +24,7 @@ import java.util.Map;
 
 import static dev.hugodesouzacaramez.topologyinventory.framework.adapters.input.rest.deserializer.LocationDeserializer.getLocation;
 import static dev.hugodesouzacaramez.topologyinventory.framework.adapters.input.rest.deserializer.SwitchDeserializer.getSwitchDeserialized;
+
 public class RouterDeserializer extends StdDeserializer<Router> {
 
     public RouterDeserializer() {

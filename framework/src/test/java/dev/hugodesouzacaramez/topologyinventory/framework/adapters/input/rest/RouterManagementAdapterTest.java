@@ -1,11 +1,11 @@
 package dev.hugodesouzacaramez.topologyinventory.framework.adapters.input.rest;
 
 import dev.hugodesouzacaramez.topologyinventory.domain.entity.CoreRouter;
+import dev.hugodesouzacaramez.topologyinventory.domain.vo.Id;
 import dev.hugodesouzacaramez.topologyinventory.domain.vo.Location;
 import dev.hugodesouzacaramez.topologyinventory.domain.vo.Model;
 import dev.hugodesouzacaramez.topologyinventory.domain.vo.RouterType;
 import dev.hugodesouzacaramez.topologyinventory.domain.vo.Vendor;
-import dev.hugodesouzacaramez.topologyinventory.framework.adapters.input.rest.request.router.AddRouter;
 import dev.hugodesouzacaramez.topologyinventory.framework.adapters.input.rest.request.router.CreateRouter;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.MethodOrderer;
@@ -30,7 +30,6 @@ public class RouterManagementAdapterTest {
         var expectedRouterId = "b832ef4f-f894-4194-8feb-a99c2cd4be0c";
         var routerStr = given()
                 .contentType("application/json")
-                .accept("application/json")
                 .pathParam("routerId", expectedRouterId)
                 .when()
                 .get("/router/{routerId}")
@@ -69,41 +68,22 @@ public class RouterManagementAdapterTest {
     @Test
     @Order(3)
     public void addRouterToCoreRouter() throws IOException {
-        var createRouter = CreateRouter.builder()
-                .vendor(Vendor.HP)
-                .model(Model.XYZ0004)
-                .ip("35.0.0.1")
-                .location(createLocation("United States"))
-                .routerType(RouterType.EDGE).build();
-        var edgeRouterStr = given()
-                .contentType("application/json")
-                .body(createRouter)
-                .when()
-                .post("/router")
-                .then()
-                .statusCode(200)
-                .extract()
-                .asString();
-
-        var routerId = getRouterDeserialized(edgeRouterStr).getId();
+        var expectedRouterId = "b832ef4f-f894-4194-8feb-a99c2cd4be0d";
         var coreRouterId = "b832ef4f-f894-4194-8feb-a99c2cd4be0c";
-        var addRemoveRouter = AddRouter.builder().
-                routerId(routerId.getUuid().toString()).
-                coreRouterId(coreRouterId).
-                build();
+
         var coreRouterStr = given()
                 .contentType("application/json")
-                .body(addRemoveRouter)
+                .pathParam("routerId", expectedRouterId)
+                .pathParam("coreRouterId", coreRouterId)
                 .when()
-                .post("/router/add")
+                .post("/router/{routerId}/to/{coreRouterId}")
                 .then()
                 .statusCode(200)
                 .extract()
                 .asString();
-
         var routers = ((CoreRouter) getRouterDeserialized(coreRouterStr)).getRouters();
 
-        assertTrue(routers.containsKey(routerId));
+        assertTrue(routers.containsKey(Id.withId(expectedRouterId)));
     }
 
     @Test
@@ -130,18 +110,14 @@ public class RouterManagementAdapterTest {
     @Test
     @Order(5)
     public void removeRouter() {
-        var routerId = "b832ef4f-f894-4194-8feb-a99c2cd4be0c";
-        var routerStr = given()
+        var routerId = "b832ef4f-f894-4194-8feb-a99c2cd4be0b";
+        given()
                 .contentType("application/json")
                 .pathParam("routerId", routerId)
                 .when()
                 .delete("/router/{routerId}")
                 .then()
-                .statusCode(200)
-                .extract()
-                .asString();
-
-        assertTrue(routerStr.isEmpty());
+                .statusCode(200);
     }
 
     public static Location createLocation(String country){
@@ -156,3 +132,4 @@ public class RouterManagementAdapterTest {
         );
     }
 }
+

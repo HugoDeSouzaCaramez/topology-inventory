@@ -21,7 +21,7 @@ import java.util.function.Predicate;
 @Getter
 public final class Switch extends Equipment {
 
-    private SwitchType switchType;
+    private final SwitchType switchType;
     @Setter
     private List<Network> switchNetworks;
 
@@ -60,3 +60,4 @@ public final class Switch extends Equipment {
         return this.switchNetworks.remove(network);
     }
 }
+

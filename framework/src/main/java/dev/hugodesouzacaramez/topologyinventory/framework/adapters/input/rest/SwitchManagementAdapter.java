@@ -15,9 +15,10 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.POST;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.core.Response;
@@ -32,6 +33,7 @@ public class SwitchManagementAdapter {
     @Inject
     RouterManagementUseCase routerManagementUseCase;
 
+    @Transactional
     @GET
     @Path("/{id}")
     @Operation(operationId = "retrieveSwitch", description = "Retrieve a switch from an edge router")
@@ -44,11 +46,12 @@ public class SwitchManagementAdapter {
                 .transform(Response.ResponseBuilder::build);
     }
 
+    @Transactional
     @POST
     @Path("/create/{edgeRouterId}")
     @Operation(operationId = "createAndAddSwitchToEdgeRouter", description = "Create switch and add to an edge router")
     public Uni<Response> createAndAddSwitchToEdgeRouter(
-            CreateSwitch createSwitch, @PathParam("edgeRouterId") Id edgeRouterId
+            CreateSwitch createSwitch, @PathParam("edgeRouterId") String edgeRouterId
     ) {
         Switch newSwitch = switchManagementUseCase.
                 createSwitch(
@@ -57,7 +60,7 @@ public class SwitchManagementAdapter {
                         IP.fromAddress(createSwitch.getIp()),
                         createSwitch.getLocation(),
                         createSwitch.getSwitchType());
-        Router edgeRouter = routerManagementUseCase.retrieveRouter(edgeRouterId);
+        Router edgeRouter = routerManagementUseCase.retrieveRouter(Id.withId(edgeRouterId));
         if(!edgeRouter.getRouterType().equals(RouterType.EDGE))
             throw new UnsupportedOperationException("Please inform the id of an edge router to add a switch");
         Router router = switchManagementUseCase.addSwitchToEdgeRouter(newSwitch, (EdgeRouter) edgeRouter);
@@ -70,14 +73,16 @@ public class SwitchManagementAdapter {
                 .transform(Response.ResponseBuilder::build);
     }
 
+    @Transactional
     @DELETE
     @Path("/{switchId}/from/{edgeRouterId}")
     @Operation(operationId = "removeSwitch", description = "Retrieve a router from the network inventory")
     public Uni<Response> removeSwitchFromEdgeRouter(
-            @PathParam("switchId") Id switchId, @PathParam("edgeRouterId") Id edgeRouterId) {
+            @PathParam("switchId") String switchId, @PathParam("edgeRouterId") String edgeRouterId) {
         EdgeRouter edgeRouter = (EdgeRouter) routerManagementUseCase
-                .retrieveRouter(edgeRouterId);
-        Switch networkSwitch = edgeRouter.getSwitches().get(switchId);
+                .retrieveRouter(Id.withId(edgeRouterId));
+        Switch networkSwitch = switchManagementUseCase.retrieveSwitch(Id.withId(switchId));
+
         Router router = switchManagementUseCase
                 .removeSwitchFromEdgeRouter(networkSwitch, edgeRouter);
 

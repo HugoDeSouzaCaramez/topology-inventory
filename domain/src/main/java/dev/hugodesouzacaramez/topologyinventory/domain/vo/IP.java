@@ -13,14 +13,14 @@ public class IP {
     private final Protocol protocol;
 
     public IP(String ipAddress){
-        if(ipAddress == null)
-            throw new IllegalArgumentException("Null IP address");
-        this.ipAddress = ipAddress;
-        if(ipAddress.length()<=15) {
-            this.protocol = Protocol.IPV4;
-        } else {
-            this.protocol = Protocol.IPV6;
-        }
+      if(ipAddress == null)
+          throw new IllegalArgumentException("Null IP address");
+      this.ipAddress = ipAddress;
+      if(ipAddress.length()<=15) {
+          this.protocol = Protocol.IPV4;
+      } else {
+        this.protocol = Protocol.IPV6;
+      }
     }
 
     public static IP fromAddress(String ipAddress){

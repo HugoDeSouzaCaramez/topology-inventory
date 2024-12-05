@@ -1,0 +1,9 @@
+*.class*
+*.txt*
+*.jar*
+*Test.xml*
+*.lst*
+*.dump*
+*.idx*
+*.dat*
+*.args*
