@@ -4600,3 +4600,142 @@ No próximo capítulo, aprenderemos sobre algumas técnicas para empacotar o sis
 imagem Docker. Também aprenderemos como executar o sistema hexagonal em um cluster Kubernetes. Esse conhecimento irá
 nos permite deixar nosso aplicativo hexagonal pronto para ser implantado em ambientes baseados em nuvem.
 
+=====================================================================
+==========================================================================================
+=================================================================================
+Configurando objetos Dockerfile e Kubernetes para implantação na nuvem
+
+Passamos os capítulos anteriores explorando alguns dos recursos incríveis que o Quarkus fornece
+para nos ajudar a criar aplicativos nativos da nuvem. Indo ainda mais longe, também aprendemos como
+integrar o Quarkus em um sistema hexagonal.
+
+Agora, precisamos preparar o sistema hexagonal para que ele possa ser implantado em ambientes de nuvem.
+Docker e Kubernetes são as principais tecnologias que dominam o cenário de nuvem atualmente. Se seu
+aplicativo estiver preparado para rodar nessas tecnologias, você está seguro para fazê-lo rodar na maioria dos provedores de nuvem.
+
+Então, neste capítulo, aprenderemos como encapsular o sistema hexagonal em uma imagem Docker e
+executá-lo em um cluster Kubernetes. Para imagens Docker, exploraremos duas técnicas para criar
+tais imagens: uma que depende de um executável .jar e outra que usa um executável nativo. Também
+aprenderemos como implantar o sistema hexagonal em um cluster Kubernetes local baseado em minikube.
+
+Os seguintes tópicos serão abordados neste capítulo:
+
+• Preparando a imagem do Docker
+• Criação de objetos Kubernetes
+• Implantando no minikube
+
+Ao final deste capítulo, você saberá como fazer o sistema hexagonal rodar em um ambiente nativo
+da nuvem com base em Docker e Kubernetes. Hoje em dia, a maioria dos aplicativos modernos roda na nuvem.
+Ao transformar o sistema hexagonal em um sistema nativo da nuvem, você poderá aproveitar as vantagens
+que existem quando você está na nuvem.
+
+====================================================
+Preparando a imagem do Docker
+
+A tecnologia de virtualização baseada em contêiner não é algo novo. Muito antes do Docker, havia tecnologias
+como o OpenVZ, que aplicava os mesmos conceitos fundamentais que são aplicados pelo Docker também.
+Ainda hoje, temos alternativas como o Linux Containers (LXC), que fornece uma solução robusta baseada em
+contêiner. O que diferencia o Docker é o quão fácil e intuitivo ele torna o manuseio de aplicativos em contêiner.
+O Docker leva a portabilidade a outro nível, simplificando e tornando os contêineres uma tecnologia viável
+para públicos maiores.
+
+No passado, outras plataformas de contêineres não eram tão simples de usar quanto o Docker é hoje. Os
+contêineres eram um tópico mais relacionado a administradores de sistemas do que a desenvolvedores de
+software. Hoje, o cenário é diferente por causa da solução simples, mas poderosa, baseada em contêineres
+que temos com o Docker. Por causa de sua simplicidade, o Docker rapidamente se tornou popular entre os
+desenvolvedores, que começaram a incorporá-lo em seus projetos.
+
+Como mencionei anteriormente, a força do Docker está na sua simplicidade de uso e aprendizado. Veja, por
+exemplo, como o Docker abstrai a complexidade necessária para encapsular um aplicativo dentro de um
+contêiner. Você só precisa definir um Dockerfile descrevendo como o aplicativo deve ser configurado e
+executado dentro do contêiner. Você pode fazer isso usando um conjunto simples de instruções. Então, o
+Docker protege o usuário de complexidades de baixo nível que existiam em tecnologias de contêiner anteriores.
+
+Uma das coisas que torna o Quarkus tão especial é que ele é um framework container-first. Ele foi projetado
+para construir aplicativos baseados em contêiner. 
+
+Com o Quarkus, podemos gerar imagens Docker usando artefatos .jar ou artefatos executáveis nativos.
+Exploraremos ambas as abordagens a seguir.
+
+========================================================================
+Criando uma imagem Docker com um artefato uber .jar
+
+Nossa abordagem aqui é encapsular o artefato uber .jar na imagem Docker para que o contêiner
+possa iniciar e executar o aplicativo executando esse arquivo .jar . Para construir uma imagem
+Docker, precisamos criar um Dockerfile com instruções para construir tal imagem.
+
+O código a seguir mostra como criar um Dockerfile para o sistema de topologia e inventário que
+usa o arquivo .jar do uber:
+
+FROM eclipse-temurin:17.0.8_7-jdk-alpine
+ENV APP_FILE_RUNNER bootstrap-1.0-SNAPSHOT-runner.jar
+ENV APP_HOME /usr/apps
+EXPOSE 8080
+COPY bootstrap/target/$APP_FILE_RUNNER $APP_HOME/
+WORKDIR $APP_HOME
+ENTRYPOINT ["sh", "-c"]
+CMD ["exec java -jar $APP_FILE_RUNNER"]
+
+Este Dockerfile deve ser colocado no diretório raiz do projeto.
+
+A primeira linha é a imagem base do JDK 17 da qual construiremos nossa imagem. Então, definimos as
+variáveis de ambiente APP_FILE_ RUNNER e APP_HOME para definir o nome e o caminho do artefato, respectivamente.
+Como o Quarkus está configurado para rodar na porta 8080, temos que usar a propriedade
+EXPOSE para expor essa porta externamente. O comando COPY copiará o artefato gerado pelo
+Maven. WORKDIR define o caminho de onde os comandos serão executados dentro do
+contêiner. Com ENTRYPOINT e CMD, podemos definir como o contêiner executará o arquivo uber .jar do aplicativo.
+
+Siga estas etapas para gerar a imagem do Docker e iniciar o contêiner:
+
+1. Primeiro, precisamos compilar e gerar um arquivo uber .jar:
+
+$ mvn clean package
+
+2. Então, podemos gerar a imagem Docker:
+
+$ docker build . -t topology-inventory
+Sending build context to Docker daemon 38.68MB
+Step 1/8 : FROM eclipse-temurin:17.0.8_7-jdk-alpine
+---> 9b2a4d2e14f6
+Step 2/8 : ENV APP_FILE_RUNNER bootstrap-1.0-SNAPSHOT-runner.jar
+---> Using cache
+---> 753b39c99e78
+Step 3/8 : ENV APP_HOME /usr/apps
+---> Using cache
+---> 652c7ce2bd47
+Step 4/8 : EXPOSE 8080
+---> Using cache
+---> 37c6928bcae4
+Step 5/8 : COPY bootstrap/target/$APP_FILE_RUNNER $APP_HOME/
+---> Using cache
+---> 389c28dc9fa7
+Step 6/8 : WORKDIR $APP_HOME
+---> Using cache
+---> 4ac09c0fe8cc
+Step 7/8 : ENTRYPOINT ["sh", "-c"]
+---> Using cache
+---> 737bbcf2402b
+Step 8/8 : CMD ["exec java -jar $APP_FILE_RUNNER"]
+---> Using cache
+---> 3b17c3fa0662
+Successfully built 3b17c3fa0662
+Successfully tagged topology-inventory:latest
+
+A saída anterior descreve todas as etapas que precisam ser executadas para gerar a imagem
+do Docker. Aqui, podemos ver que o Docker Engine começa a construir nossa imagem em
+cima da imagem eclipse- temurin:17.0.8_7-jdk-alpine . Em seguida, ele prossegue definindo as
+variáveis de ambiente e manipulando o artefato do aplicativo, preparando-o para ser
+executado toda vez que um novo contêiner dessa imagem for criado.
+
+3. Agora, podemos iniciar o contêiner com o seguinte comando:
+
+$ docker run -p 5555:8080 topology-inventory
+
+Com o parâmetro -p , estamos mapeando a porta do host 5555 para a porta do contêiner 8080.
+Então, precisaremos usar a porta 5555 para acessar o sistema.
+
+4. Para confirmar se o aplicativo está sendo executado no contêiner Docker, podemos acessar o Swagger
+   URL da interface do usuário em http://localhost:5555/q/swagger-ui.
+
+Agora, vamos aprender como gerar uma imagem do Docker usando o executável nativo.
+
