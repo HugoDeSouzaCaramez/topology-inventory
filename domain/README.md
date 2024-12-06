@@ -4739,3 +4739,136 @@ Então, precisaremos usar a porta 5555 para acessar o sistema.
 
 Agora, vamos aprender como gerar uma imagem do Docker usando o executável nativo.
 
+=======================================================
+Criando uma imagem Docker com um executável nativo
+
+No Capítulo 10, Adicionando Quarkus a um aplicativo hexagonal modularizado, aprendemos que o Quarkus
+usa técnicas de compilação Ahead-Of-Time (AOT) para otimizar o bytecode e gerar código nativo que oferece
+melhor desempenho, principalmente durante a inicialização do aplicativo.
+
+Este executável nativo é um produto da compilação AOT que é realizada pelo Quarkus. Ao contrário
+do arquivo uber .jar , que pode ser distribuído para rodar em diferentes sistemas operacionais e
+arquiteturas de CPU, o arquivo executável nativo é dependente da plataforma. Mas podemos
+superar essa limitação encapsulando o executável nativo em uma imagem Docker que pode ser
+distribuída para diferentes sistemas operacionais e arquiteturas de CPU.
+
+Existem diferentes abordagens para gerar um executável nativo. Algumas delas exigem que instalemos uma
+distribuição GraalVM e outro software. No entanto, para manter as coisas simples, seguiremos uma abordagem
+descomplicada e conveniente, onde o Quarkus gera o executável nativo para nós dentro de um contêiner
+Docker que contém o GraalVM.
+
+Siga estas etapas para gerar uma imagem do Docker com um executável nativo:
+
+1. No arquivo pom.xml do diretório raiz do projeto, precisamos incluir o seguinte código
+   antes da tag </project>:
+
+<profiles>
+ <profile>
+ <id>native</id>
+ <properties>
+ <quarkus.package.type>native
+ </quarkus.package.type>
+ </properties>
+ </profile>
+</profiles>
+
+A configuração anterior cria um perfil que define a propriedade quarkus.package.type como nativa,
+fazendo com que o Quarkus crie um artefato executável nativo.
+
+2. Então, devemos criar a classe ReflectionConfiguration no hexágono bootstrap:
+
+@RegisterForReflection(targets = {
+CoreRouter.class,
+EdgeRouter.class,
+Switch.class,
+Id.class,
+IP.class,
+Location.class,
+Model.class,
+Network.class,
+Protocol.class,
+RouterType.class,
+SwitchType.class,
+Vendor.class,
+})
+public class ReflectionConfiguration {}
+
+Uma das limitações do executável nativo é que ele oferece suporte parcial para reflexão.
+Reflexão é uma técnica que nos permite inspecionar ou modificar os atributos de tempo de execução
+de componentes Java, como classes e métodos. Quando estamos executando um aplicativo dentro de
+uma JVM, o sistema pode detectar as classes/métodos/campos que estão indiretamente conectados. O
+mesmo não é verdade quando estamos executando um executável nativo. O motivo para isso é que
+apenas classes que estão diretamente conectadas são visíveis para reflexão.
+
+Para superar essa limitação, precisamos registrar todas as classes para reflexão que não
+estão diretamente conectadas. Há duas maneiras de fazer isso: podemos colocar essas
+classes em um arquivo de configuração .json ou podemos criar uma classe anotada com a
+anotação @RegisterForReflection contendo as classes que queremos registrar para reflexão.
+No código anterior, estamos usando a última abordagem, que depende da classe anotada.
+
+3. Para gerar um executável nativo, temos que executar o seguinte comando:
+
+$ mvn clean package -P native -D quarkus.native.containerbuild=true -D native-image.xmx=6g
+
+O processo de compilação de um executável nativo é muito caro em termos de consumo de
+memória. Então, precisamos aumentar os limites de memória para evitar erros de falta de memória.
+Se 6g não for o suficiente para você, sinta-se à vontade para aumentá-lo para evitar erros.
+
+4. Em seguida, devemos criar um arquivo chamado Dockerfile-native que contém instruções para
+   construindo uma imagem Docker com o executável nativo:
+
+FROM registry.access.redhat.com/ubi8/ubi-minimal
+ENV APP_FILE_RUNNER bootstrap-1.0-SNAPSHOT-runner
+ENV APP_HOME /work
+EXPOSE 8080
+COPY bootstrap/target/$APP_FILE_RUNNER $APP_HOME/
+WORKDIR $APP_HOME
+RUN echo $APP_FILE_RUNNER
+CMD ["./bootstrap-1.0-SNAPSHOT-runner", "-
+Dquarkus.http.host=0.0.0.0"]
+
+Em vez da imagem base do JDK 17, estamos usando a imagem ubi-minimal do registro oficial
+do Red Hat. Esta imagem é adequada para executar executáveis nativos.
+
+5. Então, devemos gerar a imagem Docker com o seguinte comando:
+
+$ docker build . -t topology-inventory-native -f Dockerfile-native
+
+Você deve executar o comando anterior no diretório raiz do projeto.
+
+Usamos -t topology-inventory-native:latest e -f Dockerfile-native
+para criar uma imagem Docker diferente com base no executável nativo em vez do uber .jar
+arquivo. A saída deste comando docker build será semelhante à que geramos quando criamos a imagem
+do Docker para o arquivo uber .jar . A única diferença serão as entradas relacionadas ao artefato
+executável nativo.
+
+6. Marque e carregue sua imagem no seu registro pessoal do Docker:
+
+$ docker tag topology-inventory-native:latest hugodesouzacaramez/topology-inventory-native:latest
+docker login
+$ docker push hugodesouzacaramez/topology-inventory-native:latest
+The push refers to repository [docker.io/hugodesouzacaramez/topology-inventory-native]
+f3216c6ba268: Pushed
+0b911edbb97f: Layer already exists
+54e42005468d: Layer already exists
+latest: digest: sha256:4037e5d9c2cef01bda9c4bb5722bccbe0d003336534c28f8245076223ce77273 size: 949
+
+Usaremos a imagem nativa do sistema ao implantar o aplicativo em um cluster minikube.
+
+7. Agora, podemos iniciar o contêiner:
+
+docker run -p 5555:8080 topology-inventory-native:latest
+
+Observe que o aplicativo está inicializando muito mais rápido!
+
+8. Para confirmar se o aplicativo está sendo executado no contêiner Docker, podemos acessar o Swagger
+   URL da interface do usuário em http://localhost:5555/q/swagger-ui.
+
+Com isso, configuramos as imagens do Docker para os artefatos executáveis nativos e uber .jar . Essas
+imagens do Docker podem ser implantadas em um cluster do Kubernetes. No entanto, para fazer isso,
+precisamos criar os objetos do Kubernetes necessários para permitir a implantação. Então, na
+próxima seção, aprenderemos como criar objetos do Kubernetes para o sistema hexagonal em contêiner.
+
+
+
+
