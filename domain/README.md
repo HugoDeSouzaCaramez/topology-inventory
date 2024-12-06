@@ -4869,6 +4869,260 @@ imagens do Docker podem ser implantadas em um cluster do Kubernetes. No entanto,
 precisamos criar os objetos do Kubernetes necessários para permitir a implantação. Então, na
 próxima seção, aprenderemos como criar objetos do Kubernetes para o sistema hexagonal em contêiner.
 
+========================================================
+Criando objetos Kubernetes
 
+O Docker Engine não fornece nenhum mecanismo de tolerância a falhas ou alta disponibilidade. Ele
+oferece apenas tecnologia de virtualização baseada em contêiner. Então, se você planeja executar um
+aplicativo de missão crítica usando o Docker, pode ser necessário elaborar sua solução para garantir que os contêineres sejam confiáveis
+durante a execução ou delegar essa responsabilidade a um orquestrador de contêineres.
 
+Os orquestradores de contêineres surgiram como uma resposta ao uso crescente de contêineres no setor de TI.
+Entre esses orquestradores, podemos citar o Docker Swarm, o Rancher e aquele que domina o setor: o Kubernetes.
 
+Inicialmente concebido no Google como um software de código fechado chamado Borg, ele foi aberto com o nome
+Kubernetes. É uma tecnologia poderosa que pode rodar no seu computador para propósitos de desenvolvimento ou
+controlar uma frota de centenas, até milhares, de nós de servidores, fornecendo Pods para os aplicativos em execução.
+
+Você pode estar se perguntando, o que é um Pod? Descobriremos em breve.
+
+Não é nossa intenção aqui nos aprofundar nos detalhes internos do Kubernetes, mas revisaremos alguns conceitos
+básicos para garantir que estamos na mesma página.
+
+=================================================
+Revisando os principais objetos do Kubernetes
+
+Como vimos anteriormente, o Kubernetes é um orquestrador de contêineres que nos ajuda a gerenciar
+contêineres. Para fazer isso, a maioria – se não todas – as configurações do Kubernetes podem ser feitas por
+meio de arquivos .yaml . No Kubernetes, temos a noção do estado atual e do estado desejado. Quando o
+primeiro encontra o último, estamos bem. Caso contrário, temos problemas.
+
+A espinha dorsal dessa abordagem de estado desejado atualmente é o mecanismo de configuração do Kubernetes
+baseado em arquivos YAML. Com esses arquivos, podemos expressar o estado desejado das coisas dentro do
+cluster. O Kubernetes fará sua mágica para garantir que o estado atual sempre corresponda ao estado desejado.
+Mas, você pode estar se perguntando, o estado de quê? A resposta é o estado dos objetos do Kubernetes. Vamos dar uma olhada em alguns deles:
+
+• Pod: Um Pod é um objeto Kubernetes que controla o ciclo de vida de contêineres em um cluster
+Kubernetes. É possível anexar mais de um contêiner ao mesmo Pod, embora isso não seja uma
+prática comum.
+
+• Implantação: Se um Pod controla o ciclo de vida dos contêineres, podemos afirmar que uma Implantação
+object controla o ciclo de vida dos Pods. Com um Deployment, você pode especificar quantos Pods deseja
+fornecer para seu aplicativo. O Kubernetes cuidará de encontrar os recursos disponíveis no cluster para
+ativar esses Pods. Se, por algum motivo, um dos Pods cair, o Kubernetes tentará ativar um Pod totalmente
+novo para garantir que o estado desejado seja atendido.
+
+• Serviço: Quando implantamos Pods no cluster Kubernetes, eles não ficam imediatamente
+disponíveis internamente para outros Pods ou externamente para clientes fora do cluster.
+Para tornar um Pod implantado disponível na rede, precisamos criar um objeto Service anexado a esse Pod. Este objeto de serviço
+atua como um ponto de entrada DNS que fornece acesso básico de balanceamento de carga aos
+Pods. Por exemplo, se você tiver um aplicativo em execução em três Pods, o objeto Service manipulará
+solicitações de aplicativo para um dos três Pods localizados atrás do objeto Service . Recursos de
+balanceamento de carga mais sofisticados podem ser obtidos usando tecnologias de malha de serviço, como Istio.
+
+• ConfigMap: Se você precisar fornecer variáveis de ambiente ou montar um arquivo de configuração dentro
+de um Pod, o ConfigMap é o objeto que pode ajudá-lo com isso.
+
+• Secret: Funciona de forma semelhante ao ConfigMap, mas pode ser usado para armazenar informações
+confidenciais, como credenciais ou chaves privadas. Os dados em um objeto Secret devem ser codificados com base64.
+
+Agora que estamos mais familiarizados com alguns dos objetos mais importantes do Kubernetes, vamos ver como
+podemos usá-los para preparar nosso sistema hexagonal para ser implantado em um cluster do Kubernetes.
+
+===================================================================
+Configurando objetos do Kubernetes para o sistema hexagonal
+
+Antes de criar os objetos do Kubernetes, primeiro, vamos configurar o Quarkus para habilitar a configuração YAML e
+também um mecanismo de verificação de integridade. Precisaremos de ambos quando estivermos implantando o aplicativo no Kubernetes:
+
+<dependencies>
+ <dependency>
+<groupId>io.quarkus</groupId>
+ <artifactId>quarkus-config-yaml</artifactId>
+ </dependency>
+ <dependency>
+ <groupId>io.quarkus</groupId>
+ <artifactId>quarkus-smallrye-health</artifactId>
+ </dependency>
+</dependencies>
+
+Com quarkus-config-yaml, podemos usar o arquivo application.yaml para a maioria das
+configurações do Quarkus. E para habilitar endpoints de health checks, podemos usar quarkus-smallrye-health.
+Quando o aplicativo for iniciado, ele tentará resolver uma variável de ambiente chamada QUARKUS_
+Antes de criar os objetos do Kubernetes, vamos configurar o arquivo application.yaml
+no hexágono do bootstrap:
+
+quarkus:
+datasource:
+username: ${QUARKUS_DATASOURCE_USERNAME:root}
+password: ${QUARKUS_DATASOURCE_PASSWORD:password}
+reactive:
+url: ${QUARKUS_DATASOURCE_REACTIVE_URL:
+mysql://localhost:3306/inventory}
+
+Este arquivo .yaml nos permite usar a maioria, mas não todas, das configurações disponíveis no
+Quarkus. Então, é normal usar tanto application.yaml quanto application.properties. Estamos
+usando a configuração YAML porque podemos empregar uma técnica chamada interpolação
+de variáveis. Veja, por exemplo, a seguinte entrada de configuração:
+
+${QUARKUS_DATASOURCE_USERNAME:root}
+
+Quando o aplicativo for iniciado, ele tentará resolver uma variável de ambiente chamada QUARKUS_DATASOURCE_USERNAME. Se o aplicativo não puder resolver o nome da variável, ele retornará ao valor
+padrão de root. Essa técnica é muito útil para definir configurações padrão para desenvolvimento local,
+onde variáveis de ambiente podem não ser definidas.
+
+Você deve ter notado a presença do QUARKUS_DATASOURCE_USERNAME, QUARKUS_DATASOURCE_PASSWORD
+e QUARKUS_DATASOURCE_REACTIVE_URL . O
+Kubernetes fornecerá essas variáveis de ambiente com o Secret e o ConfigMap
+objects. Então, vamos aprender como configurar esses e os outros objetos do Kubernetes que são
+necessários para implantar o sistema de topologia e inventário (os arquivos que descreveremos aqui são
+colocados dentro de um diretório chamado k8s no diretório raiz do projeto):
+
+1. Começaremos configurando o arquivo configmap.yaml:
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+name: topology-inventory
+data:
+QUARKUS_DATASOURCE_REACTIVE_URL:
+«mysql://topology-inventory-mysql:3306/inventory»
+
+Este ConfigMap fornece uma variável de ambiente QUARKUS_DATASOURCE_REACTIVE_URL
+com a URL do banco de dados reativo que o aplicativo precisa para se conectar ao banco de dados MySQL.
+
+2. Então, devemos configurar o arquivo secret.yaml:
+
+apiVersion: v1
+kind: Secret
+metadata:
+name: topology-inventory
+type: Opaque
+data:
+QUARKUS_DATASOURCE_USERNAME: cm9vdAo=
+QUARKUS_DATASOUCE_PASSWORD: cGFzc3dvcmQK
+
+No segredo anterior, definimos as variáveis de ambiente QUARKUS_DATASOURCE_USERNAME
+e QUARKUS_DATASOUCE_PASSWORD como as credenciais para conectar ao banco de
+dados MySQL do sistema.
+
+3. Para gerar base64, você pode executar o seguinte comando em sistemas baseados em Unix:
+
+$ echo root | base64 && echo password | base64
+cm9vdAo=
+cGFzc3dvcmQK
+
+Usamos os valores root e password como credenciais para autenticação no banco de dados MySQL.
+
+4. Vamos configurar o arquivo deployment.yaml:
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+name: topology-inventory
+labels:
+app: topology-inventory
+spec:
+replicas: 1
+selector:
+matchLabels:
+app: topology-inventory
+template:
+metadata:
+labels:
+app: topology-inventory
+/** Code omitted **/
+
+Aqui, descrevemos algumas das entradas de metadados do arquivo deployment.yaml:
+
+O campo metadata.labels.app : Um objeto Kubernetes Service pode aplicar balanceamento
+de carga usando a propriedade labels para identificar os Pods que fazem parte da
+mesma Deployment. Veremos como o objeto Service faz referência a esse rótulo em breve.
+
+O campo replicas: define que esta implantação fornecerá apenas um Pod.
+
+5. Ainda no arquivo deployment.yaml , podemos começar a definir as entradas para a
+   configuração do container:
+
+spec:
+initContainers:
+- name: topology-inventory-mysql-init
+  image: busybox
+  command: [ ‹sh›, ‹-c›, ‹until nc -zv
+  topology-inventory-mysql.default.svc.clus
+  ter.local 3306; do echo waiting
+  for topology-inventory-mysql.de
+  fault.svc.cluster.local; sleep 5;
+  done;› ]
+  containers:
+- name: topology-inventory
+  image: s4intlaurent/topology-
+  inventory:latest
+  envFrom:
+- configMapRef:
+  name: topology-inventory
+  livenessProbe:
+  httpGet:
+  path: /q/health/ready
+  port: 8080
+  initialDelaySeconds: 30
+  timeoutSeconds: 5
+  periodSeconds: 3
+  ports:
+- containerPort: 8080
+
+Vejamos as entradas que são usadas para a configuração do contêiner:
+
+O campo initContainers : Ele é usado quando precisamos executar algumas tarefas ou esperar por
+algo antes que o contêiner principal inicie. Aqui, estamos usando um contêiner init para esperar que
+um banco de dados MySQL esteja disponível. O arquivo .yaml que carrega o banco de dados está
+disponível no repositório GitHub deste livro para este capítulo.
+
+Campo Contêineres : é aqui que definimos a configuração do contêiner que o Pod executa.
+
+O campo de imagem : É aqui que informamos a localização da imagem da nossa aplicação. Pode
+ser um registro público ou privado.
+
+O campo configMapRef : é usado para injetar dados do ConfigMap no contêiner.
+
+O campo livenessProbe : O Kubernetes pode enviar pacotes de sonda para verificar se o aplicativo
+está ativo. É aqui que usaremos o mecanismo de verificação de integridade que configuramos anteriormente.
+
+Campo containerPort : é aqui que informaremos a porta sobre o contêiner Docker exposto.
+
+6. Por fim, vamos configurar o arquivo service.yaml:
+
+apiVersion: v1
+kind: Service
+metadata:
+name: topology-inventory
+labels:
+app: topology-inventory
+spec:
+type: NodePort
+ports:
+- port: 8080
+  targetPort: 8080
+  nodePort: 30080
+  protocol: TCP
+  selector:
+  app: topology-inventory
+
+O Kubernetes fornece três tipos diferentes de serviço: ClusterIP para comunicação interna
+e NodePort e LoadBalance para comunicação externa. Estamos usando o NodePort para
+acessar o aplicativo de fora do cluster do Kubernetes. Vamos dar uma olhada nos campos mais importantes:
+
+O campo port : Este campo declara a porta de serviço que está disponível internamente para outros
+Pods no cluster Kubernetes
+
+O campo targetPort : Este campo especifica a porta que o contêiner está expondo
+
+O campo nodePort : Este campo especifica a porta externa, que permite que clientes
+externos acessem o aplicativo
+
+Não é uma tarefa trivial preparar um aplicativo para ser implantado em um cluster Kubernetes.
+Nesta seção, aprendemos sobre os principais objetos do Kubernetes. Entender esses objetos é
+essencial porque eles são os blocos de construção para qualquer aplicativo em execução em um cluster Kubernetes.
+
+Com todos os objetos Kubernetes necessários configurados adequadamente, podemos implantar o sistema hexagonal
+em um cluster do Kubernetes.

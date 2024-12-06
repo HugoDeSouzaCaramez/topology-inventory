@@ -21,6 +21,14 @@
       <groupId>dev.hugodesouzacaramez</groupId>
       <artifactId>framework</artifactId>
     </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-smallrye-health</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-config-yaml</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
