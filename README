@@ -37,6 +37,12 @@ docker tag topology-inventory-native hugodesouzacaramez/topology-inventory-nativ
 
 docker push hugodesouzacaramez/topology-inventory-native
 
-minikube start ou minikube start --driver=docker
+minikube start --driver=docker minikube start
 
 na raiz do projeto: kubectl apply -f k8s/
+
+minikube tunnel
+
+kubectl port-forward pod/<nome do pod> 8080:8080 -n default
+
+no navegador: http://localhost:8080/q/swagger-ui/
