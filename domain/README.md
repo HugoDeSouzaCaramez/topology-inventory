@@ -5205,3 +5205,33 @@ check",
 ]
 }
 
+
+Isso mostra que tanto o aplicativo quanto sua conexão com o banco de dados estão saudáveis.
+
+Você também pode acessar a URL da interface do usuário do Swagger em http://192.168.49.2:30080/q/swagger-ui
+
+Observe que estamos usando a porta 30080 para acessar a URL da interface do usuário do Swagger no
+minikube. 30080 é a porta do nó do Kubernetes que configuramos para habilitar o acesso externo ao aplicativo.
+
+Com isso, concluímos os passos fundamentais para transformar o sistema hexagonal em um cloud-native .
+Nossa aplicação está pronta para ser implantada em um cluster minikube local e em qualquer provedor de
+nuvem que ofereça clusters Kubernetes.
+
+========================
+Resumo
+
+Começamos este capítulo aprendendo sobre os blocos de construção que podemos usar para criar uma
+imagem Docker para o sistema hexagonal. Então, criamos dois tipos de imagem Docker. O primeiro foi
+baseado no arquivo uber .jar , que é usado para empacotar e executar o aplicativo, enquanto o segundo foi
+baseado em executáveis nativos, onde poderíamos aproveitar os recursos que o Quarkus fornece para criar
+um artefato executável nativo .
+
+Então, criamos os objetos Kubernetes que eram necessários para implantar o sistema hexagonal em
+um cluster Kubernetes. Finalmente, implantamos o sistema hexagonal em um cluster minikube local.
+Mais do que um sistema hexagonal, agora temos um sistema hexagonal nativo da nuvem pronto para aproveitar as vantagens
+fornecidos por ambientes de nuvem.
+
+No próximo capítulo, aprenderemos como a arquitetura hexagonal se relaciona com a arquitetura em camadas,
+um estilo arquitetônico usado por muitos aplicativos. Entender as diferenças entre essas duas arquiteturas nos
+ajuda a avaliar qual arquitetura pode ser melhor para empregar ao iniciar ou refatorar um projeto de software.
+
