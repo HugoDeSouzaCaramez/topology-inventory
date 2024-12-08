@@ -37,7 +37,7 @@ docker tag topology-inventory-native hugodesouzacaramez/topology-inventory-nativ
 
 docker push hugodesouzacaramez/topology-inventory-native
 
-minikube start --driver=docker minikube start
+minikube start --driver=docker ou minikube start
 
 na raiz do projeto: kubectl apply -f k8s/
 
