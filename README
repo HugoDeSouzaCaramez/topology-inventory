@@ -22,3 +22,21 @@ java -jar bootstrap/target/bootstrap-1.0-SNAPSHOT-runner.jar
 
 Adicionado framework Quarkus para injeção de dependência
 mvn test
+
+docker build . -t topology-inventory ou docker build . -t topology-inventory-native -f Dockerfile-native
+
+opcional: docker run -p 5555:8080 topology-inventory-native:latest
+
+docker tag topology-inventory hugodesouzacaramez/topology-inventory
+
+docker push hugodesouzacaramez/topology-inventory
+
+ou
+
+docker tag topology-inventory-native hugodesouzacaramez/topology-inventory-native
+
+docker push hugodesouzacaramez/topology-inventory-native
+
+minikube start ou minikube start --driver=docker
+
+na raiz do projeto: kubectl apply -f k8s/

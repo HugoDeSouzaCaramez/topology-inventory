@@ -17,10 +17,10 @@ spec:
       initContainers:
         - name: topology-inventory-mysql-init
           image: busybox
-          command: [ 'sh', '-c', 'until nc -zv topology-inventory-mysql.default.svc.cluster.local 3306; do echo waiting for topology-inventory-mysql.default.svc.cluster.local; sleep 5; done;' ]
+          command: [ 'sh', '-c', 'until nc -z -v topology-inventory-mysql.default.svc.cluster.local 3306; do echo waiting for topology-inventory-mysql.default.svc.cluster.local; sleep 5; done;' ]
       containers:
         - name: topology-inventory
-          image: s4intlaurent/topology-inventory:latest
+          image: hugodesouzacaramez/topology-inventory:latest
           envFrom:
             - configMapRef:
                 name: topology-inventory

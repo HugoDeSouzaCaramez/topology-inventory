@@ -5126,3 +5126,82 @@ essencial porque eles são os blocos de construção para qualquer aplicativo em
 
 Com todos os objetos Kubernetes necessários configurados adequadamente, podemos implantar o sistema hexagonal
 em um cluster do Kubernetes.
+
+======================================================================
+Implantando no minikube
+
+minikube é um cluster Kubernetes que foi feito para propósitos de desenvolvimento. Ele nos
+permite criar e destruir clusters com facilidade. Devido à sua simplicidade, usaremos o minikube
+para implantar nosso sistema hexagonal seguindo estas etapas (recomendo seguir as instruções em
+https://minikube.sigs.k8s.io/docs/start/ para instalar o minikube na sua máquina):
+
+1. Depois de instalar o minikube, você pode iniciar seu cluster emitindo o seguinte comando:
+
+$ minikube start
+:) minikube v1.4.0 on Fedora 30
+Creating virtualbox VM (CPUs=2, Memory=2000MB, Disk=20000MB)
+...
+Preparing Kubernetes v1.16.0 on Docker 18.09.9 ...
+Pulling images ...
+Launching Kubernetes ...
+Waiting for: apiserver proxy etcd scheduler controller dns
+Done! kubectl is now configured to use "minikube"
+
+A configuração de cluster padrão consome 2 CPUs, 2 GB de RAM e 20 GB de espaço em disco.
+
+2. Para confirmar se seu cluster está ativo, execute o seguinte comando:
+
+$ kubectl get nodes
+NAME STATUS ROLES AGE VERSION
+minikube Ready master 5m v1.16.0
+
+Legal! Agora, podemos implantar a topologia e o sistema de inventário em nosso cluster Kubernetes local.
+
+3. O processo de implantação é bastante simples. Tudo o que precisamos fazer é aplicar os arquivos YAML do Kubernetes
+   criamos na seção anterior:
+
+$ kubectl apply -f k8s/
+configmap/topology-inventory created
+deployment.apps/topology-inventory-mysql created
+service/topology-inventory-mysql created
+deployment.apps/topology-inventory created
+secret/topology-inventory created
+service/topology-inventory created
+
+4. Então, podemos executar o seguinte comando para verificar se o sistema de topologia e inventário está ativo e
+   funcionando:
+
+$ kubectl get pods
+NAME READY STATUS RES
+TARTS AGE
+topology-inventory-76f4986846-zq5t8 1/1 Running 0 73s
+topology-inventory-mysql-dc9dbfc4b-7sct6 1/1 Running 0 73s
+
+5. Para acessar o aplicativo, precisamos usar o IP do cluster minikube. Você pode usar o seguinte código para recuperar
+   esse IP em um sistema operacional baseado em Unix:
+
+$ minikube ssh "ip addr show eth0" | grep "inet\b" | awk '{print
+$2}' | cut -d/ -f1
+192.168.49.2
+
+PowerShell:
+ipconfig | Select-String -Pattern "IPv4.*" | ForEach-Object { ($_ -split ':')[1].Trim() }
+
+6. Com esse IP, podemos consultar o ponto de extremidade de verificação de integridade para ver se a topologia e o inventário
+   o sistema está vivo:
+
+$ curl -s http://192.168.49.2:30080/q/health/ready | jq
+{
+"status": "UP",
+"checks": [
+{
+"name": "Reactive MySQL connections health
+check",
+"status": "UP",
+"data": {
+"<default>": "UP"
+}
+}
+]
+}
+

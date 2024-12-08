@@ -9,8 +9,8 @@
         <processorPath useClasspath="false">
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.20/lombok-1.18.20.jar" />
         </processorPath>
-        <module name="bootstrap" />
         <module name="framework" />
+        <module name="bootstrap" />
         <module name="application" />
         <module name="domain" />
       </profile>
