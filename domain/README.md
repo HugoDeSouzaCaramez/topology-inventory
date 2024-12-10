@@ -5235,3 +5235,144 @@ No próximo capítulo, aprenderemos como a arquitetura hexagonal se relaciona co
 um estilo arquitetônico usado por muitos aplicativos. Entender as diferenças entre essas duas arquiteturas nos
 ajuda a avaliar qual arquitetura pode ser melhor para empregar ao iniciar ou refatorar um projeto de software.
 
+===============================================
+=======================
+=================================================
+==============================================================
+Usando princípios SOLID com Arquitetura Hexagonal
+
+A ideia de ter um conjunto de princípios para nos ajudar a desenvolver um software melhor me diverte. Ao
+longo dos anos, os programadores enfrentaram muitos problemas; alguns aconteceram com tanta frequência
+que padrões para resolver tais questões surgiram, dando origem aos chamados padrões de design. Esses
+padrões foram empregados para resolver problemas específicos de desenvolvimento de software.
+Complementando padrões de design que atuam mais em problemas de codificação recorrentes e específicos,
+surgiram ideias para lidar com problemas de manutenibilidade em projetos de software. Um conjunto notável
+e influente dessas ideias foi sintetizado no que é conhecido como princípios SOLID.
+
+Este capítulo explorará os princípios SOLID e como podemos aproveitá-los ao usar a arquitetura hexagonal.
+Começaremos revisando cada princípio e, em seguida, prosseguiremos para ver como eles podem ser
+aplicados no contexto de um sistema hexagonal. Por fim, discutiremos como padrões de design, como
+builder e abstract factory, podem ser usados com a arquitetura hexagonal.
+
+Os seguintes tópicos serão abordados neste capítulo:
+
+• Compreendendo os princípios SOLID
+• Aplicação do SOLID em um sistema de arquitetura hexagonal
+• Explorando outros padrões de design
+
+Após concluir este capítulo, você será capaz de empregar princípios SOLID em conjunto com técnicas de
+arquitetura hexagonal. Além disso, você saberá como usar padrões de design, como chain of responsibility,
+decorator, builder e singleton, ao desenvolver um sistema hexagonal.
+
+============================================
+Compreendendo os princípios SOLID
+
+Desde o advento da programação, os desenvolvedores têm discutido ideias e capturado princípios para ajudar a
+desenvolver um software melhor. Esses princípios surgiram como uma resposta para ajudar a lidar com código altamente complexo.
+Depois de sofrer várias vezes com os mesmos problemas recorrentes, os desenvolvedores começaram a
+reconhecer os padrões desses problemas e criaram técnicas para evitar tais problemas. Um exemplo notável
+é o livro Gang of Four (GoF) sobre padrões de design, que causou um tremendo impacto no mundo orientado
+a objetos e continua a influenciar gerações de desenvolvedores até hoje. Outro exemplo notável e influente
+são as ideias formuladas por Robert Martin que levaram aos princípios SOLID.
+
+SOLID representa os seguintes princípios:
+
+• Princípio da Responsabilidade Única (SRP)
+• Princípio Aberto Fechado (OCP)
+• Princípio da Substituição de Liskov (LSP)
+• Princípio de Segregação de Interface (ISP)
+• Princípio da Inversão de Dependência (DIP)
+
+Esses princípios visam ajudar os desenvolvedores a criar software robusto e fácil de alterar por meio de
+código, com base em um conjunto de regras definidas por esses princípios. Acredito que usar esses
+princípios não garante totalmente que o software esteja livre de problemas de manutenibilidade. No entanto,
+esses princípios podem melhorar significativamente a qualidade geral do código. Em essência, trata-se de
+empregar técnicas que permitam a introdução de alterações em uma base de código de forma sustentável.
+Quero dizer, o software crescerá, mas sua complexidade será mantida sob controle.
+
+Os princípios SOLID funcionam de forma semelhante à arquitetura hexagonal porque ambos
+visam fornecer técnicas para desenvolver software mais sustentável e tolerante a mudanças. Portanto, faz sentido
+explorar como esses princípios podem ser aplicados no contexto de uma aplicação hexagonal. Vamos
+começar nossa exploração revisando cada um dos princípios SOLID.
+
+==========================
+Princípio da Responsabilidade Única (SRP)
+
+Não é difícil para mim lembrar de uma situação em que testemunhei ou fui o autor de uma alteração de código
+que causou efeitos colaterais, descobertos somente depois que um aplicativo foi implantado em um ambiente de teste ou, pior ainda,
+em um ambiente de produção. Um stakeholder relataria problemas no aplicativo que começaram a ocorrer
+logo após a mudança que causou o efeito colateral ser implantada. Então, embora a mudança tenha
+resolvido o problema para um stakeholder, ela criou um problema para outro. Por quê? Porque o responsável pela mudança de problema
+violou o SRP. A violação ocorreu porque a mesma lógica do sistema serviu a dois stakeholders
+diferentes. A mudança resolveu o problema para um stakeholder, mas criou um efeito colateral que causou
+problemas para o outro.
+
+Uma violação de SRP também pode ocorrer quando definimos abstrações muito cedo. Suponha que definimos
+uma classe abstrata com certos dados e comportamentos que acreditamos que serão comuns a todas as
+implementações futuras dessa classe abstrata. Então, mais tarde, descobrimos, por meio de um infeliz
+relatório de incidente, que alguns dados ou comportamentos dessa classe abstrata causam resultados
+inesperados em uma implementação recente fornecida por outro desenvolvedor, que assumiu que os
+comportamentos e dados fornecidos por essa abstração funcionariam na implementação que causa o problema.
+
+O SRP garante que um método ou função seja alterado com base em solicitações de apenas um tipo de
+stakeholder ou ator, geralmente um departamento ou uma linha de negócios em uma organização. É
+importante garantir que a lógica do departamento A, por exemplo, não bagunce a lógica do departamento B,
+o que pode ser feito organizando o código de forma que a lógica para atender a diferentes stakeholders seja
+adequadamente separada.
+
+======================================
+Princípio Aberto-Fechado (OCP)
+
+A ideia por trás desse princípio está em aumentar o que o software pode fazer sem alterar as coisas existentes
+nele. Para fazer isso, um componente ou módulo de software deve estar aberto para extensão, mas fechado
+para modificação. Posso me lembrar de uma experiência em que estava implementando um recurso de relatório.
+Em vez de ter uma classe para lidar com todos os tipos de relatórios, criei uma classe abstrata base com
+atributos básicos comuns a relatórios. Toda vez que um novo tipo de relatório tivesse que ser implementado,
+uma nova classe concreta seria criada implementando a classe abstrata base. Atributos e funções adicionais
+seriam anexados aos atributos básicos da classe abstrata base.
+
+Usamos o OCP para evitar aquelas situações em que queremos adicionar um novo recurso e, para isso,
+também precisamos alterar alguma parte da lógica que já suporta um recurso existente. Ao fazer isso,
+violamos o OCP. Em vez disso, precisamos organizar o código para que possamos adicionar novos recursos
+sem modificar o código que já atende aos recursos existentes.
+
+========================================
+Princípio da Substituição de Liskov (LSP)
+
+Com base no exemplo de relatório que dei na descrição do OCP, vamos supor que temos um Relatório
+classe contendo a declaração do método print . De acordo com um determinado domínio de problema, o método print
+método é um comportamento suportado por qualquer relatório. Além da classe Report , imagine
+que temos as classes WorkdayReport e WeekendReport estendendo-a. O LSP prescreve que se
+passarmos objetos do tipo WorkdayReport ou WeekendReport para um método que espera um tipo
+Report , esse método será capaz de disparar os comportamentos inerentes a todos os tipos de relatórios – neste caso
+o método print.  O ponto principal é que o tipo Report deve ser projetado de modo que seus métodos
+declarados, quando substituídos por subtipos, sejam coerentes com o propósito do subtipo.
+
+============================
+Princípio de Segregação de Interface (ISP)
+
+O ISP é útil sempre que queremos fornecer aos clientes uma interface contendo apenas as declarações
+de método de que eles precisam. Esse princípio é geralmente empregado quando temos uma única
+interface com muitas declarações de método, e um determinado cliente implementa apenas alguns
+métodos e fornece implementações fictícias para aqueles de que não precisa. Ao empregar o ISP,
+quebramos essa única interface com múltiplas interfaces adaptadas para necessidades específicas do cliente.
+
+======================================
+Princípio da Inversão de Dependência (DIP)
+
+Componentes de software estáveis e instáveis têm conceitos distintos. Estável significa aqueles componentes que não
+mudam com muita frequência, enquanto instável é o oposto. Ter um componente cliente dependendo diretamente de
+um componente instável pode ser arriscado porque mudanças no código instável podem desencadear mudanças no
+cliente. Na maioria das vezes, o componente instável é uma classe concreta com detalhes de implementação que não
+precisam ser expostos aos seus clientes.
+
+Para evitar expor tais detalhes de implementação e proteger o cliente de mudanças de dependência, o DIP prescreve
+que os clientes devem sempre depender de abstrações em vez de concreções. O componente instável – uma classe
+concreta com detalhes de implementação – deve derivar de uma abstração implementando uma interface, por exemplo.
+Então, o cliente deve confiar em um componente estável, uma interface implementada pelo componente instável (uma
+classe concreta). Chamamos uma interface de componente estável porque ela atua como um contrato, e contratos são
+menos suscetíveis a mudanças.
+
+amos ver na próxima seção como podemos aplicar os princípios SOLID a uma aplicação desenvolvida usando
+arquitetura hexagonal.
+
