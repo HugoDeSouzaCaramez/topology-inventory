@@ -25,4 +25,6 @@ public interface RouterManagementUseCase {
 
     Router removeRouterFromCoreRouter(
             Router router, CoreRouter coreRouter);
+
+    Router changeLocation(Router router, Location location);
 }

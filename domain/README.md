@@ -5508,4 +5508,54 @@ Em vez de fornecer um design de classe em que uma única classe conteria a lógi
 roteadores de núcleo e de borda, aproveitamos a capacidade de herança do Java para estender as possibilidades da classe abstrata Router, sem alterar seus atributos e comportamentos. Tais extensões são possíveis
 por meio das implementações de classe concreta CoreRouter e EdgeRouter.
 
+=====================================
+Aplicando o LSP
+
+Para demonstrar a aplicação do LSP, precisamos fazer mais mudanças na topologia e
+no sistema de inventário. Ao aplicar o SRP e o OCP, mudamos o hexágono Domain.
+Agora, faremos mudanças no hexágono Application:
+
+1. Declare o método changeLocation na interface RouterManagementUseCase :
+
+public interface RouterManagementUseCase {
+/** Code omitted **/
+Router changeLocation(
+Router router, Location location);
+/** Code omitted **/
+}
+
+Alterar a localização de um roteador é um novo caso de uso que adicionamos ao sistema de topologia e
+inventário, então adicionamos a declaração do método changeLocation para expressar esse caso de uso.
+
+2. Implemente o método changeLocation em RouterManagementInputPort:
+
+public class RouterManagementInputPort implements
+RouterManagementUseCase {
+/** Code omitted **/
+@Override
+public Router changeLocation(Router router,
+Location location) {
+router.changeLocation(location);
+return persistRouter(router);
+}
+/** Code omitted **/
+}
+
+O método changeLocation de RouterManagementInputPort chama changeLocation de
+Router passando um objeto Location . changeLocation de Router tem uma lógica
+que verifica se o Location fornecido é permitido. Se tudo estiver bem, chamamos
+persitRouter para persistir Router com seu novo Location.
+
+A aplicação LSP pode ser observada quando implementamos o método
+changeLocation em RouterManagementInputPort. Note que changeLocation espera um tipo Router:
+
+public Router changeLocation(Router router,
+Location location) {
+router.changeLocation(location);
+return persistRouter(router);
+}
+
+Isso significa que podemos passar aqui um objeto CoreRouter ou EdgeRouter porque ambos estendem
+Router e ambos fornecem uma implementação de changeLocation, um comportamento inerente a todos os roteadores.
+
 
