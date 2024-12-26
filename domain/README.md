@@ -5558,4 +5558,81 @@ return persistRouter(router);
 Isso significa que podemos passar aqui um objeto CoreRouter ou EdgeRouter porque ambos estendem
 Router e ambos fornecem uma implementação de changeLocation, um comportamento inerente a todos os roteadores.
 
+=============================
+Aplicando o ISP
 
+Ao aplicar o LSP, criamos RouterManagementUseCase e RouterManagementInputPort
+no hexágono Application. Vamos finalizar nossa implementação fornecendo um
+adaptador de entrada no hexágono Framework para conectar o adaptador de entrada à porta de entrada:
+
+1. Implemente o método changeLocation na classe RouterManagementAdapter:
+
+@Transactional
+@POST
+@Path("/changeLocation/{routerId}")
+@Operation(operationId = "changeLocation", description
+= "Change a router location")
+public Uni<Response> changeLocation(@PathParam
+("routerId") String routerId, LocationChange loca
+tionChange) {
+Router router = routerManagementUseCase
+.retrieveRouter(Id.withId(routerId));
+Location location =
+locationChange.mapToDomain();
+return Uni.createFrom()
+.item(routerManagementUseCase.changeLocation(ro
+uter, location))
+.onItem()
+.transform(f -> f != null ? Response.ok(f) :
+Response.ok(null))
+.onItem()
+.transform(
+Response.ResponseBuilder::build);
+}
+
+Com as anotações POST e PATH , transformamos esse método em um endpoint
+REST para receber solicitações enviadas ao URI /router/changeLocation/{routerId} .
+A parte do roteador do URI vem da definição de nível superior da anotação PATH
+da classe RouterManagementAdapter.
+
+Este adaptador de entrada obtém Router usando o método retrieveRouter de
+RouterManagementUseCase. Então, ele converte o objeto LocationRequest em
+um objeto de domínio Location . Finalmente, ele passa Router e Location para o changeLocation
+método de RouterManagementUseCase.
+
+Para confirmar que nossa implementação funciona, vamos implementar um teste para verificar todo o fluxo.
+
+2. Implemente o seguinte teste na classe RouterManagementAdapterTest:
+
+@Test
+public void changeLocation() throws IOException {
+var routerId =
+"b832ef4f-f894-4194-8feb-a99c2cd4be0c";
+var expectedCountry = "Germany";
+var location = createLocation("Germany",
+"Berlin");
+var updatedRouterStr = given()
+.contentType("application/json")
+.pathParam("routerId", routerId)
+.body(location)
+.when()
+.post("/router/changeLocation/{routerId}")
+.then()
+.statusCode(200)
+.extract()
+.asString();
+var changedCountry =
+getRouterDeserialized(
+updatedRouterStr).getLocation().country();
+assertEquals(expectedCountry, changedCountry);
+}
+
+Este teste altera a localização do roteador, que é um roteador central localizado nos Estados Unidos.
+Após enviar uma solicitação POST contendo um objeto Location com Alemanha como
+país e Berlim como cidade, executamos uma asserção para garantir que o objeto Router
+retornado tenha o local alterado – Alemanha em vez dos Estados Unidos.
+
+O ISP pode ser observado ao disponibilizar operações de caso de uso para o adaptador de
+entrada. Temos a classe RouterManagementInputPort implementando a interface RouterManagementUseCase.
+O ISP é empregado porque todas as declarações de método do RouterManagementUseCase
+interface são relevantes e implementadas pelo RouterManagementInputPort.

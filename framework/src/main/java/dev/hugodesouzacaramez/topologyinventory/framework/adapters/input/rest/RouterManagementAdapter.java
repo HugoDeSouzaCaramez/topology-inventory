@@ -5,6 +5,8 @@ import dev.hugodesouzacaramez.topologyinventory.domain.entity.CoreRouter;
 import dev.hugodesouzacaramez.topologyinventory.domain.entity.Router;
 import dev.hugodesouzacaramez.topologyinventory.domain.vo.IP;
 import dev.hugodesouzacaramez.topologyinventory.domain.vo.Id;
+import dev.hugodesouzacaramez.topologyinventory.domain.vo.Location;
+import dev.hugodesouzacaramez.topologyinventory.framework.adapters.input.rest.request.router.LocationChange;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -78,7 +80,6 @@ public class RouterManagementAdapter {
                 .transform(Response.ResponseBuilder::build);
     }
 
-
     @Transactional
     @POST
     @Path("/{routerId}/to/{coreRouterId}")
@@ -118,4 +119,21 @@ public class RouterManagementAdapter {
                 .onItem()
                 .transform(Response.ResponseBuilder::build);
     }
+
+    @Transactional
+    @POST
+    @Path("/changeLocation/{routerId}")
+    @Operation(operationId = "changeLocation", description = "Change a router location")
+    public Uni<Response> changeLocation(@PathParam("routerId") String routerId, LocationChange locationChange) {
+        Router router = routerManagementUseCase
+                .retrieveRouter(Id.withId(routerId));
+        Location location = locationChange.mapToDomain();
+        return Uni.createFrom()
+                .item(routerManagementUseCase.changeLocation(router, location))
+                .onItem()
+                .transform(f -> f != null ? Response.ok(f) : Response.ok(null))
+                .onItem()
+                .transform(Response.ResponseBuilder::build);
+    }
+
 }

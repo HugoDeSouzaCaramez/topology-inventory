@@ -49,7 +49,7 @@ public class RouterManagementAdapterTest {
                 .vendor(Vendor.HP)
                 .model(Model.XYZ0004)
                 .ip(expectedIpAddress)
-                .location(createLocation("United States"))
+                .location(createLocation("United States", "New York"))
                 .routerType(RouterType.CORE).build();
         var routerStr = given()
                 .contentType("application/json")
@@ -120,10 +120,31 @@ public class RouterManagementAdapterTest {
                 .statusCode(200);
     }
 
-    public static Location createLocation(String country){
+    @Test
+    @Order(6)
+    public void changeLocation() throws IOException {
+        var routerId = "b832ef4f-f894-4194-8feb-a99c2cd4be0c";
+        var expectedCountry = "Germany";
+        var location = createLocation("Germany", "Berlin");
+        var updatedRouterStr = given()
+                .contentType("application/json")
+                .pathParam("routerId", routerId)
+                .body(location)
+                .when()
+                .post("/router/changeLocation/{routerId}")
+                .then()
+                .statusCode(200)
+                .extract()
+                .asString();
+        var changedCountry = getRouterDeserialized(updatedRouterStr).getLocation().country();
+
+        assertEquals(expectedCountry, changedCountry);
+    }
+
+    public static Location createLocation(String country, String city){
         return new Location(
                 "Test street",
-                "Test City",
+                city,
                 "Test State",
                 00000,
                 country,
@@ -132,4 +153,3 @@ public class RouterManagementAdapterTest {
         );
     }
 }
-
