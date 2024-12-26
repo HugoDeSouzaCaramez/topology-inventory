@@ -5659,3 +5659,155 @@ No Capítulo 9, Aplicando Inversão de Dependência com Módulos Java, o RouterM
 implementação de interface – um objeto RouterManagementInputPort – é fornecido pelo JPMS. Na
 implementação atual, usamos Quarkus com a anotação @Inject para fornecer RouterManagementInputPort.
 
+=======================================
+Explorando outros padrões de design
+
+Nos capítulos anteriores, aplicamos alguns padrões de design ao desenvolver a topologia e o sistema de
+inventário. Esses padrões nos ajudaram a organizar o código para dar melhor suporte às necessidades do
+aplicativo. Então, nesta seção, revisaremos os padrões de design que aplicamos ao implementar a arquitetura hexagonal.
+
+========================
+Singleton
+
+Antes de introduzir o Quarkus em nosso sistema de topologia e inventário, tivemos que fornecer nosso
+próprio mecanismo para criar um único objeto de conexão de banco de dados. Ao lidar com conexões
+baseadas em banco de dados, é comum ter apenas uma instância que se conecta a um banco de dados e
+compartilha essa conexão com outros objetos.
+
+Singleton é o padrão que usamos para criar uma única instância de conexão de banco de dados, conforme
+mostrado no exemplo a seguir:
+
+public class RouterNetworkH2Adapter implements RouterNet
+workOutputPort {
+private static RouterNetworkH2Adapter instance;
+@PersistenceContext
+private EntityManager em;
+private RouterNetworkH2Adapter(){
+setUpH2Database();
+}
+private void setUpH2Database() {
+EntityManagerFactory entityManagerFactory =
+Persistence.createEntityManagerFactory
+("inventory");
+EntityManager em =
+entityManagerFactory.createEntityManager();
+this.em = em;
+}
+public static RouterNetworkH2Adapter getInstance() {
+if (instance == null) {
+instance = new RouterNetworkH2Adapter();
+}
+return instance;
+}
+}
+
+Para garantir que apenas um objeto seja criado, criamos um construtor privado para impedir que clientes
+criem instâncias adicionais. A criação do objeto é manipulada pelo método getInstance , que verifica se o
+atributo da instância é nulo. Se for nulo, ele cria um novo RouterNetworkH2Adapter e o atribui à variável da
+instância . O construtor privado então cria uma conexão de banco de dados usando EntityManagerFactory.
+
+Ao executar getInstance pela segunda vez, em vez de criar um novo
+RouterNetworkH2Adapter, retornamos a instância existente criada anteriormente.
+
+========================
+Builder
+
+Builder é um padrão de design que nos ajuda a criar expressivamente objetos complexos. Ele é destinado a
+cenários com construtores com muitos parâmetros e diferentes maneiras de fazer o mesmo objeto. Usamos
+esse padrão de design para criar objetos CoreRouter e EdgeRouter .
+
+Considere o exemplo a seguir, onde criamos uma instância do CoreRouter usando seu construtor:
+
+var router = new CoreRouter(
+id,
+parentRouterId,
+vendor,
+model,
+ip,
+location,
+routerType,
+routers);
+
+Uma das desvantagens de usar o construtor diretamente é que precisamos saber como passar os parâmetros
+na ordem correta. No exemplo anterior, precisamos passar primeiro id, depois parentRouterId e
+breve.
+
+Agora, vamos ver a criação do objeto usando o builder:
+
+var router = CoreRouter.builder()
+.id(id == null ? Id.withoutId() : id)
+.vendor(vendor)
+.model(model)
+.ip(ip)
+.location(location)
+.routerType(routerType)
+.build();
+
+Além de pular alguns parâmetros como parentRouterId, passamos os parâmetros em qualquer ordem por meio
+de métodos builder como vendor ou model. Quando terminarmos, chamamos o método build para retornar a
+instância CoreRouter.
+
+Ao longo do livro, não fornecemos uma implementação de construtor personalizada. Em vez disso, confiamos
+nas úteis bibliotecas do Lombok para criar construtores simplesmente adicionando a anotação Builder ao
+construtor da classe:
+
+@Builder
+public CoreRouter(Id id, Id parentRouterId, Vendor vendor,
+Model model, IP ip, Location location, RouterType router
+Type, Map<Id, Router> routers) {
+/** Code omitted **/
+}
+
+O Lombok provavelmente é o suficiente para você se não tiver requisitos especiais sobre como seus objetos
+devem ser criados. Caso contrário, você pode implementar seu próprio mecanismo de construtor. Isso
+geralmente é feito quando você deseja definir parâmetros obrigatórios ou opcionais e outras regras para a criação de objetos.
+
+=======================================
+Abstract factory
+
+Discutimos na seção anterior como aplicar o LSP nos permite passar um objeto CoreRouter ou EdgeRouter
+para um método que espera um tipo Router , e então podemos usar esse objeto sem problemas. O padrão de
+fábrica abstrata entra em ação sempre que precisamos criar objetos CoreRouter ou EdgeRouter . Fizemos isso
+quando implementamos a classe RouterFactory:
+
+public class RouterFactory {
+public static Router getRouter(Id id,
+Vendor vendor,
+Model model,
+IP ip,
+Location location,
+RouterType routerType){
+switch (routerType) {
+case CORE -> {
+return CoreRouter.builder().
+Id(id == null ? Id.withoutId() : id).
+Vendor(vendor).
+Model(model).
+Ip(ip).
+Location(location).
+routerType(routerType).
+Build();
+}
+case EDGE -> {
+return EdgeRouter.builder().
+Id(id==null ? Id.withoutId():id).
+Vendor(vendor).
+Model(model).
+Ip(ip).
+Location(location).
+routerType(routerType).
+Build();
+}
+default -> throw new
+UnsupportedOperationException(
+"No valid router type informed");
+}
+}
+}
+
+A classe RouterFactory contém apenas o método getRouter , que recebe alguns parâmetros necessários para
+criar roteadores de código e de borda e retorna um objeto do tipo Router. Observe que passamos um
+parâmetro RouterType usado na instrução switch para identificar qual tipo de roteador precisa ser criado,
+CoreRouter ou EdgeRouter. Independentemente do subtipo de roteador específico, sempre o retornamos
+como o supertipo Router para uso, por exemplo, em cenários onde o LSP pode ser aplicado.
+
