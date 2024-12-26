@@ -46,3 +46,8 @@ minikube tunnel
 kubectl port-forward pod/<nome do pod> 8080:8080 -n default
 
 no navegador: http://localhost:8080/q/swagger-ui/
+
+=================
+mvn clean test
+
+obs: para o teste funcionar o Docker deve estar em execução

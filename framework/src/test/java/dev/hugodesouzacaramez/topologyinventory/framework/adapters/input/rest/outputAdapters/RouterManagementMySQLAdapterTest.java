@@ -51,7 +51,7 @@ public class RouterManagementMySQLAdapterTest {
                 Vendor.CISCO,
                 Model.XYZ0004,
                 IP.fromAddress("10.0.0.1"),
-                RouterManagementAdapterTest.createLocation("US"),
+                RouterManagementAdapterTest.createLocation("United States", "New York"),
                 RouterType.EDGE);
     }
 }

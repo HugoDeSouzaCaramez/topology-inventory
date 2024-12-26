@@ -1,6 +1,7 @@
 package dev.hugodesouzacaramez.topologyinventory.framework.adapters.input.rest;
 
 import dev.hugodesouzacaramez.topologyinventory.framework.adapters.input.rest.request.network.AddNetwork;
+import io.quarkus.test.TestReactiveTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;

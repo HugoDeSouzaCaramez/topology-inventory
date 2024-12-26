@@ -6,6 +6,7 @@ import dev.hugodesouzacaramez.topologyinventory.domain.vo.Model;
 import dev.hugodesouzacaramez.topologyinventory.domain.vo.SwitchType;
 import dev.hugodesouzacaramez.topologyinventory.domain.vo.Vendor;
 import dev.hugodesouzacaramez.topologyinventory.framework.adapters.input.rest.request.aswitch.CreateSwitch;
+import io.quarkus.test.TestReactiveTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -53,7 +54,7 @@ public class SwitchManagementAdapterTest {
                 .vendor(Vendor.CISCO)
                 .model(Model.XYZ0001)
                 .ip(expectedSwitchIP)
-                .location(createLocation("United States"))
+                .location(createLocation("United States", "New York"))
                 .switchType(SwitchType.LAYER3)
                 .build();
         var routerStr = given()

@@ -4566,19 +4566,19 @@ Após o banco de dados estar pronto, o Quarkus inicia os testes do sistema, obte
 seguinte:
 
 [INFO] Testes executados: 2, Falhas: 0, Erros: 0, Ignorados: 0, Tempo decorrido: 32.672 s - em
-dev.davivieira.topologyinventory.framework.adapters.entrada.rest.NetworkManagementAdapterTest
-[INFO] Executando dev.davivieira.topologyinventory.framework.adapters.entrada.rest.RouterManagementAdapterTest
+dev.hugodesouzacaramez.topologyinventory.framework.adapters.entrada.rest.NetworkManagementAdapterTest
+[INFO] Executando dev.hugodesouzacaramez.topologyinventory.framework.adapters.entrada.rest.RouterManagementAdapterTest
 [INFO] Testes executados: 5, Falhas: 0, Erros: 0, Ignorados: 0, Tempo decorrido: 0,232 s - em
-dev.davivieira.topologyinventory.framework.adapters.entrada.rest.RouterManagementAdapterTest
-[INFO] Executando dev.davivieira.topologyinventory.framework.adapters.entrada.rest.SwitchManagementAdapterTest
+dev.hugodesouzacaramez.topologyinventory.framework.adapters.entrada.rest.RouterManagementAdapterTest
+[INFO] Executando dev.hugodesouzacaramez.topologyinventory.framework.adapters.entrada.rest.SwitchManagementAdapterTest
 [INFO] Testes executados: 3, Falhas: 0, Erros: 0, Ignorados: 0, Tempo decorrido: 0,088 s - em
-dev.davivieira.topologyinventory.framework.adapters.entrada.rest.SwitchManagementAdapterTest
-[INFO] Executando dev.davivieira.topologyinventory.framework.adapters.entrada.rest.saídaAdaptadores.RoteadorGerenciamentoMySQLAdapterTest
+dev.hugodesouzacaramez.topologyinventory.framework.adapters.entrada.rest.SwitchManagementAdapterTest
+[INFO] Executando dev.hugodesouzacaramez.topologyinventory.framework.adapters.entrada.rest.saídaAdaptadores.RoteadorGerenciamentoMySQLAdapterTest
 [INFO] Testes executados: 3, Falhas: 0, Erros: 0, Ignorados: 0, Tempo decorrido: 0,116 s - em
-dev.davivieira.topologyinventory.framework.adapters.entrada.rest.saídaAdaptadores.RoteadorGerenciamentoMySQLAdapterTest
-[INFO] Executando dev.davivieira.topologyinventory.framework.adapters.entrada.rest.saídaAdaptadores.SwitchManagementMySQLAdapterTest
+dev.hugodesouzacaramez.topologyinventory.framework.adapters.entrada.rest.saídaAdaptadores.RoteadorGerenciamentoMySQLAdapterTest
+[INFO] Executando dev.hugodesouzacaramez.topologyinventory.framework.adapters.entrada.rest.saídaAdaptadores.SwitchManagementMySQLAdapterTest
 [INFO] Testes executados: 1, Falhas: 0, Erros: 0, Ignorados: 0, Tempo decorrido: 0,013 s - em
-dev.davivieira.topologyinventory.framework.adapters.entrada.rest.saídaAdaptadores.SwitchManagementMySQLAdapterTest
+dev.hugodesouzacaramez.topologyinventory.framework.adapters.entrada.rest.saídaAdaptadores.SwitchManagementMySQLAdapterTest
 
 Para testar os adaptadores de saída, precisamos chamar os adaptadores de entrada. Se pudermos testar os adaptadores de
 entrada com sucesso, isso significa que também estamos testando os adaptadores de saída com sucesso.
