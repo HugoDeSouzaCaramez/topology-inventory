@@ -5497,5 +5497,15 @@ Suponha que, em vez de declarar changeLocation como abstrato, fornecemos um conc
 implementação compartilhada pelas classes CoreRouter e EdgeRouter. Isso
 violaria o SRP porque a lógica changeLocation atenderia a diferentes atores.
 
+====================================
+Aplicando o OCP
+
+Ainda não declaramos, mas o arranjo entre o roteador, o CoreRouter e o EdgeRouter
+classes representa uma aplicação do OCP.
+
+O OCP garante que um módulo ou componente seja fechado para alteração, mas aberto para extensão.
+Em vez de fornecer um design de classe em que uma única classe conteria a lógica para lidar com
+roteadores de núcleo e de borda, aproveitamos a capacidade de herança do Java para estender as possibilidades da classe abstrata Router, sem alterar seus atributos e comportamentos. Tais extensões são possíveis
+por meio das implementações de classe concreta CoreRouter e EdgeRouter.
 
 
