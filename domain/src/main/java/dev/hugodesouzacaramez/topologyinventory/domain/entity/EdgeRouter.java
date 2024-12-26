@@ -1,8 +1,6 @@
 package dev.hugodesouzacaramez.topologyinventory.domain.entity;
 
-import dev.hugodesouzacaramez.topologyinventory.domain.specification.EmptyNetworkSpec;
-import dev.hugodesouzacaramez.topologyinventory.domain.specification.SameCountrySpec;
-import dev.hugodesouzacaramez.topologyinventory.domain.specification.SameIpSpec;
+import dev.hugodesouzacaramez.topologyinventory.domain.specification.*;
 import dev.hugodesouzacaramez.topologyinventory.domain.vo.IP;
 import dev.hugodesouzacaramez.topologyinventory.domain.vo.Id;
 import dev.hugodesouzacaramez.topologyinventory.domain.vo.Location;
@@ -44,5 +42,14 @@ public final class EdgeRouter extends Router {
         emptyNetworkSpec.check(anySwitch);
 
         return this.switches.remove(anySwitch.id);
+    }
+
+    @Override
+    public void changeLocation(Location location) {
+        var allowedCountrySpec = new AllowedCountrySpec();
+        var allowedCitySpec = new AllowedCitySpec();
+        allowedCountrySpec.check(location);
+        allowedCitySpec.check(location);
+        this.location = location;
     }
 }

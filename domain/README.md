@@ -5376,3 +5376,126 @@ menos suscetíveis a mudanças.
 amos ver na próxima seção como podemos aplicar os princípios SOLID a uma aplicação desenvolvida usando
 arquitetura hexagonal.
 
+===============================
+Aplicando SOLID em um sistema de arquitetura hexagonal
+
+Para ver como cada princípio SOLID é aplicado, voltaremos à topologia e ao sistema de inventário que desenvolvemos
+ao longo do livro. Vamos começar vendo como o SRP pode ser aplicado na topologia e no sistema de inventário.
+
+===========================================
+Aplicando o SRP
+
+Só para recapitular, o sistema de topologia e inventário gerencia recursos de rede, como roteadores e switches. Esse
+sistema é adequado para empresas de telecomunicações ou Provedores de Serviços de Internet (ISP) que desejam
+manter um inventário dos recursos de rede que usam para atender seus clientes.
+
+No sistema de topologia e inventário, temos roteadores core e edge. Roteadores core lidam com tráfego de
+rede de alta carga de um ou mais roteadores edge. Roteadores edge são usados para lidar com tráfego de usuários finais.
+Roteadores de borda se conectam a switches de rede.
+
+Considere um cenário em que roteadores core e edge mudam de local. Por exemplo, um roteador
+core que agora está localizado na França precisa, por algum motivo, ser reprovisionado na Itália, e um roteador edge
+que está em Frankfurt precisa ser reprovisionado em Berlim. Considere também que as mudanças de
+rede entre países são tratadas pelo ator A, e as mudanças de rede entre cidades são tratadas pelo ator B.
+
+Vamos mudar a topologia e o aplicativo de inventário para cumprir o requisito descrito. As mudanças
+descritas a seguir são feitas no hexágono Domain:
+
+1. Crie a classe de especificação AllowedCountrySpec :
+
+public final class AllowedCountrySpec extends Ab
+stractSpecification<Location> {
+private List<String> allowedCountries =
+List.of(
+"Germany", "France", "Italy", "United States");
+@Override
+public boolean isSatisfiedBy(Location location) {
+return allowedCountries
+.stream()
+.anyMatch(
+allowedCountry -> allowedCountry
+.equals(location.country()));
+}
+/** Code omitted **/
+}
+
+Esta especificação limita quais países podem ser escolhidos por meio do atributo allowedCountries .
+Não é assim que você deve representá-lo em uma aplicação real, mas é o suficiente para ilustrar a
+ideia do SRP.
+
+2. Agora, crie a classe de especificação AllowedCitySpec :
+
+public final class AllowedCitySpec extends Ab
+stractSpecification<Location> {
+private List<String> allowedCities =
+List.of(
+"Berlin", "Paris", "Rome", "New York");
+@Override
+public oolean isSatisfiedBy(Location location) {
+return allowedCities
+.stream()
+.anyMatch(
+allowedCountry -> allowedCountry
+.equals(location.city()));
+}
+/** Code omitted **/
+}
+
+Seguindo a mesma ideia da especificação anterior, aqui limitamos quais cidades
+são permitidas através do atributo allowedCities .
+
+3. Declare o método changeLocation na classe abstrata Router :
+
+public abstract sealed class Router extends Equipment
+permits CoreRouter, EdgeRouter {
+/** Code omitted **/
+public abstract void changeLocation(
+Location location);
+/** Code omitted **/
+}
+
+Observe que Router é uma classe abstrata selada, permitindo que apenas as classes CoreRouter
+e EdgeRouter a implementem.
+
+4. Forneça uma implementação para CoreRouter:
+
+@Override
+public void changeLocation(Location location) {
+var allowedCountrySpec = new AllowedCountrySpec();
+allowedCountrySpec.check(location);
+this.location = location;
+}
+
+Usamos o AllowedCountrySpec para verificar se o novo local do roteador é permitido.
+Se um país não permitido for fornecido, uma exceção será lançada. Caso contrário,
+o novo local será atribuído à variável location do objeto Router .
+
+5. Forneça uma implementação para EdgeRouter:
+
+@Override
+public void changeLocation(Location location) {
+var allowedCountrySpec = new AllowedCountrySpec();
+var allowedCitySpec = new AllowedCitySpec();
+allowedCountrySpec.check(location);
+allowedCitySpec.check(location);
+this.location = location;
+}
+
+A implementação do EdgeRouter é um pouco diferente. Além de AllowedCountrySpec,
+também temos AllowedCitySpec. Um novo Location será atribuído ao objeto Router
+somente após o cumprimento dessas duas especificações.
+
+Vamos rever o que fizemos aqui. Começamos criando o AllowedCountrySpec
+e especificações AllowedCitySpec ; então, declaramos o método changeLocation na classe
+abstrata Router . Como tanto CoreRouter quanto EdgeRouter implementam essa classe,
+tivemos que substituir o método changeLocation para atender às necessidades do ator A
+e do ator B. O ator A é responsável por manipular mudanças de localização entre países
+– neste caso, CoreRouter. O ator B é responsável por manipular mudanças de localização
+entre cidades, o que é responsabilidade do EdgeRouter'.
+
+Suponha que, em vez de declarar changeLocation como abstrato, fornecemos um concreto
+implementação compartilhada pelas classes CoreRouter e EdgeRouter. Isso
+violaria o SRP porque a lógica changeLocation atenderia a diferentes atores.
+
+
+

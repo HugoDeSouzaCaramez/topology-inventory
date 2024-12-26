@@ -1,9 +1,6 @@
 package dev.hugodesouzacaramez.topologyinventory.domain.entity;
 
-import dev.hugodesouzacaramez.topologyinventory.domain.specification.EmptyRouterSpec;
-import dev.hugodesouzacaramez.topologyinventory.domain.specification.EmptySwitchSpec;
-import dev.hugodesouzacaramez.topologyinventory.domain.specification.SameCountrySpec;
-import dev.hugodesouzacaramez.topologyinventory.domain.specification.SameIpSpec;
+import dev.hugodesouzacaramez.topologyinventory.domain.specification.*;
 import dev.hugodesouzacaramez.topologyinventory.domain.vo.IP;
 import dev.hugodesouzacaramez.topologyinventory.domain.vo.Id;
 import dev.hugodesouzacaramez.topologyinventory.domain.vo.Location;
@@ -58,5 +55,12 @@ public final class CoreRouter extends Router {
             }
         }
         return this.routers.remove(anyRouter.id);
+    }
+
+    @Override
+    public void changeLocation(Location location) {
+        var allowedCountrySpec = new AllowedCountrySpec();
+        allowedCountrySpec.check(location);
+        this.location = location;
     }
 }

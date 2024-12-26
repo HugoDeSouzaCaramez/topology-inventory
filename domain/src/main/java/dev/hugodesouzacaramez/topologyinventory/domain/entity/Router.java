@@ -36,4 +36,6 @@ public abstract sealed class Router extends Equipment permits CoreRouter, EdgeRo
         this.routerType = routerType;
         this.parentRouterId = parentRouterId;
     }
+
+    public abstract void changeLocation(Location location);
 }
