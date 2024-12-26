@@ -5636,3 +5636,26 @@ O ISP pode ser observado ao disponibilizar operações de caso de uso para o ada
 entrada. Temos a classe RouterManagementInputPort implementando a interface RouterManagementUseCase.
 O ISP é empregado porque todas as declarações de método do RouterManagementUseCase
 interface são relevantes e implementadas pelo RouterManagementInputPort.
+
+============================================
+Aplicando o DIP
+
+Discutimos a inversão de dependência no Capítulo 9, Aplicando Inversão de Dependência com
+Módulos Java, onde usamos o Java Platform Module System (JPMS) para aplicar a inversão de
+dependência. Para recapitular, vamos rever o diagrama a seguir:
+
+O DIP afirma que os clientes devem sempre depender de abstrações em vez de concreções. É exatamente
+isso que estamos fazendo ao fazer o RouterManagementAdapter depender da interface
+RouterManagementUseCase , em vez do RouterManagementInputPort
+classe concreta:
+
+public class RouterManagementAdapter {
+@Inject
+RouterManagementUseCase routerManagementUseCase;
+/** Code omitted **/
+}
+
+No Capítulo 9, Aplicando Inversão de Dependência com Módulos Java, o RouterManagementUseCase
+implementação de interface – um objeto RouterManagementInputPort – é fornecido pelo JPMS. Na
+implementação atual, usamos Quarkus com a anotação @Inject para fornecer RouterManagementInputPort.
+
