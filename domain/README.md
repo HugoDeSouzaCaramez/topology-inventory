@@ -5811,3 +5811,277 @@ parâmetro RouterType usado na instrução switch para identificar qual tipo de 
 CoreRouter ou EdgeRouter. Independentemente do subtipo de roteador específico, sempre o retornamos
 como o supertipo Router para uso, por exemplo, em cenários onde o LSP pode ser aplicado.
 
+========================================================
+========================================================
+========================================================
+Boas práticas de design para Sua aplicação hexagonal
+
+Ao explorar a arquitetura hexagonal neste livro, aprendemos sobre alguns dos princípios
+e técnicas que caracterizam uma aplicação hexagonal. Ao visualizar um sistema com
+limites claramente definidos, estabelecemos três hexágonos: Domínio, Aplicação e Framework.
+
+Usando esses hexágonos como guia, exploramos como separar o código de negócios do código de
+tecnologia. Essa separação nos permitiu explorar maneiras de criar sistemas tolerantes a mudanças. Mas
+não paramos por aí. Indo além, aprendemos como a estrutura Quarkus poderia ser usada para transformar
+um aplicativo hexagonal em um aplicativo nativo da nuvem.
+
+Chegamos ao final deste livro equipados com as ideias fundamentais necessárias para criar sistemas
+hexagonais. Neste capítulo, exploraremos algumas práticas de design úteis que podemos aplicar ao criar
+aplicativos hexagonais robustos.
+
+Neste capítulo, abordaremos os seguintes tópicos principais:
+
+• Usando Domain-Driven Design (DDD) para moldar o hexágono do domínio
+• A necessidade de criar portas e casos de uso
+• Lidando com múltiplas categorias de adaptadores
+• Conclusão – a jornada hexagonal
+
+Ao final deste capítulo, você estará ciente das práticas de design que podem tornar seu projeto de
+arquitetura hexagonal mais robusto. Essas práticas também ajudarão você a decidir quando e como
+empregar os princípios da arquitetura hexagonal.
+
+=======================
+Usando o Domain-Driven Design para moldar o
+hexágono do domínio
+
+Ao empregar a arquitetura hexagonal para projetar a estrutura de código de um sistema, não podemos enfatizar
+o suficiente o quão importante é implementar primeiro o hexágono de Domínio. É o hexágono de Domínio que
+define o tom para o desenvolvimento de todo o aplicativo.
+
+Contanto que você mantenha o código no hexágono de Domínio que expressa puramente o domínio do
+problema — o código que não mescla preocupações comerciais com as tecnológicas — você está no caminho
+certo para garantir o nível de encapsulamento que favorece um design mais tolerante a mudanças. A técnica
+que você usará para desenvolver o hexágono de Domínio não deve ser sua principal preocupação neste
+estágio — em vez disso, seu objetivo deve ser criar um hexágono de Domínio que seja focado no propósito do
+sistema, em vez da tecnologia que você pode usar para implementá-lo. Então, você pode desenvolver o
+hexágono de Domínio usando seu próprio conjunto de princípios, ou pode pegar ideias emprestadas de outros que já abordaram um problema similar antes.
+
+A vantagem de usar DDD é que isso significa que você não precisa reinventar a roda. A maioria — se não todos
+— dos conceitos e princípios que você precisa para modelar seu domínio de problema estão bem estabelecidos
+no rico corpo de conhecimento presente nas técnicas de DDD. No entanto, isso não significa que você deve
+seguir todos os princípios de DDD à risca. A abordagem recomendada é adotar e adaptar as coisas que você
+acha úteis para seu projeto.
+
+A seguir, exploraremos algumas das abordagens que você pode seguir ao usar DDD para projetar o hexágono de domínio.
+
+==========================
+Compreendendo o negócio em que atuamos
+
+Um bom design de aplicativo reflete um bom entendimento do negócio que ele pretende atender. A jornada de
+design não começa no código, mas na busca por conhecimento de negócios. Não estou dizendo para você se
+tornar um especialista em negócios no campo para o qual pretende construir software. No entanto, acho
+importante entender os fundamentos porque, se não entender, os erros cometidos no início da fase de design
+podem causar danos irreversíveis que se estenderão por todo o projeto de software.
+
+No melhor cenário, o projeto pode sobreviver a esses erros iniciais, mas não sem pagar o alto
+custo de um software emaranhado e difícil de manter. No pior cenário, o resultado é um
+software inutilizável, e começar um novo projeto do zero é a melhor coisa a fazer.
+
+Entender os fundamentos do negócio é a primeira coisa que devemos fazer. Os detalhes do negócio
+também são importantes, e devemos prestar bastante atenção a eles se quisermos fazer software de primeira linha.
+Mas erros relacionados a detalhes não são tão sérios quanto erros relacionados a fundamentos. O primeiro é
+geralmente mais fácil e barato de consertar do que o último.
+
+Vamos revisitar a topologia e o sistema de inventário por um momento. Temos uma regra de negócios afirmando
+que apenas roteadores de borda do mesmo país podem ser conectados uns aos outros. Usamos os roteadores de
+borda para lidar com tráfego regional porque eles têm menos capacidade de tráfego do que os roteadores principais.
+Os roteadores principais podem estar localizados em diferentes países porque têm mais capacidade de tráfego.
+
+Todo o modelo de domínio foi construído com base nessas premissas de negócios. Comprometemos
+todo o desenvolvimento do sistema se não conseguirmos entender e traduzir essas premissas de
+negócios em um modelo de domínio coeso. Tudo o que construímos em cima de tal modelo será baseado em suposições erradas.
+É por isso que precisamos investir todo o tempo necessário para entender os fundamentos do negócio.
+
+Agora, vamos ver algumas técnicas que podemos usar para construir conhecimento empresarial.
+
+==============
+Tela de Modelo de Negócios
+
+Um excelente exercício para entender como o negócio funciona pode ser feito com o Business Model Canvas
+técnica. Um Business Model Canvas é uma ferramenta para criar modelos de negócios. Ele fornece instrumentos
+para analisar e entender os principais elementos de um negócio. Ao fornecer uma maneira estruturada e simplificada
+de identificar os principais aspectos de um negócio, o Business Model Canvas pode ser o ponto de partida para
+desenhar o panorama geral que você e sua equipe precisam para entender os fundamentos do negócio.
+
+O principal benefício da ferramenta é seu foco nos elementos-chave que são cruciais para a lucratividade de um
+negócio. Outro aspecto útil é como ela representa clientes e parceiros no cenário geral dos negócios. Isso nos ajuda
+a entender o quão bem o modelo de negócios está atendendo às expectativas de clientes e parceiros.
+
+Uma desvantagem é que ele não fornece uma visão profunda e abrangente de como um negócio deve operar para
+produzir bons resultados. Além disso, ele não aborda a estratégia de negócios. Grande parte de sua ênfase está nos
+resultados finais em vez de metas de longo prazo.
+
+Há uma variação de — e uma alternativa para — o Business Model Canvas chamado Lean Canvas, que é mais
+direcionado para startups. A principal diferença com essa abordagem é que ela foca no alto nível de incerteza que
+as startups enfrentam quando tentam desenvolver novas ideias e produtos.
+
+Como podemos ver na figura anterior, o Business Model Canvas nos permite estruturar cada aspecto
+do negócio em partes distintas. Essa separação nos ajuda a visualizar os principais elementos que compõem o negócio.
+Aqui estão os elementos do Business Model Canvas:
+
+• O elemento Parceiros-chave representa nossos principais parceiros e fornecedores e contém informações
+sobre os principais recursos ou atividades envolvidos nesse relacionamento.
+
+• Em Atividades-chave, declaramos as propostas de valor necessárias para as atividades-chave
+
+• Para os Recursos-chave, precisamos identificar as propostas de valor necessárias para habilitar os recursos-chave
+
+• Nas Propostas de Valor, descrevemos os elementos de valor que pretendemos entregar ao cliente
+
+• O elemento Relacionamento com o Cliente diz respeito às expectativas de cada segmento de clientes em
+estabelecer e manter um relacionamento conosco
+
+• Em Canais, identificamos os canais de comunicação através dos quais nossos segmentos de clientes
+nos alcançará
+
+• O elemento Segmentos de clientes representa os grupos de pessoas aos quais queremos entregar valor
+
+• O elemento Estrutura de Custos descreve os custos mais altos envolvidos na viabilização do modelo de negócios
+
+• O elemento Fluxos de Receita mostra o valor que nossos clientes estão realmente dispostos a pagar
+
+Além do Business Model Canvas, também temos a técnica Event Storming como alternativa, que é mais voltada
+para projetos DDD. Vamos examiná-la agora.
+
+===============================
+Tempestade de eventos
+
+Se você não achar o Business Model Canvas uma abordagem adequada, outra técnica chamada event
+storming pode ajudar você a entender suas necessidades de negócios. Criado por Alberto Brandolini, o
+event storming usa notas adesivas coloridas para mapear elementos de negócios em eventos de domínio,
+comandos, atores e agregados. Cada um desses elementos de nota adesiva tem sua própria cor.
+
+Como podemos ver no diagrama anterior, as notas adesivas do event storming usam a mesma
+terminologia que encontramos ao lidar com DDD. Isso porque o event storming foi criado
+especialmente para aqueles que usam DDD e precisam entender os requisitos de negócios para seu projeto.
+
+As sessões de event storming devem ser conduzidas por desenvolvedores, especialistas no domínio e um
+facilitador que coordena a sessão para garantir que os esforços de mapeamento sigam na direção certa.
+
+O ponto de partida de uma sessão de event storming geralmente é um processo de negócios desafiador para
+modelar. Nessas sessões, é comum discutir como os atores e suas ações influenciam os processos de negócios.
+Outro ponto central é como os sistemas externos dão suporte e interagem com os processos de negócios.
+Riscos e pontos problemáticos também são assuntos essenciais para mapear para identificar áreas críticas
+de negócios. Para saber mais sobre o event storming, confira seu site em https://www.eventstorming.com.
+
+Uma vez que entendemos como o negócio funciona, precisamos traduzir esse conhecimento em um modelo
+de domínio. Na próxima seção, veremos como a colaboração pode nos ajudar a aumentar nosso conhecimento
+sobre o negócio.
+
+============================
+Promover a colaboração para aumentar o conhecimento
+
+O modelo de domínio é o resultado de pessoas tentando entender o negócio e traduzir esse entendimento em
+código. Para obter o máximo desse processo, a colaboração desempenha um papel vital onde o grau de
+complexidade é alto e as coisas são difíceis de realizar. Para superar essa complexidade, precisamos
+estabelecer uma atmosfera colaborativa onde todos os envolvidos no projeto podem contribuir com
+informações relevantes que ajudam a construir o panorama geral. A abordagem colaborativa ajuda a garantir
+que todos estejam na mesma página em relação ao domínio do problema, levando a um modelo de domínio
+que reflete melhor as preocupações do negócio.
+
+Além de usar o próprio código para capturar e transmitir o conhecimento do domínio do problema, a
+documentação escrita é outra ferramenta útil para colaboração. Não estou falando sobre escrever
+documentação longa e abrangente – quero dizer o oposto. Deixe-me explicar.
+
+Documentação concisa focada em explicar os blocos de construção de um sistema pode ajudar pessoas
+que não estão familiarizadas com o código a dar os primeiros passos para entender o sistema e,
+consequentemente, o domínio do problema. Às vezes, uma introdução aos principais elementos do sistema
+leva rapidamente a uma compreensão abrangente do domínio do problema.
+
+O que estou dizendo pode parecer óbvio, mas, com muita frequência, me deparei com uma base de código
+complexa com documentação ruim ou nenhuma documentação. Quando o domínio do problema é
+complexo, é natural que o código também seja complexo. Sem documentação para explicar o sistema
+básico, o que já é complicado se torna ainda mais difícil de entender.
+
+Recomendo reservar algum tempo no final do projeto para escrever a documentação do sistema. Novos
+participantes, em particular, se beneficiarão de um documento amigável que forneça uma visão geral do
+quadro geral do sistema.
+
+Agora que sabemos o quão importante é ter uma base sólida baseada na compreensão dos requisitos de
+negócios e discutimos o valor da colaboração para aumentar nosso conhecimento do domínio do
+problema, vamos explorar algumas das técnicas de DDD a serem adotadas ao construir o hexágono do domínio.
+
+===========================================
+Aplicando técnicas DDD para construir o hexágono de domínio
+
+Nesta seção, exploraremos algumas práticas de design para nos ajudar a estabelecer limites claros no
+sistema hexagonal. Complementando o que vimos no Capítulo 2, Wrapping Business Rules inside Domain
+Hexagon, veremos a importância de criar subdomínios, buscar uma linguagem ubíqua e definir contextos
+delimitados para distinguir os diferentes aspectos do domínio do problema.
+
+======================
+Subdomínios
+
+O propósito de um subdomínio é agrupar os elementos que dão suporte ao domínio principal, mas não
+podem ser considerados elementos que expressam o domínio principal. Esses elementos de suporte são
+essenciais para as atividades conduzidas pelo domínio principal. Sem os elementos de suporte, o domínio
+principal não pode funcionar. Existem também subdomínios genéricos cujo propósito é fornecer capacidades adicionais para
+domínios principais e subdomínios de suporte. Um subdomínio genérico funciona como um componente
+autônomo que não depende de coisas fornecidas por outros domínios.
+
+Podemos dizer que temos atividades primárias no domínio principal. E no subdomínio, temos atividades
+secundárias que permitem as primárias. Se misturarmos atividades primárias e secundárias, acabaremos com um
+modelo de domínio com preocupações mistas. Pode não ser um grande problema para sistemas menores, mas
+em sistemas maiores, pode adicionar uma complexidade considerável que pode minar a produtividade de qualquer
+um que tente entender o sistema. É por isso que é uma boa abordagem dividir um domínio em subdomínios.
+Sempre teremos um domínio central concentrado na parte mais importante do código.
+
+Vamos usar um sistema bancário como exemplo para explorar mais a fundo a ideia de subdomínio. Em tal sistema,
+é possível identificar os seguintes domínios:
+
+• Como domínio principal, temos Transações que permitem aos usuários receber e enviar dinheiro
+• Como subdomínios de suporte, podemos ter Empréstimos e Seguros que adicionam mais recursos ao
+sistema, mas dependem do domínio principal de Transações para habilitar esses recursos
+• Por fim, temos a Autenticação como um subdomínio genérico, atendendo tanto ao domínio principal quanto
+suportando subdomínios que exigem que cada transação seja autenticada
+
+O domínio principal Transactions contém os elementos do bloco de construção do sistema. Esses elementos
+também estão presentes nos subdomínios Loans and Insurances, mas para propósitos diferentes. A autenticação genérica
+subdomain não sabe nada sobre os outros domínios. Ele apenas fornece um mecanismo de autenticação que é
+compartilhado entre o domínio principal e subdomínios de suporte.
+
+==========================
+Linguagem ubíqua
+
+Uma das pedras de toque do DDD é sua ênfase em como usamos a linguagem para descrever um modelo
+de domínio. Essa ênfase visa evitar a armadilha de ambiguidades em nossa comunicação geral infiltrandose no código do sistema que queremos criar.
+
+Como seres humanos, temos muito mais capacidade do que os computadores para lidar com ambiguidades na
+linguagem porque podemos adicionar contexto às nossas palavras. Os computadores, por outro lado, não têm essa capacidade a menos que
+nós fornecemos isso para eles. Para diminuir o nível de ambiguidade de um sistema, uma linguagem ubíqua
+busca terminologia precisa para descrever as coisas que compõem o modelo de domínio.
+
+Definir terminologia precisa, no entanto, não é suficiente para garantir que sempre transmitiremos o significado
+correto no modelo de domínio, pois palavras semelhantes podem ter um significado diferente dependendo do
+contexto em que são usadas. É por isso que há outra técnica em DDD chamada contexto limitado que podemos
+usar para lidar com diferenças de significado dentro de um modelo de domínio.
+
+===================
+Contexto limitado
+
+A ideia de contexto limitado é uma resposta ao fato de que as palavras têm um significado diferente
+dependendo do contexto em que são usadas. Quando trazemos essa ideia para o DDD, podemos descobrir
+que um elemento do modelo de domínio pode ter um significado diferente ou se comportar de forma diferente
+dependendo do contexto em que é aplicado. Se não tomarmos medidas ativamente para definir explicitamente
+um contexto para esclarecer o significado de tal elemento do modelo de domínio, estamos contribuindo para a ambiguidade dentro do sistema.
+
+Por exemplo, pegue o sistema de topologia e inventário. Suponha que, além dos recursos de inventário,
+queremos permitir que o sistema obtenha um status em tempo real e informações básicas de roteadores e
+outros equipamentos de rede. Esse novo recurso pode resultar em dois contextos: um para inventário e outro
+para status.
+
+Da perspectiva do inventário, um roteador significa um registro estático em um banco de dados. Por
+outro lado, da perspectiva do status, um roteador é algo vivo que emite dados em tempo real. Ao
+expressar essa distinção na forma de um contexto delimitado, garantimos que nossa compreensão de
+um contexto não se confunda com a de outro. Mais do que isso, ao estruturar o código dentro dos limites claros que um contexti limitado
+pode fornecer, estamos criando um sistema que pode evoluir e receber mudanças de uma forma mais
+organizada. Além disso, estamos aplicando o Princípio da Responsabilidade Única no nível dos módulos. Isso
+significa que um módulo deve mudar apenas por um único motivo e não por vários motivos.
+
+As técnicas de DDD discutidas nesta sessão não oferecem muito valor se não entendermos primeiro nossas
+necessidades de negócios. É por isso que começamos explorando algumas das técnicas que podemos usar
+para aprimorar nossa compreensão do modelo de negócios. Uma vez que sabemos sobre o negócio em que
+estamos, podemos empregar com segurança as técnicas de DDD (como subdomínios e contextos delimitados)
+para estabelecer limites entre diferentes componentes do sistema e remover ambiguidades dentro do modelo de domínio.
+
+Então, vamos ver como podemos implementar contextos e subdomínios limitados em um sistema hexagonal.
